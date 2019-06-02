@@ -8,7 +8,7 @@ source("functions.R")
 # * Finn likevektsfangsten
 # * Lag figurer
 # * Skriv ut resultater
-# * Fortsett å lage flere funksjoner
+# * Fortsett å lage flere funksjoner.
 
 #compile("harp_and_hoods.cpp")
 compile("harps_and_hoods_population_model.cpp","-O1 -g",DLLFLAGS="")
@@ -78,7 +78,7 @@ parameters$Mtilde= logit(Minit)
 parameters$M0tilde= logit(M0init)
 
 
-obj <- MakeADFun(data,parameters,DLL="harp_and_hoods")
+obj <- MakeADFun(data,parameters,DLL="harps_and_hoods_population_model")
 #obj <- MakeADFun(data,parameters,random="u",DLL="hessm")
 
 obj$fn()
