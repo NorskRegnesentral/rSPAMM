@@ -16,20 +16,21 @@ load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15
   # Read in data ---------------
 
   # Catch data
-  catch_data <- read.table(paste("../Data/",population,"/catch_data.dat",sep = ""),header = FALSE)
+  catch_data <- read.table(paste("./Data/",population,"/catch_data.dat",sep = ""),header = FALSE)
   # Pup production estimates
-  pup_production <- read.table(paste("../Data/",population,"/pup_production.dat",sep = ""),header = FALSE)
+  pup_production <- read.table(paste("./Data/",population,"/pup_production.dat",sep = ""),header = FALSE)
   # Available fecundity data
-  fecundity <- read.table(paste("../Data/",population,"/fecundity.dat",sep = ""),header = FALSE)
+  fecundity <- read.table(paste("./Data/",population,"/fecundity.dat",sep = ""),header = FALSE)
   # Birth ogives for different periods
-  Pdat <- read.table(paste("../Data/",population,"/wgharp.ogi",sep = ""),sep = "",header = TRUE)
+  Pdat <- read.table(paste("./Data/",population,"/wgharp.ogi",sep = ""),sep = "",header = TRUE)
   # Which periods the various birth ogives applies to
-  Pper <- read.table(paste("../Data/",population,"/wgharp.ogp",sep = ""),header = TRUE)
+  Pper <- read.table(paste("./Data/",population,"/wgharp.ogp",sep = ""),header = TRUE)
   #Priors used
-  priors <- read.table(paste("../Data/",population,"/priors.dat",sep = ""),header = FALSE)					#Priors used
+  priors <- read.table(paste("./Data/",population,"/priors.dat",sep = ""),header = FALSE)					#Priors used
 
+  years <- c(catch_data[1,1],catch_data[dim(catch_data)[1],1])
   #MAYBE ADD STEPWISE CHANGES IN FECUNDITY AND BIRTH OGIVES INSTEAD OF LINEAR TRANSITION
-  FecAndP = build.PandF(Fdat = fecundity,cdata = catch_data,Fproj = Fproj,Pdat = Pdat,Pper = Pper,years = c(cdata[1,1],cdata[dim(cdata)[1],1]))
+  FecAndP = build.PandF(Fdat = fecundity,Fproj = Fproj,Pdat = Pdat,Pper = Pper,years = years)
   Fdt = FecAndP$Fdt       #SJEKK VERDIEN PÅ DEN SISTE OG SAMMENLIKN MED WGHARP
   Pmat = FecAndP$Pmatrix
 
@@ -77,17 +78,25 @@ build.PandF <- function(Fdat = fecundity,Fproj = Fproj,Pdat = Pdat,Pper = Pper,y
   Fvec = array(0,nyr)
   Fvec[1:(Fdat$V1[1] - yr1 + 1)] = Fdat$V2[1]
 
-  for (i in 2:length(Fdat$V1)){
-    if(Fdat$V1[i]-Fdat$V1[i-1]==1){
-      Fvec[Fdat$V1[i]-yr1+1] = Fdat$V2[i]
-    } else {
-      i1 = Fdat$V1[i-1] - yr1 + 1
-      i2 = Fdat$V1[i] - yr1 + 1
-      Fvec[i1:i2] = seq(Fdat$V2[i-1],Fdat$V2[i],length.out = (i2-i1+1))
+  ## M. Biuw 2019/06/11: Added 'if' below statement to avoid error
+  ## when using only one fecundity estimate (as for hoods)
+  
+  if(length(Fdat$V1)>1) {
+    for (i in 2:length(Fdat$V1)){
+      if(Fdat$V1[i]-Fdat$V1[i-1]==1){
+        Fvec[Fdat$V1[i]-yr1+1] = Fdat$V2[i]
+      } else {
+        i1 = Fdat$V1[i-1] - yr1 + 1
+        i2 = Fdat$V1[i] - yr1 + 1
+        Fvec[i1:i2] = seq(Fdat$V2[i-1],Fdat$V2[i],length.out = (i2-i1+1))
+      }
     }
-  }
-  Fvec[i2:nyr] = Fdat$V2[i]
-
+    Fvec[i2:nyr] = Fdat$V2[i]
+  } else {  
+    i2 <- Fdat$V1 - yr1 + 1
+    Fvec[i2:nyr] = Fdat$V2
+  }	  
+  
   if(class(Fproj) == "character") Fvec[(yr2-yr1+1):nyr] = mean(Fdat$V2)
 
   if(class(Fproj)=="numeric") Fvec[(yr2-yr1+1):nyr] = Fproj
@@ -140,12 +149,12 @@ load.initial.values <- function(population = "harpeast",fromFile = TRUE,Kinit = 
 {
 
   if(fromFile == TRUE){
-    initial_values <- read.table(paste("../Data/",population,"/initial_values.dat",sep = ""),header = FALSE)
+    initial_values <- read.table(paste("./Data/",population,"/initial_values.dat",sep = ""),header = FALSE)
 
     #Initial values
-    Kinit = initial_values[1]								#Initial population size
-    Minit = initial_values[2]									#Natural adult mortality
-    M0init = initial_values[3]								#Natural pup mortality
+    Kinit = initial_values[1,]								#Initial population size
+    Minit = initial_values[2,]									#Natural adult mortality
+    M0init = initial_values[3,]								#Natural pup mortality
   }
 
 

@@ -11,12 +11,96 @@
 #' @examples
 #' load.model.object(population = "harpeast")
 
-load.model.object <- function(data = data,parameters = parameters)
+load.model.object <- function(dat = data,par = parameters)
 {
-  compile("harps_and_hoods_population_model.cpp","-O1 -g",DLLFLAGS="")
-  dyn.load(dynlib("harps_and_hoods_population_model"))
+  
+  cat('Compiling model dll, be patient....\n\n')
+  flush.console()
+  
+  compile("./R/harps_and_hoods_population_model.cpp","-O1 -g",DLLFLAGS="")
+ 
+  cat('\n\nDone!\n')
+  flush.console()
+  
+  cat('\nLoading model dll....\n')
+  flush.console()
 
-  obj <- MakeADFun(data,parameters,DLL="harps_and_hoods_population_model")
+  dyn.load(dynlib("./R/harps_and_hoods_population_model"))
 
-
+  cat('\n\nDone!\n')
+  flush.console()
+  
+  cat('\nBuilding model object....\n')
+  flush.console()
+  
+  obj <- MakeADFun(data=dat,parameters=par,DLL="harps_and_hoods_population_model")
+  
+  cat('Done!\n')
+  flush.console()
+  
+  obj
 }
+
+#' Run the loaded population model for harp seals and hooded seals
+#'
+#' Optimize the model object.
+#' @param obj Model object to be optimized.
+#' @return Output from optimized model.
+#' @keywords population model
+#' @export
+#' @examples
+#' run.model()
+
+
+run.model <- function(object=obj)
+{
+  nlminb(object$par,object$fn,object$gr)
+}
+
+
+#' Get results from optimized population model for harp seals and hooded seals
+#'
+#' Get model results.
+#' @param dat Data object that was used to fit the model
+#' @param object The TMB model object
+#' @param optimized Output from the optimization
+#' @param to.file Logical, whether to return results to the workspace (default) or save to file. NOT YET IMPLEMENTED!
+#' @return results Results returned to the workspace or saved to file.
+#' @keywords population model
+#' @export
+#' @examples
+#' load.model.object(population = "harpeast")
+
+model.results <- function(dat=data, object=obj, optimized=opt) 
+{
+  rep<-sdreport(object, getJointPrecision=TRUE)
+  rep.matrix <- summary(rep)
+  rep.rnames = rownames(rep.matrix)
+  indN0 = which(rep.rnames=="N0");indN0 <- indN0[-1]
+  indN1 = which(rep.rnames=="N1");indN1 <- indN1[-1]
+  indD1 = which(rep.rnames=="D1");
+  indD1New = which(rep.rnames=="D1New");   #NEED TO BE FIXED
+  indN0Current = which(rep.rnames=="N0CurrentYear");
+  
+  yrs = c(min(data$Cdata[,1]):(max(dat$Cdata[,1])+data$Npred+1))
+  
+  #Extract parameters
+  Kest = exp(optimized$par[1])
+  Mest = ilogit(optimized$par[2])
+  M0est = ilogit(optimized$par[3])
+  
+  D1 = rep.matrix[indD1,1]
+  D1New = rep.matrix[indD1New,1]
+  N0Current = rep.matrix[indN0Current,1]
+  D1.sd = rep.matrix[indD1,2]
+  D1New.sd = rep.matrix[indD1New,2]
+  N0Current.sd = rep.matrix[indN0Current,2]
+  
+  list(rep=rep, rep.matrix=rep.matrix, rep.rnames=rep.rnames, indN0=indN0,
+       indN1=indN1, indD1=indD1, indD1New=indD1New, indN0Current=indN0Current,
+       years=yrs, Kest=Kest, Mest=Mest, M0est=M0est, 
+       D1=D1, D1New=D1New, N0Current=N0Current, D1.sd=D1.sd, D1New.sd=D1New.sd,
+       N0Current.sd=N0Current.sd)
+}
+
+
