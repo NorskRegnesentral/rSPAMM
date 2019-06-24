@@ -5,13 +5,15 @@
 #' @param Amax Maximum age group. Default is 20 years.
 #' @param years_of_prediction Number of years in the future to project the model. Default is 15 years.
 #' @param Fproj Which fecundity rate to use in future projections. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise a fixed Fproj can be set.
+#' @param catch_quota Catch quota for 0 and 1+animals to be used in future projections. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise a fixed Fproj can be set.
 #' @return data List of loaded data ready for TMB.
 #' @keywords input, data
 #' @export
 #' @examples
 #' load.data(population = "harpeast")
 
-load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15,Fproj = "mean")
+load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15,
+                      Fproj = "mean", catch_quota='mean')
 {
   # Read in data ---------------
 
@@ -33,7 +35,11 @@ load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15
   FecAndP = build.PandF(Fdat = fecundity,Fproj = Fproj,Pdat = Pdat,Pper = Pper,years = years)
   Fdt = FecAndP$Fdt       #SJEKK VERDIEN PÅ DEN SISTE OG SAMMENLIKN MED WGHARP
   Pmat = FecAndP$Pmatrix
-
+  
+  if(any(catch_quota=='mean')) {
+    catch_quota <- round(apply(tail(catch_data, 5)[,-1], 2, mean))
+  }
+  
   # Prepare input to the model ------------
   data <- list()
   data$Amax = Amax													#Maximum age group
@@ -46,7 +52,7 @@ load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15
   data$Npred = years_of_prediction									#Number of years to run projections
   data$priors = as.matrix(priors)									#Priors for estimated parameters
   data$Npriors = length(priors$V1)									#Number of priors
-  #data$CQuota = catch_quota											#Catch level in future projections
+  data$CQuota = catch_quota											#Catch level in future projections
 
   return(data)
 }
