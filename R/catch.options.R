@@ -118,9 +118,13 @@ N70.helper.Nmax <- function(Tot,population,quota, root.dir="C:/Users/a5406/Docum
   ## Above line from original code. Changed to qnorm(1-0.2) 
   ## to reflect criterion of 80% rather than 90% probability
   
-  Npred <- NTot[indCur+15]-qnorm(1-0.2)*NTotSD[indCur+15]
+  Npred <- NTot[indCur+15]-qnorm(1-0.1)*NTotSD[indCur+15]
   
-  abs(N70-Npred)
+  if(Npred>0) {
+    abs(N70-Npred)
+  } else {
+    99999
+  }  
 }
 
 
@@ -161,9 +165,13 @@ N70.helper.D <- function(Tot,population,quota, root.dir="C:/Users/a5406/Document
   ## Dpred = D1New-qnorm(1-0.1)*std$Dnew.std
   ## Above line from original code. Changed to qnorm(1-0.2) 
   ## to reflect criterion of 80% rather than 90% probability
-  Dpred = D1-qnorm(1-0.2)*D1SD
-
-  abs(0.7-Dpred)
+  Dpred = D1-qnorm(1-0.1)*D1SD
+  
+  if(Dpred>0) {
+    abs(0.7-Dpred)
+  } else {
+    99999
+  }  
 }
 
 
@@ -179,7 +187,7 @@ N70.helper.D <- function(Tot,population,quota, root.dir="C:/Users/a5406/Document
 #' @keywords population model
 #' @export
 
-find.N70.quota <- function(MIN=5000,MAX=200000,quota=c(0,1),population="harpwest",method = "Dbased")
+find.N70.quota <- function(MIN=5000,MAX=50000,quota=c(0,1),population="harpwest",method = "Dbased")
 {
   # Function to find 70% quota
   quota = quota/sum(quota)
