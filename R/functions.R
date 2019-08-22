@@ -11,7 +11,9 @@ ilogit <- function(x){
 }
 
 
-buildPandF <- function(Fdat = fecundity,cdata = catch_data,Fproj = Fproj,Pdat = Pdat,Pper = Pper)
+buildPandF <- function(Fdat = fecundity,cdata = catch_data,
+                       Fproj = Fproj,Pdat = Pdat,Pper = Pper,
+                       return.periods=T)
 {
   ##Prepare fecundity data
   #Fdat <- read.table("wgharp.fdt",header = FALSE,sep = "")
@@ -24,17 +26,25 @@ buildPandF <- function(Fdat = fecundity,cdata = catch_data,Fproj = Fproj,Pdat = 
   Fvec = array(0,nyr)
   Fvec[1:(Fdat$V1[1] - yr1 + 1)] = Fdat$V2[1]
 
-  for (i in 2:length(Fdat$V1)){
-    if(Fdat$V1[i]-Fdat$V1[i-1]==1){
-      Fvec[Fdat$V1[i]-yr1+1] = Fdat$V2[i]
-    } else {
-      i1 = Fdat$V1[i-1] - yr1 + 1
-      i2 = Fdat$V1[i] - yr1 + 1
-      Fvec[i1:i2] = seq(Fdat$V2[i-1],Fdat$V2[i],length.out = (i2-i1+1))
+  ## M. Biuw 2019/06/11: Added 'if' below statement to avoid error
+  ## when using only one fecundity estimate (as for hoods)
+  
+  if(length(Fdat$V1)>1) {
+    for (i in 2:length(Fdat$V1)){
+      if(Fdat$V1[i]-Fdat$V1[i-1]==1){
+        Fvec[Fdat$V1[i]-yr1+1] = Fdat$V2[i]
+      } else {
+        i1 = Fdat$V1[i-1] - yr1 + 1
+        i2 = Fdat$V1[i] - yr1 + 1
+        Fvec[i1:i2] = seq(Fdat$V2[i-1],Fdat$V2[i],length.out = (i2-i1+1))
+      }
     }
-  }
-  Fvec[i2:nyr] = Fdat$V2[i]
-
+    Fvec[i2:nyr] = Fdat$V2[i]
+  } else {  
+    i2 <- Fdat$V1 - yr1 + 1
+    Fvec[i2:nyr] = Fdat$V2
+  }	  
+  
   if(class(Fproj) == "character") Fvec[(yr2-yr1+1):nyr] = mean(Fdat$V2)
 
   if(class(Fproj)=="numeric") Fvec[(yr2-yr1+1):nyr] = Fproj
@@ -71,5 +81,9 @@ buildPandF <- function(Fdat = fecundity,cdata = catch_data,Fproj = Fproj,Pdat = 
   }
 
   #write.table(P,"wgharp.pma",row.names = FALSE, col.names = FALSE)
- return(list(Fdt = Fvec,Pmatrix = P))
+ if(return.periods) {
+   return(list(Fdt = Fvec,Pmatrix = P, Pper = Pper))
+ } else {
+   return(list(Fdt = Fvec,Pmatrix = P))
+ }
 }
