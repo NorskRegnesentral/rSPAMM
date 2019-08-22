@@ -15,7 +15,7 @@
 plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
                    xLim=NA,yLim=NA,plot.legend=T,plot.Nlims=T)
 {
-  
+  options(scipen=10)
   add.alpha <- function(col, alpha=1){
     if(missing(col))
       stop("Please provide a vector of colours.")
@@ -144,6 +144,7 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
       }
     }  
   }
+  options(scipen=0)
 }
 
 
@@ -184,4 +185,40 @@ par.table <- function(results=res, dat=data) {
                 
   data.frame(par=c('Kest', 'M0est', 'M1est', 'N0Current', 'N1Current', 'NTotCurrent', 'D1', 'NTotprojected'), 
              parNames, Mean=means, SD=sds, stringsAsFactors = F)
+}
+
+plot.Pmat <- function(dat=data, highlight.last=T) {
+  opal <- palette()
+  palette(RColorBrewer::brewer.pal(8, 'Dark2'))
+  matplot(t(dat$Pmat), type='l', lty=1, col='grey',
+          xlab='Age (years)',
+          ylab='Proportion of mature females',
+          ylim=c(0,1), axes=F)
+  axis(1)
+  axis(2, at=seq(0, 1, by=0.2))
+  box()
+  ymat <- match(dat$Pper$Pstart, dat$Cdata[,1])
+  matlines(t(dat$Pmat[ymat,]), lty=1, col=c(1:length(ymat)), lwd=2)
+  if(highlight.last) {
+    lines(c(1:dim(dat$Pmat)[2]), dat$Pmat[tail(ymat, 1),], 
+                           lty=1, lwd=3, col='black')
+  }  
+  leglab <- apply(dat$Pper, 1, function(x) {
+    if(x[1]==x[2]) {
+      x[1]
+    } else {
+      paste(x, collapse='-')
+    }  
+  })
+  
+  if(highlight.last) {
+    legend('bottomright', lwd=c(rep(2, length(ymat)-1), 3, 1), 
+           col=c(c(1:(length(ymat)-1)), 'black', 'grey'), 
+           c(leglab, 'Between periods'), bty='n', cex=0.7)
+  } else {
+    legend('bottomright', lwd=c(rep(2, length(ymat)), 1), 
+           col=c(c(1:length(ymat)), 'grey'), 
+           c(leglab, 'Between periods'), bty='n', cex=0.7)
+  }
+  palette(opal)       
 }

@@ -203,3 +203,30 @@ find.N70.quota <- function(MIN=5000,MAX=50000,quota=c(0,1),population="harpwest"
 }
 
 
+#' Function for finding PBR quota
+#'
+#' Finding Potential Biological Removal (PBR) quotas
+#' @param n0 Estimated current population size of 0 animals
+#' @param n1 Estimated current population size of 1+ animals
+#' @param se0 Standard error of estimate for n0
+#' @param se1 Standard error of estimate for n1
+#' @param rMax Maximum rate of population increase (by default 0.12, commonly used for pinnipeds)
+#' @param Fr Assumed recovery factor
+#' @param quota Proportional catch of 0 and 1+ animals
+#' @return Returns Minimum projected population size (Nmin) and Potential Biological Removal (PBR),
+#' along with the PBR divided by 0 and 1+ animals given specified quota 
+#' @keywords population model
+#' @export
+
+PBR <- function(n0=partab[4,3], n1=partab[5,3], se0=partab[4,4], se1=partab[5,4],
+                rMax=0.12, Fr=0.5, quota=c(0,1), cv=NA) {
+  
+  if(is.na(cv)) cv <- sqrt((se0^2) + (se1^2)+(2*se0*se1))/(n0+n1)
+  
+  Nmin <- round((n0+n1) / exp(0.842*sqrt(log(1+cv^2))))
+  pbr <- round(0.5 * rMax * Fr * Nmin)
+  
+  quota <- as.vector(quota)
+  
+  list(Nmin=Nmin, CV=cv, PBR=pbr, p0=round(pbr*quota[1]), p1=round(pbr*quota[2]))
+}

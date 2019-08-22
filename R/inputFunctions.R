@@ -4,6 +4,7 @@
 #' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
 #' @param Amax Maximum age group. Default is 20 years.
 #' @param years_of_prediction Number of years in the future to project the model. Default is 15 years.
+#' @param Fpast Which fecundity rate to use in past estimations. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise available estimates (linearly interpolated) are used.
 #' @param Fproj Which fecundity rate to use in future projections. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise a fixed Fproj can be set.
 #' @param catch_quota Catch quota for 0 and 1+animals to be used in future projections. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise a fixed Fproj can be set.
 #' @return data List of loaded data ready for TMB.
@@ -13,7 +14,7 @@
 #' load.data(population = "harpeast")
 
 load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15,
-                      Fproj = "mean", catch_quota='mean')
+                      Fpast='est', Fproj = 'mean', catch_quota='mean')
 {
   # Read in data ---------------
 
@@ -32,6 +33,10 @@ load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15
 
   years <- c(catch_data[1,1],catch_data[dim(catch_data)[1],1])
   #MAYBE ADD STEPWISE CHANGES IN FECUNDITY AND BIRTH OGIVES INSTEAD OF LINEAR TRANSITION
+  if(Fpast=='mean') {
+    fecundity[,2] <- rep(mean(fecundity[,2]), nrow(fecundity))
+    fecundity[,3] <- rep(mean(fecundity[,3]), nrow(fecundity))
+  }
   FecAndP = build.PandF(Fdat = fecundity,Fproj = Fproj,Pdat = Pdat,Pper = Pper,years = years)
   Fdt = FecAndP$Fdt       #SJEKK VERDIEN PÅ DEN SISTE OG SAMMENLIKN MED WGHARP
   Pmat = FecAndP$Pmatrix
@@ -54,6 +59,10 @@ load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15
   data$Npriors = length(priors$V1)									#Number of priors
   data$CQuota = catch_quota											#Catch level in future projections
 
+  if('Pper' %in% names(FecAndP)) {
+    data$Pper = FecAndP$Pper
+  }
+  
   return(data)
 }
 
@@ -67,6 +76,11 @@ load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15
 #' @param Pdat Observed birth ogives.
 #' @param Pper For which time periods the birth ogives are valid.
 #' @param years Start and stop year for the model (without projections).
+#' @param return.periods Whether to return data frame containing information 
+#' about time periods of P and F sampling. NOTE! This is to allow plotting fecundity curves,
+#' distinguishing between real sampled values and interpolated between sampling periods. 
+#' The returned object, Pper, must be omitted from data that are input into model.
+#' 
 #' @return Pmatrix Time varying birth ogives.
 #' @keywords Fecundity, birth ogive
 #' @export
@@ -74,7 +88,7 @@ load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15
 #' FvecandPmat <- build.PandF(fecundity,catch_data,Fproj,Pdat,Pper)
 
 #MAYBE ADD STEPWISE CHANGES IN FECUNDITY AND BIRTH OGIVES INSTEAD OF LINEAR TRANSITION
-build.PandF <- function(Fdat = fecundity,Fproj = Fproj,Pdat = Pdat,Pper = Pper,years = years)
+build.PandF <- function(Fdat = fecundity,Fproj = Fproj,Pdat = Pdat,Pper = Pper,years = years,return.periods=T)
 {
 
   yr1 = years[1]
@@ -133,7 +147,14 @@ build.PandF <- function(Fdat = fecundity,Fproj = Fproj,Pdat = Pdat,Pper = Pper,y
     P[i,] = Pdat[,length(Pper$Pstart)+1]
   }
 
-  return(list(Fdt = Fvec,Pmatrix = P))
+  ## M. Biuw 2019/08/13: Added option for returning data frame with info on 
+  ## time periods for P and F sampling.
+  
+  if(return.periods) {
+    return(list(Fdt = Fvec,Pmatrix = P, Pper = Pper))
+  } else {
+    return(list(Fdt = Fvec,Pmatrix = P))
+  }
 }
 
 #' Load initial values
