@@ -7,6 +7,7 @@
 #' @param Fpast Which fecundity rate to use in past estimations. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise available estimates (linearly interpolated) are used.
 #' @param Fproj Which fecundity rate to use in future projections. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise a fixed Fproj can be set.
 #' @param catch_quota Catch quota for 0 and 1+animals to be used in future projections. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise a fixed Fproj can be set.
+#' @param return_fec Return entire fecundity table, including information on years of sampling. Useful for plotting etc.
 #' @return data List of loaded data ready for TMB.
 #' @keywords input, data
 #' @export
@@ -14,7 +15,7 @@
 #' load.data(population = "harpeast")
 
 load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15,
-                      Fpast='est', Fproj = 'mean', catch_quota='mean')
+                      Fpast='est', Fproj = 'mean', catch_quota='mean', return_fec=F)
 {
   # Read in data ---------------
 
@@ -61,6 +62,9 @@ load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15
 
   if('Pper' %in% names(FecAndP)) {
     data$Pper = FecAndP$Pper
+  }
+  if(return_fec) {
+    data$fecundity <- fecundity
   }
   
   return(data)
@@ -193,3 +197,71 @@ load.initial.values <- function(population = "harpeast",fromFile = TRUE,Kinit = 
 
   return(parameters)
   }
+
+
+plot.catch <- function(pop='harpwest', unit=10000) {
+  dat <- load.data(pop)$Cdata
+  require(RColorBrewer)
+  theCols <- brewer.pal(ncol(dat), 'Dark2')
+  
+  add.alpha <- function(col, alpha=1){
+    if(missing(col))
+      stop("Please provide a vector of colours.")
+    apply(sapply(col, col2rgb)/255, 2, 
+          function(x) 
+            rgb(x[1], x[2], x[3], alpha=alpha))  
+  }
+  
+  unit.form <- format(unit, big.mark=' ')
+  if(unit!=1) {
+    matplot(dat[,1], dat[,-1]/unit, type='n', 
+            xlab='', ylab=paste0('Catch level (in ', unit.form, ')'))
+  } else {
+    matplot(dat[,1], dat[,-1]/unit, type='n', 
+            xlab='', ylab='Catch level')
+  }
+  
+  polygon(c(dat[,1], rev(dat[,1])), c(dat[,2]/unit, rep(0, nrow(dat))),
+          border=theCols[2], col=add.alpha(theCols[2], 0.7)) 
+  
+  polygon(c(dat[,1], rev(dat[,1])), c(dat[,3]/unit, rep(0, nrow(dat))),
+          border=theCols[1], col=add.alpha(theCols[1], 0.7)) 
+  
+  legend('topright', col=theCols[c(1:2)], lwd=2, c('1+ catches', 'Pup catches'), bty='n')
+}
+
+plot.fecundity <- function(pop='harpwest') {
+  dat <- load.data(pop, return_fec=T)
+  theXlim=range(dat$Cdata[,1])
+  fec <- dat$fecundity
+  theYlim=c(0.1*floor(min(fec[,2])*10),
+            0.1*ceiling(max(fec[,2])*10))
+  require(RColorBrewer)
+  fApp <- approx(fec[,1], fec[,2], dat$Cdata[,1], rule=2)
+  plot(fec[,1], fec[,2], xlim=theXlim, ylim=theYlim,
+       type='n', xlab='', ylab='F')
+  lines(fApp$x, fApp$y, lty=2, col=4)
+  segments(fec[,1], fec[,2]-fec[,3],
+           fec[,1], fec[,2]+fec[,3])
+  segments(fec[,1]-0.5, fec[,2]-fec[,3],
+           fec[,1]+0.5, fec[,2]-fec[,3])
+  segments(fec[,1]-0.5, fec[,2]+fec[,3],
+           fec[,1]+0.5, fec[,2]+fec[,3])
+  points(fec[,1], fec[,2], pch=21, bg=2)
+  legend('bottomleft', pch=c(21, NA), lty=c(NA, 2), pt.bg=c(2, NA), c('Historical fecundities', 'Linear interpolation between periods'), bty='n', col=c(1, 4))
+}
+
+plot.ogives <- function(pop='harpwest') {
+  dat <- load.data(pop)
+  ogi <- dat$Pmat[match(dat$Pper$Pstart, dat$Cdata[,1]),]
+  matplot(c(1:dim(dat$Pmat)[2]), t(dat$Pmat), 
+          type='l', lty=1, col='lightgrey',
+          xlab='Age (years)', ylab='Proportion mature females')
+  matlines(c(1:dim(ogi)[2]), t(ogi), lty=1, col=c(2:(dim(ogi)[1]+1)))
+  
+  leg.txt <- dat$Pper$Pstart
+  leg.txt[which(dat$Pper$Pstart!=dat$Pper$Pstop)] <- 
+    paste(leg.txt[which(dat$Pper$Pstart!=dat$Pper$Pstop)], 
+          dat$Pper$Pstop[which(dat$Pper$Pstart!=dat$Pper$Pstop)], sep='-')
+  legend('bottomright', col=c(2:(dim(ogi)[1]+1)), leg.txt, bty='n', lwd=1)
+}
