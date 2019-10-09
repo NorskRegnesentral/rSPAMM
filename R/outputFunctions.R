@@ -13,9 +13,14 @@
 #' plot.N(res, data)
 
 plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
-                   xLim=NA,yLim=NA,plot.legend=T,plot.Nlims=T)
+                   xLim=NA,yLim=NA,plot.legend=T,plot.Nlims=T, projections=T, mean.proj=F)
 {
-  options(scipen=10)
+  if(projections) {
+    span <- c(1:length(results$indN0))
+  } else {
+    span <- c(1:nrow(dat$Cdata))
+  }
+  options(scipen=999)
   add.alpha <- function(col, alpha=1){
     if(missing(col))
       stop("Please provide a vector of colours.")
@@ -32,11 +37,25 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
     lCI <- results$rep.matrix[results$indN1,1]-(1.96*results$rep.matrix[results$indN1,2])
     uCI <- results$rep.matrix[results$indN1,1]+(1.96*results$rep.matrix[results$indN1,2])
     if(length(yLim)==1) yLim <- c(0, max(uCI))
+    if(!projections) {
+      if(length(xLim)==1) {
+        xLim <- range(results$years[span])
+      } else {
+        xLim[2] <- min(c(xLim[2], max(dat$Cdata[,1])))
+      }  
+      if(length(yLim)==1) {
+        yLim <- c(0, max(uCI[span]))
+      } else {
+        yLim[2] <- max(uCI[span])
+      }  
+    }
     plot(results$years, results$rep.matrix[results$indN1,1],
-         type = "l",xlab = "Year",ylab = "Abundance",
+         type = "l",xlab = "",ylab = "Abundance",
          col=theCols[1], lwd=2, lty=2, xlim=xLim, ylim=yLim, axes=F)
+    if(!projections | !mean.proj) lines(results$years, results$rep.matrix[results$indN1,1], lwd=2, lty=2, col='white')
     axis(1)
-    axis(2)
+    axis(2, at=pretty(par('usr')[c(3,4)]), 
+         labels=format(pretty(par('usr')[c(3,4)]), scientific=F))
     abline(h=par('usr')[3])
     abline(v=par('usr')[1])
     if(plot.Nlims) {
@@ -47,8 +66,11 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
       text(par('usr')[2], Nlims[3], expression(N[70]), xpd=NA, adj=0, cex=0.7)
     }
     
-    lines(results$years, lCI, col=theCols[1], lty=2)
-    lines(results$years, uCI, col=theCols[1], lty=2)
+    if(projections) {
+      lines(results$years, lCI, col=theCols[1], lty=2)
+      lines(results$years, uCI, col=theCols[1], lty=2)
+    }
+    
     polygon(c(c(results$years[1]:max(dat$pupProductionData[,1])), 
               rev(c(results$years[1]:max(dat$pupProductionData[,1])))), 
             c(lCI[c(1:(max(dat$pupProductionData[,1])-results$years[1]+1))],
@@ -56,6 +78,7 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
             col=add.alpha(theCols[1], 0.5), border=NA)
     lines(c(results$years[1]:max(dat$pupProductionData[,1])), results$rep.matrix[indN1back,1],
           col=theCols[1], lwd=2)
+    
   } 
   
   if('N0' %in% component) {
@@ -64,19 +87,35 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
     puCI <- results$rep.matrix[results$indN0,1]+(1.96*results$rep.matrix[results$indN0,2])
     if(!'N1' %in% component) {
       if(length(yLim)==1) yLim <- c(0, max(puCI))
+      if(!projections) {
+        if(length(xLim)==1) {
+          xLim <- range(results$years[span])
+        } else {
+          xLim[2] <- min(c(xLim[2], max(dat$Cdata[,1])))
+        }  
+        if(length(yLim)==1) {
+          yLim <- c(0, max(c(max(puCI[span]), max(dat$pupProductionData[,2]+(1.96*(dat$pupProductionData[,3]*dat$pupProductionData[,2]))))))
+        } else {
+          yLim[2] <- max(c(max(puCI[span]), max(dat$pupProductionData[,2]+(1.96*(dat$pupProductionData[,3]*dat$pupProductionData[,2])))))
+        }  
+      }
       plot(results$years, results$rep.matrix[results$indN0,1],
-           type = "l",xlab = "Year",ylab = "Abundance",
+           type = "l",xlab = "",ylab = "Abundance",
            col=theCols[2], lwd=2, lty=2, xlim=xLim, ylim=yLim, axes=F)
+      if(!projections | !mean.proj) lines(results$years, results$rep.matrix[results$indN0,1], lwd=2, lty=2, col='white')
       axis(1)
-      axis(2)
+      axis(2, at=pretty(par('usr')[c(3,4)]), 
+           labels=format(pretty(par('usr')[c(3,4)]), scientific=F))
       abline(h=par('usr')[3])
       abline(v=par('usr')[1])
     } else { 
-      lines(results$years, results$rep.matrix[results$indN0,1],
+      if(projections) lines(results$years, results$rep.matrix[results$indN0,1],
             col=theCols[2], lwd=2,lty=2)
     }
-    lines(results$years, plCI, col=theCols[2], lty=2)
-    lines(results$years, puCI, col=theCols[2], lty=2)
+    if(projections) {
+      lines(results$years, plCI, col=theCols[2], lty=2)
+      lines(results$years, puCI, col=theCols[2], lty=2)
+    }  
     
     polygon(c(c(results$years[1]:max(dat$pupProductionData[,1])), 
               rev(c(results$years[1]:max(dat$pupProductionData[,1])))), 
@@ -159,7 +198,7 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
 #' @examples
 #' par.table()
 
-par.table <- function(results=res, dat=data) {
+par.table <- function(results=res, dat=data, tab2flex=F) {
   ## CHECK THIS FUNCTION!!
   means <- c(as.vector(results$Kest), 
              as.vector(results$M0est), 
@@ -183,8 +222,19 @@ par.table <- function(results=res, dat=data) {
                 paste0('NTotal,', max(dat$Cdata[,1])),
                 'D1+', paste0('NTotal,', max(results$years)))
                 
-  data.frame(par=c('Kest', 'M0est', 'M1est', 'N0Current', 'N1Current', 'NTotCurrent', 'D1', 'NTotprojected'), 
-             parNames, Mean=means, SD=sds, stringsAsFactors = F)
+  if(tab2flex) {
+    means <- unlist(lapply(means, function(x) {
+      ifelse(x<10, format(x, digits=2, scientific=F), 
+             format(x, big.mark=' ', digits=0, scientific=F))
+    }))
+    sds <- unlist(lapply(sds, function(x) {
+      ifelse(x<10, format(x, digits=2, scientific=F), 
+             format(x, big.mark=' ', digits=0, scientific=F))
+    }))
+  } else {
+    data.frame(par=c('Kest', 'M0est', 'M1est', 'N0Current', 'N1Current', 'NTotCurrent', 'D1', 'NTotprojected'), 
+               parNames, Mean=means, SD=sds, stringsAsFactors = F)
+  }
 }
 
 plot.Pmat <- function(dat=data, highlight.last=T) {
@@ -222,3 +272,4 @@ plot.Pmat <- function(dat=data, highlight.last=T) {
   }
   palette(opal)       
 }
+

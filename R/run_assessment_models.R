@@ -33,6 +33,13 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
   cat('\nBuilding model object....\n')
   flush.console()
   
+  ## M. Biuw 2019/08/13: Added safety catch to omit data frame with 
+  ## info on time periods for P and F sampling, from data used to build model object.
+  
+  if('Pper' %in% names(dat)) {
+    dat <- dat[-match('Pper', names(dat))]
+  }
+  
   obj <- MakeADFun(data=dat,parameters=par,DLL=template)
   
   cat('Done!\n')
