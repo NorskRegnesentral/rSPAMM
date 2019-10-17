@@ -17,7 +17,7 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
   cat('Compiling model dll, be patient....\n\n')
   flush.console()
   
-  compile(paste0("./R/", template, ".cpp"),"-O1 -g",DLLFLAGS="")
+  compile(paste0("../R/", template, ".cpp"),"-O1 -g",DLLFLAGS="")
  
   cat('\n\nDone!\n')
   flush.console()
@@ -25,7 +25,8 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
   cat('\nLoading model dll....\n')
   flush.console()
 
-  dyn.load(dynlib(paste0("./R/", template)))
+  cat('\n This is ok \n')
+  dyn.load(dynlib(paste0("../R/", template)))
 
   cat('\n\nDone!\n')
   flush.console()
