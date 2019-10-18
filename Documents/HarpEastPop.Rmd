@@ -3,10 +3,10 @@ title: "The 2019 abundance of harp seals (*Pagophilus groenlandicus*) in the Bar
 author: "Martin Biuw, Tore Haug, Tor Arne Øigård"
 date: "Draft: `r format(Sys.time(), '%Y-%m-%d')`"
 output: 
-##  bookdown::pdf_document2:
-  bookdown::word_document2:
+  bookdown::pdf_document2:
+##  bookdown::word_document2:
     toc: no
-    reference_doc: 'WordTemplateWGHARP.dotx'
+##    reference_doc: 'WordTemplateWGHARP.dotx'
 ##    latex_engine: xelatex
 
 ##output: 
@@ -403,7 +403,7 @@ cat <- align(cat, c(1:nrow(annCatch)), 1, 'left', part='body')
 cat <- align(cat, 2, 1, 'left', part='header')
 cat
 } else {
-  cat <- knitr::kable(annCatch, format='latex', booktabs=T, align=c('l', rep('r', length(annCatch)-1)), format.args=list(big.mark = ' '), caption='Catches of 0 and 1+ seals from the Barents Sea / White Sea harp seal population during the most recent 5 years. Data from Haug & Zabavnikov (2016, 2019)')
+  cat <- knitr::kable(annCatch, format='latex', booktabs=T, align=c('l', rep('r', length(annCatch)-1)), format.args=list(big.mark = ' '), caption='Catches of 0 and 1+ seals from the Barents Sea / White Sea harp seal population during the most recent 5 years. Data from Haug and Zabavnikov (2016, 2019)')
   cat
 }
 ```
