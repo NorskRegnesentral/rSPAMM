@@ -13,12 +13,17 @@ data <- load.data(population = population)
 #Prepare parameters to be estimated
 parameters <- load.initial.values(population = population)
 
+#Load the model object
+obj = load.model.object(dat = data,par = parameters,template='harps_and_hoods_population_model2')
+
 #Run the assessment model
-opt <- run.model()
+opt <- run.model(object = obj)
 
 #Get the model results
-res <- model.results()
+res <- model.results(dat = data,object = obj,optimized = opt)
 
 #######
 # Plot catch data
 # Plot fecundity data
+# Update manual info for all functions and adding
+# examples to each function.

@@ -46,7 +46,7 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
   cat('Done!\n')
   flush.console()
   
-  obj
+  return(obj)
 }
 
 #' Run the loaded population model for harp seals and hooded seals
@@ -60,11 +60,8 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
 #' run.model()
 
 
-run.model <- function(object=NULL,load.model = TRUE,print.to.screen = TRUE)
+run.model <- function(object=obj,print.to.screen = TRUE)
 {
-  if(load.model){
-    object <- load.model.object(template='harps_and_hoods_population_model2')
-  }
   
   opt = nlminb(object$par,object$fn,object$gr)
   
@@ -83,6 +80,7 @@ run.model <- function(object=NULL,load.model = TRUE,print.to.screen = TRUE)
   }
   
   return(opt)
+  
 }
 
 
@@ -124,9 +122,19 @@ model.results <- function(dat=data, object=obj, optimized=opt)
   indNTotCurrent <- indNTot[curYr]
   
   #Extract parameters
-  Kest = exp(optimized$par[1])
-  Mest = ilogit(optimized$par[2])
-  M0est = ilogit(optimized$par[3])
+  Kest = exp((rep.matrix[1,1]))
+  Kll = exp(rep.matrix[1,1]-1.96*rep.matrix[1,2])
+  Kest.sd = (Kest-Kll)/1.96
+  
+  Mest = ilogit((rep.matrix[2,1]))
+  Mll = ilogit(rep.matrix[2,1]-1.96*rep.matrix[2,2])
+  Mest.sd = (Mest-Mll)/1.96
+  
+  
+  M0est = ilogit((rep.matrix[3,1]))
+  M0ll = ilogit(rep.matrix[3,1]-1.96*rep.matrix[3,2])
+  M0est.sd = (M0est-Mll)/1.96
+  
   
   D1 = rep.matrix[indD1,1]
   D1New = rep.matrix[indD1New,1]
@@ -144,13 +152,14 @@ model.results <- function(dat=data, object=obj, optimized=opt)
   N1Current <- rep.matrix[indN1[cur.yr],1]
   N1Current.sd <- rep.matrix[indN1[cur.yr],2]
     
-  list(rep=rep, rep.matrix=rep.matrix, rep.rnames=rep.rnames, indN0=indN0,
+  res = list(rep=rep, rep.matrix=rep.matrix, rep.rnames=rep.rnames, indN0=indN0,
        indN1=indN1, indNTot=indNTot, indD1=indD1, indD1New=indD1New, indN0Current=indN0Current,
        indN1Current=indN1Current, indNTotCurrent=indNTotCurrent, 
-       years=yrs, Kest=Kest, Mest=Mest, M0est=M0est, 
+       years=yrs, Kest=Kest,Kest.sd = Kest.sd, Mest=Mest,Mest.sd=Mest.sd, M0est=M0est, M0est.sd = M0est.sd, 
        D1=D1, D1New=D1New, N0Current=N0Current, N1Current=N1Current, 
        NTotCurrent=NTotCurrent, D1.sd=D1.sd, D1New.sd=D1New.sd,
        N0Current.sd=N0Current.sd, N1Current.sd=N1Current.sd, NTotCurrent.sd=NTotCurrent.sd)
-}
+  return(res)
+  }
 
 
