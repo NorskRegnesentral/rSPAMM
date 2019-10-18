@@ -17,7 +17,7 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
   cat('Compiling model dll, be patient....\n\n')
   flush.console()
   
-  compile(paste0("../R/", template, ".cpp"),"-O1 -g",DLLFLAGS="")
+  compile(paste0("R/", template, ".cpp"),"-O1 -g",DLLFLAGS="")
  
   cat('\n\nDone!\n')
   flush.console()
@@ -25,8 +25,8 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
   cat('\nLoading model dll....\n')
   flush.console()
 
-  cat('\n This is ok \n')
-  dyn.load(dynlib(paste0("../R/", template)))
+
+  dyn.load(dynlib(paste0("R/", template)))
 
   cat('\n\nDone!\n')
   flush.console()
@@ -60,9 +60,25 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
 #' run.model()
 
 
-run.model <- function(object=obj)
+run.model <- function(object=NULL,load.model = TRUE,print.to.screen = TRUE)
 {
-  nlminb(object$par,object$fn,object$gr)
+  if(load.model){
+    object <- load.model.object(template='harps_and_hoods_population_model2')
+  }
+  
+  opt = nlminb(object$par,object$fn,object$gr)
+  
+  #Print relevant output to screen
+  if(print.to.screen){
+    cat('\n--------------------------------------------------\n')
+    if(opt$convergence== 0){
+    cat('Optimization converged \n')
+    cat(opt$message)
+    } else cat('Optimization did not converge \n')
+    cat('\n--------------------------------------------------\n')
+  }
+  
+  return(opt)
 }
 
 
