@@ -6,7 +6,7 @@ output:
 ##  bookdown::pdf_document2:
   bookdown::word_document2:
     toc: no
-    reference_doc: 'C:/Users/a5406/Documents/Custom Office Templates/WordTemplateWGHARP.dotx'
+    reference_doc: 'WordTemplateWGHARP.dotx'
 ##    latex_engine: xelatex
 
 ##output: 
@@ -14,7 +14,7 @@ output:
   
 ##    latex_engine: xelatex
 always_allow_html: yes
-bibliography: 'C:/Users/a5406/Documents/Articles/library.bib'
+bibliography: 'C:/Ulibrary.bib'
 csl: 'ices-journal-of-marine-science.csl'
 ##biblio-style: apalike
 ##biblio-style: harvard
@@ -32,19 +32,19 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, eval=T)
-knitr::opts_knit$set(root.dir='C:/Users/a5406/Documents/Populasjonsmodellering/rSPAMM/rSPAMM-master')
+##knitr::opts_knit$set(root.dir='C:/Users/a5406/Documents/Populasjonsmodellering/rSPAMM/rSPAMM-master')
 ```
 
 ```{r runAss, message=F, cache=T, update.cache=T, warning=F, include=F}
-source('./R/inputFunctions.R')
-source('./R/run_assessment_models.R')
-source('./R/outputFunctions.R')
-source('./R/functions.R')
-source('./R/catch.options.R')
+source('../R/inputFunctions.R')
+source('../R/run_assessment_models.R')
+source('../R/outputFunctions.R')
+source('../R/functions.R')
+source('../R/catch.options.R')
 
 data <- load.data('harpeast')
 
-massMort <- read.table('./Data/harpeast/invasion_removals.dat', sep='\t')
+massMort <- read.table('../Data/harpeast/invasion_removals.dat', sep='\t')
 massMort[which(is.na(massMort[,2])),2] <- 0
 massMort[which(is.na(massMort[,3])),3] <- 0
 data$Cdata[match(massMort[,1], data$Cdata[,1]),2] <- data$Cdata[match(massMort[,1], data$Cdata[,1]),2]+massMort[,3]
@@ -258,7 +258,7 @@ if(doc.type=='docx') {
 ```{r fTab, message=FALSE, warning=FALSE}
 ## Fecundity:
 
-Fm <- read.table(paste("./Data/harpeast/fecundity.dat",sep = ""),header = FALSE)
+Fm <- read.table(paste("../Data/harpeast/fecundity.dat",sep = ""),header = FALSE)
 names(Fm) <- c('Year', 'Fecundity', 'SD')
 doc.type <- knitr::opts_knit$get('rmarkdown.pandoc.to')
 if(doc.type=='docx') {

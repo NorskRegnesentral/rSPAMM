@@ -15,3 +15,10 @@ parameters <- load.initial.values(population = population)
 
 #Run the assessment model
 opt <- run.model()
+
+#Get the model results
+res <- model.results()
+
+#######
+# Plot catch data
+# Plot fecundity data

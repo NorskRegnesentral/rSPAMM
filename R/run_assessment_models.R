@@ -72,9 +72,13 @@ run.model <- function(object=NULL,load.model = TRUE,print.to.screen = TRUE)
   if(print.to.screen){
     cat('\n--------------------------------------------------\n')
     if(opt$convergence== 0){
-    cat('Optimization converged \n')
-    cat(opt$message)
-    } else cat('Optimization did not converge \n')
+    cat(paste('\n Optimization converged: ',opt$message,'\n'))
+    cat('\n\n Parameter estimates\n')
+    cat(' -------------------\n')
+    cat(paste(' Initial population size: K = ',round(exp(opt$par[1])),'\n'))
+    cat(paste(' Pup mortality:          M0 = ',round(ilogit(opt$par[3]),2),'\n'))
+    cat(paste(' 1+ mortality:            M = ',round(ilogit(opt$par[2]),2),'\n'))
+    } else cat('\nOptimization did not converge \n')
     cat('\n--------------------------------------------------\n')
   }
   
