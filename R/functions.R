@@ -1,16 +1,62 @@
+#' Inverse logit transformation - type 2
+#'
+#' Performs an inverse logit transforms the input number
+#' @param x Number to be inverse logit transformed
+#' @return ilogit_x Inverse logit transformed value of x
+#' @keywords logit 
+#' @export
+#' @examples
+#' ilogit1(x) 
+
 ilogit1 <- function(x){
   return(1/(1+exp(-x)))
 }
+
+#' Logit transformation
+#'
+#' Logit transforms the input number
+#' @param x Number to be logit transformed
+#' @return logit_x Logit transformed value of x
+#' @keywords logit 
+#' @export
+#' @examples
+#' logit(x) 
 
 logit <- function(x){
   return(log(x/(1-x)))
 }
 
+#' Inverse logit transformation - type 1
+#'
+#' Performs an inverse logit transforms the input number
+#' @param x Number to be inverse logit transformed
+#' @return ilogit_x Inverse logit transformed value of x
+#' @keywords logit 
+#' @export
+#' @examples
+#' ilogit(x)
 ilogit <- function(x){
   return(exp(x)/(1+exp(x)))
 }
 
 
+#' Build P and F
+#'
+#' Create the birth ogive matrix and the fecundity rate vector
+#' @param Fdat Observed fecundity data
+#' @param cdata Catch data
+#' @param Fproj Type of projection
+#' @param Pdat Birth ogive data
+#' @param Pper Time periods for the various birth ogive curves
+#' @param return.periods Set True if to return the various periods
+#' @return Fdt Vector of fecundity data
+#' @return Pmat Matrix of birth ogive data
+#' @return Pper Return the Pper variable
+#' @keywords Fecundity
+#' @export
+#' @examples
+#' 
+#' 
 buildPandF <- function(Fdat = fecundity,cdata = catch_data,
                        Fproj = Fproj,Pdat = Pdat,Pper = Pper,
                        return.periods=T)
