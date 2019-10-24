@@ -4,9 +4,8 @@
 \alias{PBR}
 \title{Function for finding PBR quota}
 \usage{
-PBR(n0 = partab[4, 3], n1 = partab[5, 3], se0 = partab[4, 4],
-  se1 = partab[5, 4], rMax = 0.12, Fr = 0.5, quota = c(0, 1),
-  cv = NA)
+PBR(n0 = n0, n1 = n1, se0 = se0, se1 = se1, rMax = 0.12,
+  Fr = 0.5, quota = c(0, 1), cv = NA)
 }
 \arguments{
 \item{n0}{Estimated current population size of 0 animals}

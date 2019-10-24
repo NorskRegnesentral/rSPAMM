@@ -237,7 +237,16 @@ par.table <- function(results=res, dat=data, tab2flex=F) {
   }
 }
 
-plot.Pmat <- function(dat=data, highlight.last=T) {
+#' Plot birth ogive curves
+#'
+#' Plot the birth ogive curves for various time periods.
+#' @param dat input data for the model
+#' @param highlight.last Highlist last observed birth ogive curve (TRUE/FALSE)
+#' @keywords birth ogive
+#' @export
+#' @examples
+#' plot.Pmat()
+plot.Pmat <- function(dat=data, highlight.last=TRUE) {
   opal <- palette()
   palette(RColorBrewer::brewer.pal(8, 'Dark2'))
   matplot(t(dat$Pmat), type='l', lty=1, col='grey',

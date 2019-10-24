@@ -12,12 +12,6 @@
 eq.quota.helper.D <- function(Tot,population,quota, root.dir="C:/Users/a5406/Documents/Populasjonsmodellering/rSPAMM/rSPAMM-master")
 {
   # Function called from find.eq.quota, that should be used!
-  #setwd(root.dir)
-  source('../R/inputFunctions.R')
-  source('../R/run_assessment_models.R')
-  source('../R/outputFunctions.R')
-  source('../R/functions.R')
-  data <- load.data(population=population, catch_quota=Tot*quota)
   parameters <- load.initial.values(population)
   obj <- load.model.object(data, parameters, template='harps_and_hoods_population_model2')
   opt <- nlminb(obj$par,obj$fn,obj$gr)
@@ -40,11 +34,6 @@ eq.quota.helper.D <- function(Tot,population,quota, root.dir="C:/Users/a5406/Doc
 eq.quota.helper.N1 <- function(Tot,population,quota, root.dir="C:/Users/a5406/Documents/Populasjonsmodellering/rSPAMM/rSPAMM-master")
 {
   # Function called from find.eq.quota, that should be used!
-  #setwd(root.dir)
-  source('../R/inputFunctions.R')
-  source('../R/run_assessment_models.R')
-  source('../R/outputFunctions.R')
-  source('../R/functions.R')
   data <- load.data(population=population, catch_quota=Tot*quota)
   parameters <- load.initial.values(population)
   obj <- load.model.object(data, parameters, template='harps_and_hoods_population_model2')
@@ -78,7 +67,12 @@ find.eq.quota <- function(MIN=1000,MAX=40000,quota=c(0,1),population="harpwest",
   {
     tmp = optimize(eq.quota.helper.N1,lower=MIN,upper=MAX,population=population,quota=quota,tol=50)
   }
-  cat("Equilibrium quota for",population,"(pups,adults,total):",round(tmp$minimum*quota),sum(round(tmp$minimum*quota)),"\n")
+  cat("-----------------------------------------------------\n\n")
+  cat("Equilibrium quota for",population,":\n")
+  cat("Pups:  ",round(tmp$minimum*quota)[1],"\n")
+  cat("Adults:",round(tmp$minimum*quota)[2],"\n")
+  cat("Total :",sum(round(tmp$minimum*quota)),"\n\n")
+  cat("-----------------------------------------------------")
   invisible(tmp$minimum*quota)
 }
 
@@ -96,11 +90,6 @@ find.eq.quota <- function(MIN=1000,MAX=40000,quota=c(0,1),population="harpwest",
 
 N70.helper.Nmax <- function(Tot,population,quota, root.dir="C:/Users/a5406/Documents/Populasjonsmodellering/rSPAMM/rSPAMM-master")
 {
-  setwd(root.dir)
-  source('../R/inputFunctions.R')
-  source('../R/run_assessment_models.R')
-  source('../R/outputFunctions.R')
-  source('../R/functions.R')
   data <- load.data(population=population, catch_quota=Tot*quota)
   parameters <- load.initial.values(population)
   obj <- load.model.object(data, parameters, template='harps_and_hoods_population_model2')
@@ -142,11 +131,6 @@ N70.helper.Nmax <- function(Tot,population,quota, root.dir="C:/Users/a5406/Docum
 N70.helper.D <- function(Tot,population,quota, root.dir="C:/Users/a5406/Documents/Populasjonsmodellering/rSPAMM/rSPAMM-master")
 {
   # Function called from find.N70 that should be used!
-  #setwd(root.dir)
-  source('../R/inputFunctions.R')
-  source('../R/run_assessment_models.R')
-  source('../R/outputFunctions.R')
-  source('../R/functions.R')
   data <- load.data(population=population, catch_quota=Tot*quota)
   parameters <- load.initial.values(population)
   obj <- load.model.object(data, parameters, template='harps_and_hoods_population_model2')
@@ -218,7 +202,7 @@ find.N70.quota <- function(MIN=5000,MAX=50000,quota=c(0,1),population="harpwest"
 #' @keywords population model
 #' @export
 
-PBR <- function(n0=partab[4,3], n1=partab[5,3], se0=partab[4,4], se1=partab[5,4],
+PBR <- function(n0=n0, n1=n1, se0=se0, se1=se1,
                 rMax=0.12, Fr=0.5, quota=c(0,1), cv=NA) {
   
   if(is.na(cv)) cv <- sqrt((se0^2) + (se1^2)+(2*se0*se1))/(n0+n1)

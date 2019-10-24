@@ -36,12 +36,12 @@ knitr::opts_chunk$set(echo = FALSE, eval=T)
 ```
 
 ```{r runAss, message=F, cache=T, update.cache=T, warning=F, include=F}
-source('../R/inputFunctions.R')
-source('../R/run_assessment_models.R')
-source('../R/outputFunctions.R')
-source('../R/functions.R')
-source('../R/catch.options.R')
-
+#source('../R/inputFunctions.R')
+#source('../R/run_assessment_models.R')
+#source('../R/outputFunctions.R')
+#source('../R/functions.R')
+#source('../R/catch.options.R')
+library(rSPAMM)
 data <- load.data('harpeast')
 parameters <- load.initial.values('harpeast')
 ##obj <- load.model.object(template='harps_and_hoods_population_model2')
