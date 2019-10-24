@@ -1,9 +1,10 @@
-source('R/inputFunctions.R')
-source('R/run_assessment_models.R')
-source('R/outputFunctions.R')
-source('R/functions.R')
-source('R/catch.options.R')
+#source('R/inputFunctions.R')
+#source('R/run_assessment_models.R')
+#source('R/outputFunctions.R')
+#source('R/functions.R')
+#source('R/catch.options.R')
 
+library(rSPAMM)
 
 #Set population
 population = 'harpeast'
