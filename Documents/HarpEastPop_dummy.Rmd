@@ -41,13 +41,15 @@ knitr::opts_chunk$set(echo = FALSE, eval=T)
 #source('../R/outputFunctions.R')
 #source('../R/functions.R')
 #source('../R/catch.options.R')
-library(rSPAMM)
+require(rSPAMM)
 data <- load.data('harpeast')
 parameters <- load.initial.values('harpeast')
 ##obj <- load.model.object(template='harps_and_hoods_population_model2')
-opt <- run.model()
-res <- model.results()
-partab <- par.table() 
+obj = load.model.object(dat = data,par = parameters,template='harps_and_hoods_population_model2')
+
+opt <- run.model(object = obj)
+res <- model.results(dat = data,object = obj,optimized = opt)
+partab <- par.table(results=res, dat=data, tab2flex=FALSE) 
 LCI <- partab$Mean - (1.96*partab$SD)
 UCI <- partab$Mean + (1.96*partab$SD)
 
@@ -100,9 +102,9 @@ part70M <- par.table(res70M, dat70M)
 
 ## PBR quotas:
 
-pbr.05 <- PBR(quota=partab[c(4,5),3]/partab[6,3])
-pbr.025 <- PBR(Fr=0.25, quota=partab[c(4,5),3]/partab[6,3])
-pbr.05.cv03 <- PBR(quota=partab[c(4,5),3]/partab[6,3], cv=0.3)
+pbr.05 <- PBR(n0=partab[4,3], n1=partab[5,3], se0=partab[4,4],se1=partab[5,4],rMax=0.12,Fr=0.5,quota=partab[c(4,5),3]/partab[6,3])
+pbr.025 <- PBR(n0=partab[4,3], n1=partab[5,3], se0=partab[4,4],se1=partab[5,4],rMax=0.12,Fr=0.25,quota=partab[c(4,5),3]/partab[6,3])
+pbr.05.cv03 <- PBR(n0=partab[4,3], n1=partab[5,3], se0=partab[4,4], se1=partab[5,4],rMax=0.12, Fr=0.5,quota=partab[c(4,5),3]/partab[6,3], cv=0.3)
 
 ## Pop model with PBR scenario 1:
 
@@ -249,7 +251,7 @@ if(doc.type=='docx') {
 ```{r fTab, message=FALSE, warning=FALSE}
 ## Fecundity:
 
-Fm <- read.table(paste("../Data/harpeast/fecundity.dat",sep = ""),header = FALSE)
+Fm <- read.table(paste("Data/harpeast/fecundity.dat",sep = ""),header = FALSE)
 names(Fm) <- c('Year', 'Fecundity', 'SD')
 doc.type <- knitr::opts_knit$get('rmarkdown.pandoc.to')
 if(doc.type=='docx') {

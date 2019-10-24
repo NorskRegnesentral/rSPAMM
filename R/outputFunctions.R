@@ -198,7 +198,7 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
 #' @examples
 #' par.table()
 
-par.table <- function(results=res, dat=data, tab2flex=F) {
+par.table <- function(results=res, dat=data, tab2flex=FALSE) {
   ## CHECK THIS FUNCTION!!
   means <- c(as.vector(results$Kest), 
              as.vector(results$M0est), 

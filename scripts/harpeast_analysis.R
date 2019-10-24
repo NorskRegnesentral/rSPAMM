@@ -17,6 +17,13 @@ opt <- run.model(object = obj)
 #Get the model results
 res <- model.results(dat = data,object = obj,optimized = opt)
 
+#Create table for estimates
+partab <- par.table(results=res, dat=data, tab2flex=FALSE) 
+LCI <- partab$Mean - (1.96*partab$SD)
+UCI <- partab$Mean + (1.96*partab$SD)
+
+
+
 #Catch quotas
 ## Find equilibrium quota: 
 ## 0% pups:
@@ -39,8 +46,11 @@ part70 <- par.table(res70, dat70)
 
 ## PBR quotas:
 
-pbr.05 <- PBR(quota=part70[c(4,5),3]/part70[6,3])
+pbr.05 <- PBR(n0=partab[4,3], n1=partab[5,3], se0=partab[4,4], se1=partab[5,4],
+              rMax=0.12, Fr=0.5,quota=partab[c(4,5),3]/partab[6,3])
 
+n0=n0, n1=n1, se0=se0, se1=se1,
+rMax=0.12, Fr=0.5, quota=c(0,1)
 
 #######
 # Plot catch data
