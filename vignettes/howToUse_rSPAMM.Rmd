@@ -1,0 +1,66 @@
+---
+title: "How to use the *rSPAMM* package for assessment of harp and hooded seals populations"
+author: "T. A. Øigård and M. Biuw"
+date: "10/25/2019"
+output: rmarkdown::html_vignette
+vignette: >
+    %\VignetteIndexEntry{How to use the *rSPAMM* package for assessment of harp and hooded seal populations}
+    %\VignetteEngine{knitr::rmarkdown}
+    \usepackage[itf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Overview
+The purpose of this vignette is to show how to use the *rSPAMM* package for assessment of various harp and hooded seal populations. It will guide you through the model fitting, obtaining estimated quantities, finding and exploring, various catch options, how to structure the data set, and how to visualize the population dynamics.
+
+## Installation of the *rSPAMM* package and how to update it
+The most recent version of *rSPAMM* is hosted on a git repository at [https://github.com/NorskRegnesentral/rSPAMM.git](https://github.com/NorskRegnesentral/rSPAMM.git).
+
+We recommend to use the RStudio software and the instructions assumes that the user makes use of this software. More advanced users not using RStudio will be able to follow the installation procedure described below and do it manually. In order to download the rSPAMM package you han download it from Git Hub by cloning the Git repository. In RStudio you do the following steps:
+
+* Select: File -> New project
+* Select: Version control
+* Select: Git
+* In the "Repository URL" box type: https://github.com/NorskRegnesentral/rSPAMM.git
+* Fill in the rest of the boxes depending on where you want the package stored on your computer
+* In the console window type:
+```{r eval = FALSE}
+source("install_rSPAMM.R")
+```
+
+The *rSPAMM* package is now installed. To load the package type
+```{r eval = FALSE}
+library(rSPAMM)
+```
+
+If you want to update the package to the most recent version you find the Git menu in the panel to the top right corner of RStudio. From there you click on the Pull button and then it will download the most recent version of *rSPAMM*. You have to install the package again by sourcing the installation script again.
+
+## Data: How the data is structured and how to load the data
+
+## Model fitting and obtaining estimates
+
+## Exploring various catch options
+
+## Visualize the modelled population dynamics
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
