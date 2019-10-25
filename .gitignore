@@ -6,3 +6,4 @@
 *.dll
 *.so
 /Documents/*cache/*
+/Documents/*files/*
