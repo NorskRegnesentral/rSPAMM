@@ -50,6 +50,26 @@ In order to load the data you have to specify which population you want to load 
 ```{r eval = FALSE}
 data <- load.data(population = "harpeast")
 ```
+To explore the data object you can
+```{r eval = TRUE,echo=FALSE}
+library(rSPAMM)
+
+#Set population
+population = 'harpeast'
+#Load the data
+data <- load.data(population = population)
+```
+
+```{r eval = TRUE}
+names(data)
+```
+The data object is a list and you can further explore the actual values used by e.g.,
+```{r}
+data$Amax
+
+data$pupProductionData
+
+```
 
 
 ## Parameters to be estimed by the model and how to load them
@@ -59,9 +79,14 @@ In this section we describe which parameters or quantities are needed to fit the
 
 ### How to load the initial values of the parameters
 To load the initial values of the parameters to be estimated run:
-```{r eval = FALSE}
+```{r eval = TRUE}
 parameters <- load.initial.values(population = population)
 ```
+The parameters object is also a list and the content looks like this for the *harpeast* population
+```{r eval = TRUE}
+parameters
+```
+Here *logK* is the log transformed initial population size, *M0tilde* is the logit transformed pup mortality, and *Mtilde* is the logit transformed 1+ mortality (seals of age 1 and greater). The reason that transformed parameters are estimated instead of the non transformed parameters is that the log transformation of the initial population ensures that the model provides a stricktly positive estimate of the initial population. The logit tranformation of the mortalities ensures that the estimates are bounded between 0 and 1. 
 
 ## Model fitting and obtaining estimates
 The model is implemented in the Template Model Builder framework and makes use of the *TMB* R package. This means that the code for model is written in C++ and will thus have to be compiled first time you try to fit a model. It will also have to be recompiled if the model is updated. This is not something the user need to worry about. When installing the *rSPAMM* package the *TMB* package and all dependencies should also be installed automatically, and when loading the model it automatically checks wether the C++ code needs to be compiled or not. If it needs to be compiled it is done automatically.
@@ -72,13 +97,60 @@ When compiling the model a model object, a *.dll* file is created and this has t
 ```{r eval = FALSE}
 obj = load.model.object(dat = data,par = parameters)
 ```
-The *obj* variable is an object containing the log-likelihood value and the gradient for the initial parameters. This is used by fitting the model using an ordinary built in optimization routine in R. The default optimization routine used is *nlminb*, but this can be changed. (MARTIN: bør vi legge inn en mulighet til å endre optimiseringsrutiner). To fit the model run:
+```{r eval = TRUE, echo = FALSE,include = FALSE}
+obj = load.model.object(dat = data,par = parameters,template='harps_and_hoods_population_model2')
+```
+The *obj* object is an object containing the log-likelihood value and the gradient for the initial parameters. This is used by fitting the model using an ordinary built in optimization routine in R. The default optimization routine used is *nlminb*, but this can be changed. (MARTIN: bør vi legge inn en mulighet til å endre optimiseringsrutiner). The content of the *obj* object looks like this:
+```{r}
+names(obj)
+```
+The value of the log likelihood and the gradient of the log likelihood for a given set of parameters can be explored by
+```{r}
+obj$fn()
+
+obj$gr()
+```
+
+To fit the model run:
 
 ```{r eval = FALSE}
 opt <- run.model(object = obj)
 ```
 
+When the model is fitted some key information will be written to screen. This key information show whether the model converged, what type of convergence and estimates of the parameters that describes the modelled population dynamics. It might look like this:
+```{r echo = FALSE}
+opt <- run.model(object = obj)
+```
+
+
+
 ### Obtaining the estimated quantities
+In addition to the estimated parameters needed to describe the modelled population dynamics of a population the model fit also provides the user with other relevant quantities. The Table below lists the various quantities obtained.
+
+The model results can be obtained by running:
+```{r eval = FALSE}
+res <- model.results(dat = data,object = obj,optimized = opt)
+```
+```{r echo = FALSE,include = FALSE}
+res <- model.results(dat = data,object = obj,optimized = opt)
+```
+The *res* object is a list containing all the estimates of the quantities listed in Table ??
+
+```{r}
+names(res)
+```
+
+A table for the most interesting quantities needed can be made by running:
+```{r eval = FALSE}
+partab <- par.table(results=res, dat=data, tab2flex=FALSE) 
+```
+```{r include = FALSE}
+partab <- par.table(results=res, dat=data, tab2flex=FALSE) 
+```
+```{r}
+partab 
+```
+
 
 ## Exploring various catch options
 
