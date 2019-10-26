@@ -1,7 +1,7 @@
 ---
 title: "How to use the *rSPAMM* package for assessment of harp and hooded seals populations"
 author: "T. A. Øigård and M. Biuw"
-date: "10/25/2019"
+date: "`r Sys.Date()`" 
 output: rmarkdown::html_vignette
 vignette: >
     %\VignetteIndexEntry{How to use the *rSPAMM* package for assessment of harp and hooded seal populations}
@@ -13,7 +13,9 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ## Overview
-The purpose of this vignette is to show how to use the *rSPAMM* package for assessment of various harp and hooded seal populations. It will guide you through the model fitting, obtaining estimated quantities, finding and exploring, various catch options, how to structure the data set, and how to visualize the population dynamics.
+The purpose of this vignette is to show how to use the *rSPAMM* package for assessment of various harp and hooded seal populations. It will guide you through the model fitting, obtaining estimated quantities, finding and exploring, various catch options, how to structure the data set, and how to visualize the modelled population dynamics. We also present the model which is used (Martin: burde dette være appendix istedet eller er det OK slik?).
+
+## The population dynamics model
 
 ## Installation of the *rSPAMM* package and how to update it
 The most recent version of *rSPAMM* is hosted on a git repository at [https://github.com/NorskRegnesentral/rSPAMM.git](https://github.com/NorskRegnesentral/rSPAMM.git).
@@ -37,9 +39,46 @@ library(rSPAMM)
 
 If you want to update the package to the most recent version you find the Git menu in the panel to the top right corner of RStudio. From there you click on the Pull button and then it will download the most recent version of *rSPAMM*. You have to install the package again by sourcing the installation script again.
 
-## Data: How the data is structured and how to load the data
+## Data used by the population dynamics model and how to load them
+
+In this section we will describe what type of data is used, which data files are needed, and the format the various data are stored.
+
+### The structure of the data
+
+### Loading the data
+In order to load the data you have to specify which population you want to load the data for. The various alternatives are *harpeast*, *harpwest*, and *hooded* (which is the hooded seal population in the West Ice - the ice along the east coast of Greenland). In the examples that follows we will use the *harpeast* population. To load the data used you run the following command:
+```{r eval = FALSE}
+data <- load.data(population = "harpeast")
+```
+
+
+## Parameters to be estimed by the model and how to load them
+In this section we describe which parameters or quantities are needed to fit the population dynamics model. We also describe how to load the initial values used for the various parameters.
+
+### Parameters estimated by the model
+
+### How to load the initial values of the parameters
+To load the initial values of the parameters to be estimated run:
+```{r eval = FALSE}
+parameters <- load.initial.values(population = population)
+```
 
 ## Model fitting and obtaining estimates
+The model is implemented in the Template Model Builder framework and makes use of the *TMB* R package. This means that the code for model is written in C++ and will thus have to be compiled first time you try to fit a model. It will also have to be recompiled if the model is updated. This is not something the user need to worry about. When installing the *rSPAMM* package the *TMB* package and all dependencies should also be installed automatically, and when loading the model it automatically checks wether the C++ code needs to be compiled or not. If it needs to be compiled it is done automatically.
+
+### Loading the model object and fitting the model
+When compiling the model a model object, a *.dll* file is created and this has to be loaded first. This is done by running:
+
+```{r eval = FALSE}
+obj = load.model.object(dat = data,par = parameters)
+```
+The *obj* variable is an object containing the log-likelihood value and the gradient for the initial parameters. This is used by fitting the model using an ordinary built in optimization routine in R. The default optimization routine used is *nlminb*, but this can be changed. (MARTIN: bør vi legge inn en mulighet til å endre optimiseringsrutiner). To fit the model run:
+
+```{r eval = FALSE}
+opt <- run.model(object = obj)
+```
+
+### Obtaining the estimated quantities
 
 ## Exploring various catch options
 

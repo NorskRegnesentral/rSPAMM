@@ -11,7 +11,7 @@
 #' @examples
 #' load.model.object(population = "harpeast")
 
-load.model.object <- function(dat = data,par = parameters,template='harps_and_hoods_population_model')
+load.model.object <- function(dat = data,par = parameters,template='harps_and_hoods_population_model2')
 {
   require(TMB)
   cat('Compiling model dll, be patient....\n\n')
