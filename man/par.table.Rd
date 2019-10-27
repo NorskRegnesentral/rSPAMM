@@ -4,7 +4,7 @@
 \alias{par.table}
 \title{Create table with key parameters from fitted population model}
 \usage{
-par.table(results = res, dat = data, tab2flex = F)
+par.table(results = res, dat = data, tab2flex = FALSE)
 }
 \arguments{
 \item{results}{Output from fitted model}

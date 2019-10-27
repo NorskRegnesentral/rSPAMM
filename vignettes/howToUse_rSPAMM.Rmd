@@ -43,7 +43,59 @@ If you want to update the package to the most recent version you find the Git me
 
 In this section we will describe what type of data is used, which data files are needed, and the format the various data are stored.
 
-### The structure of the data
+### Data files
+All data that is described below will be loaded and used by the model to fit the population dynamics. All data sets are found in the *Data/* folder separated into folders for each population.
+
+#### Catch data
+Catch data are found in the file *catch_data.dat* and the content of the file looks like this:
+```{r echo = FALSE}
+catch_data <- read.table(paste("Data/harpeast/catch_data.dat",sep = ""),header = FALSE)
+head(catch_data)
+```
+The first column contains the year, the seccond column contains the catch of pups, and the third column contains the catch of the 1+ population.
+
+#### Pup production estimates
+Estimated pup production is found in the file *pup_production.dat*. The content of the file looks like this: 
+```{r echo = FALSE}
+pup_production <- read.table(paste("Data/harpeast/pup_production.dat",sep = ""),header = FALSE)
+pup_production
+```
+In the first column you see the survey year, in the seccond column you see the estimated pup production, and in the third the estimated CV of that survey is given.
+
+#### Fecundity data
+Fecundity data is found in the *fecundity.dat* file. The content of the file looks like this:
+```{r echo = FALSE}
+fecundity <- read.table(paste("Data/harpeast/fecundity.dat",sep = ""),header = FALSE)
+fecundity
+```
+In the first column you have the year for when the fecundity is estimated, in the seccond column you have the estimated fecundity, and in the thirst column you have the estimated standard error of the fecundity estimate.
+
+#### Birth ogive
+In the files *wgharp.ogi* and *wgharp.ogp* you find the birth ogive data, and the from which time periods the birth ogive curves applies for. The content of the *wgharp.ogi* looks like
+
+```{r echo = FALSE}
+# Birth ogives for different periods
+Pdat <- read.table(paste("Data/harpeast/wgharp.ogi",sep = ""),sep = "",header = TRUE)
+# Which periods the various birth ogives applies to
+Pper <- read.table(paste("Data/harpeast/wgharp.ogp",sep = ""),header = TRUE)
+Pdat
+```
+In the first column the age group is listed and in the following columns a birth ogive curve is listed for a given period. Every time a new birth ogive estimated is available, a new column is added. The content of the *wgharp.ogp* looks like 
+```{r echo = FALSE}
+Pper
+```
+The first column denotes the start of the time period a given birth ogive curve applies for, and the second column denotes the end of the time period the birth ogive curve is valid. The reason for this is that usually data for several years are pooled together when estimating the birth ogive curve in order to ensure enough data to obtain a reasonable estimated of the birth ogive. Note that the number of rows in the *wgharp.ogp* file corresponds to the number of columns in the *wgharp.ogi* file (minus 1 since one column represents the age group).
+
+#### Priors used
+Priors used for the various parameters are specified in the *priors.dat* file. The content of the file looks like this:
+
+```{r echo = FALSE}
+priors <- read.table(paste("Data/harpeast/priors.dat",sep = ""),header = FALSE)
+priors
+```
+Each row specify mean and the standard deviation of a Gaussian prior used for a given parameter. In the first colum the mean value is found and in the second column the standard deviation is found. In the first row the prior distribution of the initial population size $K$ is specified, in the seccond row the prior distribution of the 1+ mortality $M$ is specified, and in the third row the prior distribution of the pup mortality $M_0$ is specified.
+
+
 
 ### Loading the data
 In order to load the data you have to specify which population you want to load the data for. The various alternatives are *harpeast*, *harpwest*, and *hooded* (which is the hooded seal population in the West Ice - the ice along the east coast of Greenland). In the examples that follows we will use the *harpeast* population. To load the data used you run the following command:
@@ -72,12 +124,9 @@ data$pupProductionData
 ```
 
 
-## Parameters to be estimed by the model and how to load them
-In this section we describe which parameters or quantities are needed to fit the population dynamics model. We also describe how to load the initial values used for the various parameters.
+## Parameters to be estimed and how to load them
+As briefly mentioned earlier the population dynamics model is described by three parameters. The initial population size $K$, the mortality of the 1+ population $M$, and the pup mortality $M_0$. The initial population size is the population size for the year the model is fit from, and this is determined by the availability of the catch data. The earliest catch data is from 1946, so the model is fit from 1946 and up to present. It also predicts the population dynamics into the future, and this is default set to 15 years. 
 
-### Parameters estimated by the model
-
-### How to load the initial values of the parameters
 To load the initial values of the parameters to be estimated run:
 ```{r eval = TRUE}
 parameters <- load.initial.values(population = population)
@@ -127,6 +176,67 @@ opt <- run.model(object = obj)
 ### Obtaining the estimated quantities
 In addition to the estimated parameters needed to describe the modelled population dynamics of a population the model fit also provides the user with other relevant quantities. The Table below lists the various quantities obtained.
 
+----------------------------------------------------
+Variable name           Description
+-----------------       ----------------------------
+rep                     Check it out
+
+rep.matrix              Check
+
+rep.names               check
+
+indN0                   Indexes of where the fitted pup population is found in the
+                        rep.matrix
+                     
+indN1                   Indexes for the modelled 1+ population
+
+indNtot                 Indexes for  the total population
+
+indD1                   Index for the estimated of D 
+
+indD1new                Index for the estimated D1new
+
+indN0Current            Index for the modelled pup abundance in the current year
+
+indN1Current            Index for the modelled 1+ abundance in the current year
+
+indNtotCurrent          Index for the modelled total population in the current year                     
+
+years                   The years the model is fitted for
+
+Kest                    Estimated initial population size
+
+Kest.sd                 Standard deviation of the initial population size
+
+Mest                    Estimated 1+ mortality
+
+Mest.sd                 Standard deviation of the 1+ mortality
+
+M0est                   Estimated pup mortality
+
+M0est.sd                Standard deviation of the estimated pup mortality
+
+D1                      Estimated depletion coefficient
+
+D1New                   Estimated of depletion coefficient
+
+N0Current               Estimated pup abundance for the current year
+
+N1Current               Estimated 1+ abundance for the current year
+
+NtotCurrent             Estimated total abundance for the current year
+
+D1.sd                   Standard deviation of estimated D
+
+D1New.sd                Standard deviation of estimated D
+
+N0Current               Standard deviation of current pup abundance
+
+N1Current               Standard deviation of current 1+ abundance
+
+NtotCurrent             Standard deviation of current total abundance
+-------------------------------------------------
+
 The model results can be obtained by running:
 ```{r eval = FALSE}
 res <- model.results(dat = data,object = obj,optimized = opt)
@@ -134,7 +244,7 @@ res <- model.results(dat = data,object = obj,optimized = opt)
 ```{r echo = FALSE,include = FALSE}
 res <- model.results(dat = data,object = obj,optimized = opt)
 ```
-The *res* object is a list containing all the estimates of the quantities listed in Table ??
+The *res* object is a list containing all the estimates of the quantities listed in the Table above.
 
 ```{r}
 names(res)
@@ -156,22 +266,4 @@ partab
 
 ## Visualize the modelled population dynamics
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Short summary of an actual assessment of the population dynamics for a given population

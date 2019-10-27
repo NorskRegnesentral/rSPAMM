@@ -5,7 +5,7 @@
 \title{Load the population model for harp seals and hooded seals}
 \usage{
 load.model.object(dat = data, par = parameters,
-  template = "harps_and_hoods_population_model")
+  template = "harps_and_hoods_population_model2")
 }
 \arguments{
 \item{population}{Choose which population to run the model on (harpwest,harpeast,hooded).}
