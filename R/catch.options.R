@@ -203,7 +203,7 @@ find.N70.quota <- function(MIN=5000,MAX=50000,quota=c(0,1),population="harpwest"
 #' @export
 
 PBR <- function(n0=n0, n1=n1, se0=se0, se1=se1,
-                rMax=0.12, Fr=0.5, quota=c(0,1), cv=NA) {
+                rMax=0.12, Fr=0.5, quota=c(0.15,1-0.15), cv=NA) {
   
   if(is.na(cv)) cv <- sqrt((se0^2) + (se1^2)+(2*se0*se1))/(n0+n1)
   
