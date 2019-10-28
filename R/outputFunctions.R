@@ -3,9 +3,13 @@
 #' Plot population trajectories.
 #' @param results Output from fitted model
 #' @param dat Original data on estimated pup production (set to NA if these are not to be included).
-#' @param component Which opulation component to plot. Can be either 'N0' for pups, 'N1' for adults, or a vector with both.
+#' @param component Which population component to plot. Can be either 'N0' for pups, 'N1' for adults, or a vector with both.
 #' @param xLim Manually set the x axis extent, overrides the default which is the extent of the plotted data.
 #' @param yLim Manually set the y axis extent, overrides the default which is the extent of the plotted data.
+#' @param plot.legend Add legend to plot (TRUE/FALSE)
+#' @param plot.Nlims True/False
+#' @param projections Plot projections (TRUE/FALSE)
+#' @param mean.proj True/False
 #' @return plot Returns a plot of predicted population size for different population components
 #' @keywords population model
 #' @export
@@ -13,7 +17,7 @@
 #' plot.N(res, data)
 
 plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
-                   xLim=NA,yLim=NA,plot.legend=T,plot.Nlims=T, projections=T, mean.proj=F)
+                   xLim=NA,yLim=NA,plot.legend=TRUE,plot.Nlims=TRUE, projections=TRUE, mean.proj=FALSE)
 {
   if(projections) {
     span <- c(1:length(results$indN0))
@@ -186,6 +190,105 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
   options(scipen=0)
 }
 
+
+#' Plot modelled population dynamics
+#'
+#' Plot population trajectories.
+#' @param results Output from fitted model
+#' @param dat Original data on estimated pup production (set to NA if these are not to be included).
+#' @param component Which population component to plot. Can be either 'N0' for pups, 'N1' for adults, or a vector with both.
+#' @param xLim Manually set the x axis extent, overrides the default which is the extent of the plotted data.
+#' @param yLim Manually set the y axis extent, overrides the default which is the extent of the plotted data.
+#' @param plot.legend Add legend to plot (TRUE/FALSE)
+#' @param plot.Nlims True/False
+#' @param projections Plot projections (TRUE/FALSE)
+#' @param mean.proj True/False
+#' @return plot Returns a plot of predicted population size for different population components
+#' @keywords population model
+#' @export
+#' @examples
+#' plot.N(res, data)
+
+plot.res <- function(results=res,dat=data,component=c('N0', 'N1'),
+                   xLim=NA,yLim=NA,plot.legend=TRUE,plot.Nlims=TRUE, projections=TRUE, conf.int = TRUE,width = 9,height = 7)
+{
+  library(ggplot2)
+  dframe <- data.frame(Year = res$years,
+                       N0 = as.vector(res$rep.matrix[res$indN0,1]),
+                       N0sd = as.vector(res$rep.matrix[res$indN0,2]),
+                       N1 = as.vector(res$rep.matrix[res$indN1,1]),
+                       N1sd = as.vector(res$rep.matrix[res$indN1,2])
+                       )
+  
+  dfpups <- data.frame(Year = data$pupProductionData[,1],Pups = data$pupProductionData[,2],sd = data$pupProductionData[,2]/data$pupProductionData[,3])
+  dfpups$LL = dfpups[,"Pups"]-1.96*dfpups[,"sd"]
+  dfpups$UL = dfpups[,"Pups"]+1.96*dfpups[,"sd"]
+  
+  indPups = which(dframe[,"Year"])
+                       
+  windows("",width = width,height = height)
+                       
+  ggplot(dframe,aes(x=Year)) + 
+    geom_line(aes(y = N0),color = "darkred",size = 3) +
+    geom_line(aes(y = N1),color = "steelblue",size = 3)
+    geom_errorbar(data =dfpups,aes(x = Year,ymin = LL,ymax = UL))                     
+
+  
+}
+
+
+#' Plot the reported catch data
+#'
+#' Plot the reported catch data.
+#' @param results Output from fitted model
+#' @param dat Original data on estimated pup production (set to NA if these are not to be included).
+#' @param component Which population component to plot. Can be either 'N0' for pups, 'N1' for adults, or a vector with both.
+#' @param xLim Manually set the x axis extent, overrides the default which is the extent of the plotted data.
+#' @param yLim Manually set the y axis extent, overrides the default which is the extent of the plotted data.
+#' @param plot.legend Add legend to plot (TRUE/FALSE)
+#' @param plot.Nlims True/False
+#' @param projections Plot projections (TRUE/FALSE)
+#' @param mean.proj True/False
+#' @return plot Returns a plot of predicted population size for different population components
+#' @keywords population model
+#' @export
+#' @examples
+#' plot.N(res, data)
+
+plot.catch <- function(res=res,dat=data,component=c('N0', 'N1'),
+                     xLim=NA,yLim=NA,plot.legend=TRUE,plot.Nlims=TRUE, projections=TRUE,width = 9,height = 7)
+{
+  library(ggplot2)
+  #Create a data frame for the results
+    
+}
+
+
+#' Plot fecundity data
+#'
+#' Plot the fecundity data used in the model fit.
+#' @param results Output from fitted model
+#' @param dat Original data on estimated pup production (set to NA if these are not to be included).
+#' @param component Which population component to plot. Can be either 'N0' for pups, 'N1' for adults, or a vector with both.
+#' @param xLim Manually set the x axis extent, overrides the default which is the extent of the plotted data.
+#' @param yLim Manually set the y axis extent, overrides the default which is the extent of the plotted data.
+#' @param plot.legend Add legend to plot (TRUE/FALSE)
+#' @param plot.Nlims True/False
+#' @param projections Plot projections (TRUE/FALSE)
+#' @param mean.proj True/False
+#' @return plot Returns a plot of predicted population size for different population components
+#' @keywords population model
+#' @export
+#' @examples
+#' plot.N(res, data)
+
+plot.fecundity <- function(results=res,dat=data,component=c('N0', 'N1'),
+                     xLim=NA,yLim=NA,plot.legend=TRUE,plot.Nlims=TRUE, projections=TRUE, conf.int = TRUE)
+{
+  library(ggplot2)
+  
+  
+}
 
 #' Create table with key parameters from fitted population model 
 #'

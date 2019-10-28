@@ -41,7 +41,7 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
     dat <- dat[-match('Pper', names(dat))]
   }
   
-  obj <- MakeADFun(data=dat,parameters=par,DLL=template)
+  obj <- MakeADFun(data=dat,parameters=par,DLL=template,silent = TRUE)
   
   cat('Done!\n')
   flush.console()

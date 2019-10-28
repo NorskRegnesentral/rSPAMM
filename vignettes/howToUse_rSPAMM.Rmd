@@ -351,8 +351,10 @@ pbrCatch
 
 where n0 is the current population size, n1 is the current 1+ population size, se0 is the standard deviation of the estimated current pup abundance, and se1 is the standard deviation of the estimated current 1+ abundance. Recall from the Table above that these quantities could be found using the *par.tab* command.
 
+## Appendix
 
+### The population dynamics model
+Martin: kunne lagt modellen her istedet for i begynnelsen. Vet ikke hva som er best.
 
-
-
-## Short summary of an actual assessment of the population dynamics for a given population
+### Complete code for assessment
+Legge til kode som summerer alle stegene for en komplett analyse.
