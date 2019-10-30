@@ -200,19 +200,24 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
 #' @param xLim Manually set the x axis extent, overrides the default which is the extent of the plotted data.
 #' @param yLim Manually set the y axis extent, overrides the default which is the extent of the plotted data.
 #' @param plot.legend Add legend to plot (TRUE/FALSE)
-#' @param plot.Nlims True/False
+#' @param plot.Nlims Plot horizontal lines indicating 30%, 50% and 70% of 1+ population True/False
+#' @param col Specify colors used for (pups,1+,error bars)
 #' @param projections Plot projections (TRUE/FALSE)
 #' @param mean.proj True/False
 #' @return plot Returns a plot of predicted population size for different population components
 #' @keywords population model
 #' @export
 #' @examples
-#' plot.N(res, data)
+#' plot.res(res, data)
 
-plot.res <- function(results=res,dat=data,component=c('N0', 'N1'),
-                   xLim=NA,yLim=NA,plot.legend=TRUE,plot.Nlims=TRUE, projections=TRUE, conf.int = TRUE,width = 9,height = 7)
+plot.res <- function(res=res,dat=data,component=c('N0', 'N1'),
+                   xLim=NA,yLim=NA,plot.legend=TRUE,plot.Nlims=TRUE, col = c("royalblue","darkred","steelblue"),projections=TRUE, conf.int = TRUE,width = 9,height = 7)
 {
-  library(ggplot2)
+  require(ggplot2)
+  
+  if(projections){
+  }
+  
   dframe <- data.frame(Year = res$years,
                        N0 = as.vector(res$rep.matrix[res$indN0,1]),
                        N0sd = as.vector(res$rep.matrix[res$indN0,2]),
@@ -220,21 +225,54 @@ plot.res <- function(results=res,dat=data,component=c('N0', 'N1'),
                        N1sd = as.vector(res$rep.matrix[res$indN1,2])
                        )
   
-  dfpups <- data.frame(Year = data$pupProductionData[,1],Pups = data$pupProductionData[,2],sd = data$pupProductionData[,2]/data$pupProductionData[,3])
+  
+  dframe$Ntot = dframe$N0 + dframe$N1
+  dframe$Ntotsd = sqrt(dframe$N0sd^2+dframe$N1sd^2)
+  dframe$N0LL = dframe$N0 - 1.96*dframe$N0sd
+  dframe$N0UL = dframe$N0 + 1.96*dframe$N0sd
+  dframe$N1LL = dframe$N1 - 1.96*dframe$N1sd
+  dframe$N1UL = dframe$N1 + 1.96*dframe$N1sd
+  dframe$NtotLL = dframe$Ntot - 1.96*dframe$Ntotsd
+  dframe$NtotUL = dframe$Ntot + 1.96*dframe$Ntotsd
+  
+  
+  dfpups <- data.frame(Year = data$pupProductionData[,1],Pups = data$pupProductionData[,2],sd = data$pupProductionData[,2]*data$pupProductionData[,3])
   dfpups$LL = dfpups[,"Pups"]-1.96*dfpups[,"sd"]
   dfpups$UL = dfpups[,"Pups"]+1.96*dfpups[,"sd"]
   
-  indPups = which(dframe[,"Year"])
-                       
-  windows("",width = width,height = height)
-                       
-  ggplot(dframe,aes(x=Year)) + 
-    geom_line(aes(y = N0),color = "darkred",size = 3) +
-    geom_line(aes(y = N1),color = "steelblue",size = 3)
-    geom_errorbar(data =dfpups,aes(x = Year,ymin = LL,ymax = UL))                     
-
+  maxYear = max(dframe$Year)
+  maxN = max(dframe$N1)
   
-}
+  pl <- ggplot(data = dframe,aes(x = Year))
+  if(plot.Nlims){
+    pl <- pl + geom_segment(aes(x=min(dframe$Year),xend=maxYear,y=(0.3*maxN),yend=(0.3*maxN)),color = "lightgrey",size = 0.5)
+    pl <- pl + geom_segment(aes(x=min(dframe$Year),xend=maxYear,y=(0.5*maxN),yend=(0.5*maxN)),color = "lightgrey",size = 0.5)
+    pl <- pl + geom_segment(aes(x=min(dframe$Year),xend=maxYear,y=(0.7*maxN),yend=(0.7*maxN)),color = "lightgrey",size = 0.5)
+    
+    #  geom_hline(yintercept = 0.3*max(dframe$N1),color = "lightgrey",size = 0.5)
+    #pl <- pl + geom_hline(yintercept = 0.5*max(dframe$N1),color = "lightgrey",size = 0.5)
+    #pl <- pl + geom_hline(yintercept = 0.7*max(dframe$N1),color = "lightgrey",size = 0.5)
+    pl <- pl + geom_text(x = (max(dframe$Year)+10),y = 0.3*max(dframe$N1),label = expression(N[lim]),size = 5)
+    pl <- pl + geom_text(x = (max(dframe$Year)+10),y = 0.5*max(dframe$N1),label = expression(N[50]), size = 5)
+    pl <- pl + geom_text(x = (max(dframe$Year)+10),y = 0.7*max(dframe$N1),label = expression(N[70]), size = 5)
+    }
+
+  if("N0" %in% component) pl  <- pl + geom_line(data = dframe,aes(x = Year,y = N0),color = col[1],size = 1.5)
+  if("N0" %in% component) pl  <- pl + geom_point(data = dfpups,aes(x=Year,y = Pups,col = "red"),size = 3,color = col[3]) 
+  if("N0" %in% component) pl  <- pl + geom_errorbar(data =dfpups,aes(x = Year,ymin = LL,ymax = UL), color = col[3],size = 1)                     
+  if("N1" %in% component) pl  <- pl + geom_line(data = dframe,aes(x = Year,y = N1),color = col[2],size = 1.5) 
+  if("Ntot" %in% component) pl  <- pl + geom_line(data = dframe,aes(x = Year,y = Ntot),color = col[2],size = 1.5) 
+  
+  #pl <- pl + expand_limits(x = (max(dframe$Year)+5))
+  pl <- pl + coord_cartesian(xlim = c(min(dframe$Year), (max(dframe$Year)+5)), clip = 'off')
+  pl <- pl + theme_classic() 
+  pl <- pl + theme(text = element_text(size=20),
+                   plot.margin = unit(c(1,3,1,1), "cm"))
+  pl <- pl + ylab("Population size")
+  windows("",width = width,height = height)
+  pl
+  
+  }
 
 
 #' Plot the reported catch data
