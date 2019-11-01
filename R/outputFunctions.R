@@ -10,6 +10,8 @@
 #' @param plot.Nlims True/False
 #' @param projections Plot projections (TRUE/FALSE)
 #' @param mean.proj True/False
+#' @param width Width of the figure
+#' @param height Height of the figure
 #' @return plot Returns a plot of predicted population size for different population components
 #' @keywords population model
 #' @export
@@ -17,13 +19,17 @@
 #' plot.N(res, data)
 
 plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
-                   xLim=NA,yLim=NA,plot.legend=TRUE,plot.Nlims=TRUE, projections=TRUE, mean.proj=FALSE)
+                   xLim=NA,yLim=NA,plot.legend=TRUE,
+                   plot.Nlims=TRUE, projections=TRUE, 
+                   mean.proj=FALSE,width = 13, height = 7,
+                   conf.int = TRUE)
 {
   if(projections) {
     span <- c(1:length(results$indN0))
   } else {
     span <- c(1:nrow(dat$Cdata))
   }
+  
   options(scipen=999)
   add.alpha <- function(col, alpha=1){
     if(missing(col))
@@ -33,14 +39,20 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
             rgb(x[1], x[2], x[3], alpha=alpha))  
   }
   
+  windows("",width = width,height = height)
+  
   require(RColorBrewer)
   theCols <- brewer.pal(max(c(3, length(component))), 'Dark2')
+  
   if(length(xLim)==1) xLim <- range(results$years)
+  
   if('N1' %in% component) {
     indN1back <- results$indN1[c(1:match(max(dat$pupProductionData[,1]), results$years))]
     lCI <- results$rep.matrix[results$indN1,1]-(1.96*results$rep.matrix[results$indN1,2])
     uCI <- results$rep.matrix[results$indN1,1]+(1.96*results$rep.matrix[results$indN1,2])
+    
     if(length(yLim)==1) yLim <- c(0, max(uCI))
+    
     if(!projections) {
       if(length(xLim)==1) {
         xLim <- range(results$years[span])
@@ -53,9 +65,10 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
         yLim[2] <- max(uCI[span])
       }  
     }
+    
     plot(results$years, results$rep.matrix[results$indN1,1],
-         type = "l",xlab = "",ylab = "Abundance",
-         col=theCols[1], lwd=2, lty=2, xlim=xLim, ylim=yLim, axes=F)
+         type = "l",xlab = "Year",ylab = "Abundance",
+         col=theCols[1], lwd=2, lty=2, xlim=xLim, ylim=yLim, axes=FALSE)
     if(!projections | !mean.proj) lines(results$years, results$rep.matrix[results$indN1,1], lwd=2, lty=2, col='white')
     axis(1)
     axis(2, at=pretty(par('usr')[c(3,4)]), 
@@ -65,21 +78,27 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
     if(plot.Nlims) {
       Nlims <- c(0.3, 0.5, 0.7)*max(results$rep.matrix[results$indN1,1]) 
       abline(h=Nlims, col='lightgrey')
-      text(par('usr')[2], Nlims[1], expression(N[lim]), xpd=NA, adj=0, cex=0.7)
-      text(par('usr')[2], Nlims[2], expression(N[50]), xpd=NA, adj=0, cex=0.7)
-      text(par('usr')[2], Nlims[3], expression(N[70]), xpd=NA, adj=0, cex=0.7)
+      text(par('usr')[2], Nlims[1], expression(N[lim]), xpd=NA, adj=0, cex=0.9)
+      text(par('usr')[2], Nlims[2], expression(N[50]), xpd=NA, adj=0, cex=0.9)
+      text(par('usr')[2], Nlims[3], expression(N[70]), xpd=NA, adj=0, cex=0.9)
     }
     
     if(projections) {
-      lines(results$years, lCI, col=theCols[1], lty=2)
-      lines(results$years, uCI, col=theCols[1], lty=2)
+      if(conf.int){
+        lines(results$years, lCI, col=theCols[1], lty=2)
+        lines(results$years, uCI, col=theCols[1], lty=2)
+      }
+      lines(results$years, results$rep.matrix[results$indN1,1],col=theCols[1], lwd = 2, lty=2)
     }
     
-    polygon(c(c(results$years[1]:max(dat$pupProductionData[,1])), 
+    if(conf.int){
+      polygon(c(c(results$years[1]:max(dat$pupProductionData[,1])), 
               rev(c(results$years[1]:max(dat$pupProductionData[,1])))), 
             c(lCI[c(1:(max(dat$pupProductionData[,1])-results$years[1]+1))],
               rev(uCI[c(1:(max(dat$pupProductionData[,1])-results$years[1]+1))])),
             col=add.alpha(theCols[1], 0.5), border=NA)
+    }
+     
     lines(c(results$years[1]:max(dat$pupProductionData[,1])), results$rep.matrix[indN1back,1],
           col=theCols[1], lwd=2)
     
@@ -105,27 +124,31 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
       }
       plot(results$years, results$rep.matrix[results$indN0,1],
            type = "l",xlab = "",ylab = "Abundance",
-           col=theCols[2], lwd=2, lty=2, xlim=xLim, ylim=yLim, axes=F)
+           col=theCols[2], lwd=2, lty=2, xlim=xLim, ylim=yLim, axes=FALSE)
       if(!projections | !mean.proj) lines(results$years, results$rep.matrix[results$indN0,1], lwd=2, lty=2, col='white')
       axis(1)
       axis(2, at=pretty(par('usr')[c(3,4)]), 
-           labels=format(pretty(par('usr')[c(3,4)]), scientific=F))
+           labels=format(pretty(par('usr')[c(3,4)]), scientific=FALSE))
       abline(h=par('usr')[3])
       abline(v=par('usr')[1])
     } else { 
       if(projections) lines(results$years, results$rep.matrix[results$indN0,1],
-            col=theCols[2], lwd=2,lty=2)
+                            col=theCols[2], lwd=2,lty=2)
     }
     if(projections) {
-      lines(results$years, plCI, col=theCols[2], lty=2)
-      lines(results$years, puCI, col=theCols[2], lty=2)
+      if(conf.int){
+        lines(results$years, plCI, col=theCols[2], lty=2)
+        lines(results$years, puCI, col=theCols[2], lty=2)
+      }
     }  
     
+    if(conf.int){
     polygon(c(c(results$years[1]:max(dat$pupProductionData[,1])), 
               rev(c(results$years[1]:max(dat$pupProductionData[,1])))), 
             c(plCI[c(1:(max(dat$pupProductionData[,1])-results$years[1]+1))],
               rev(puCI[c(1:(max(dat$pupProductionData[,1])-results$years[1]+1))])),
             col=add.alpha(theCols[2], 0.5), border=NA)
+    }
     
     lines(c(results$years[1]:max(dat$pupProductionData[,1])), results$rep.matrix[indN0back,1],
           col=theCols[2], lwd=2)
@@ -158,19 +181,19 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
       if(length(component)==1) {
         legend('topright', lwd=2, col=theCols[1], 
                pch=NA, 
-               'Total population size',
+               '1+ population size',
                bty='n')
-        }  else {
+      }  else {
         legend('topright', lwd=rep(2, 2), col=theCols[c(1,2)], 
-               c('Total population size', 
+               c('1+ population size', 
                  'Pup production'), pch=rep(NA, 2),
                bty='n')
-      
+        
         if(length(dat)>1) {
           legend('topright', lwd=rep(1, 2), lty=NA, 
                  pt.bg=c(NA, theCols[2]), pch=c(NA,21),
                  pt.cex=c(0, 1.5),
-                 c('Total population size', 
+                 c('1+ population size', 
                    'Pup production'),
                  bty='n')
         }
@@ -191,9 +214,10 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
 }
 
 
+
 #' Plot modelled population dynamics
 #'
-#' Plot population trajectories.
+#' Plot population trajectories. This function does not work properly, use plot.N() instead.
 #' @param results Output from fitted model
 #' @param dat Original data on estimated pup production (set to NA if these are not to be included).
 #' @param component Which population component to plot. Can be either 'N0' for pups, 'N1' for adults, or a vector with both.
@@ -203,15 +227,22 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
 #' @param plot.Nlims Plot horizontal lines indicating 30%, 50% and 70% of 1+ population True/False
 #' @param col Specify colors used for (pups,1+,error bars)
 #' @param projections Plot projections (TRUE/FALSE)
-#' @param mean.proj True/False
+#' @param add.title Add title to figure (TRUE/FALSE)
 #' @return plot Returns a plot of predicted population size for different population components
 #' @keywords population model
 #' @export
 #' @examples
 #' plot.res(res, data)
 
-plot.res <- function(res=res,dat=data,component=c('N0', 'N1'),
-                   xLim=NA,yLim=NA,plot.legend=TRUE,plot.Nlims=TRUE, col = c("royalblue","darkred","steelblue"),projections=TRUE, conf.int = TRUE,width = 9,height = 7)
+plot.res.ggplot <- function(res=res,dat=data,component=c('N0', 'N1'),
+                   xLim=NA,yLim=NA,plot.legend=TRUE,
+                   plot.Nlims=TRUE, 
+                   col = c("royalblue","darkred","steelblue"),
+                   projections=TRUE, 
+                   conf.int = TRUE,
+                   add.title = TRUE,
+                   width = 13,
+                   height = 7)
 {
   require(ggplot2)
   
@@ -235,6 +266,18 @@ plot.res <- function(res=res,dat=data,component=c('N0', 'N1'),
   dframe$NtotLL = dframe$Ntot - 1.96*dframe$Ntotsd
   dframe$NtotUL = dframe$Ntot + 1.96*dframe$Ntotsd
   
+  dfN0 = data.frame(Year = dframe$Year,Abun = dframe$N0,id = 'Pup population')
+  dfN1 = data.frame(Year = dframe$Year,Abun = dframe$N1,id = '1+ population')
+  dfNtot = data.frame(Year = dframe$Year,Abun = dframe$Ntot,id = "Total population")
+  dfPupsbig = data.frame(Year = dframe$Year,Abun = NA,id = "Pup production estimates")
+  dfPupsbig$Abun[which(dframe$Year %in% dfpups$Year)] = data$pupProductionData[,2]
+  
+  #Find out which components to plot
+  if(length(component)>1){
+    if(("N0" %in% component) & ("N1" %in% component))   dfall <- rbind.data.frame(dfN0,dfN1)
+    if(("N0" %in% component) & ("Ntot" %in% component))   dfall <- rbind.data.frame(dfN0,dfNtot)
+  }
+  
   
   dfpups <- data.frame(Year = data$pupProductionData[,1],Pups = data$pupProductionData[,2],sd = data$pupProductionData[,2]*data$pupProductionData[,3])
   dfpups$LL = dfpups[,"Pups"]-1.96*dfpups[,"sd"]
@@ -252,23 +295,74 @@ plot.res <- function(res=res,dat=data,component=c('N0', 'N1'),
     #  geom_hline(yintercept = 0.3*max(dframe$N1),color = "lightgrey",size = 0.5)
     #pl <- pl + geom_hline(yintercept = 0.5*max(dframe$N1),color = "lightgrey",size = 0.5)
     #pl <- pl + geom_hline(yintercept = 0.7*max(dframe$N1),color = "lightgrey",size = 0.5)
-    pl <- pl + geom_text(x = (max(dframe$Year)+10),y = 0.3*max(dframe$N1),label = expression(N[lim]),size = 5)
-    pl <- pl + geom_text(x = (max(dframe$Year)+10),y = 0.5*max(dframe$N1),label = expression(N[50]), size = 5)
-    pl <- pl + geom_text(x = (max(dframe$Year)+10),y = 0.7*max(dframe$N1),label = expression(N[70]), size = 5)
-    }
+    pl <- pl + geom_text(x = (max(dframe$Year)+10),y = 0.3*max(dframe$N1),label = (expression(N[lim])),size = 5)
+    pl <- pl + geom_text(x = (max(dframe$Year)+10),y = 0.5*max(dframe$N1),label = (expression(N[50])), size = 5)
+    pl <- pl + geom_text(x = (max(dframe$Year)+10),y = 0.7*max(dframe$N1),label = (cexpression(N[70])), size = 5)
+  }
+  
+  # Add confidence intervals
+  if(conf.int){
+    if("N0" %in% component) pl <- pl  + geom_ribbon(data=dframe,aes(ymin=N0LL,ymax=N0UL,x=Year),fill = col[1],alpha = 0.3)
+    if("N1" %in% component) pl <- pl  + geom_ribbon(data=dframe,aes(ymin=N1LL,ymax=N1UL,x=Year),fill = col[2],alpha = 0.3)
+    if("Ntot" %in% component) pl <- pl  + geom_ribbon(data=dframe,aes(ymin=NtotLL,ymax=NtotUL,x=Year),fill = col[2],alpha = 0.3)
+  }
 
-  if("N0" %in% component) pl  <- pl + geom_line(data = dframe,aes(x = Year,y = N0),color = col[1],size = 1.5)
-  if("N0" %in% component) pl  <- pl + geom_point(data = dfpups,aes(x=Year,y = Pups,col = "red"),size = 3,color = col[3]) 
-  if("N0" %in% component) pl  <- pl + geom_errorbar(data =dfpups,aes(x = Year,ymin = LL,ymax = UL), color = col[3],size = 1)                     
-  if("N1" %in% component) pl  <- pl + geom_line(data = dframe,aes(x = Year,y = N1),color = col[2],size = 1.5) 
-  if("Ntot" %in% component) pl  <- pl + geom_line(data = dframe,aes(x = Year,y = Ntot),color = col[2],size = 1.5) 
+
+  #If only one component is plottet, plot the right one
+  if(length(component) == 1){
+    if("N0" %in% component) pl  <- pl + geom_line(data = dframe,aes(x = Year,y = N0),color = col[1],size = 1.5)
+    if("N0" %in% component) pl  <- pl + geom_point(data = dfpups,aes(x=Year,y = Pups,col = "red"),size = 3,color = col[3]) 
+    if("N0" %in% component) pl  <- pl + geom_errorbar(data =dfpups,aes(x = Year,ymin = LL,ymax = UL), color = col[3],size = 1)                     
+    if("N1" %in% component) pl  <- pl + geom_line(data = dframe,aes(x = Year,y = N1),color = col[2],size = 1.5) 
+    if("Ntot" %in% component) pl  <- pl + geom_line(data = dframe,aes(x = Year,y = Ntot),color = col[2],size = 1.5) 
+  } else {
+        #Plot multiple lines
+        pl <- pl + geom_line(data = dfall,aes(x = Year,y = Abun,colour = id),size = 1.5)
+        if(("N0" %in% component) & ("N1" %in% component)) pl <- pl + scale_colour_manual(values = c('Pup population' = col[1],'1+ population' = col[2]))
+        if(("N0" %in% component) & ("Ntot" %in% component)) pl <- pl + scale_colour_manual(values = c('Pup population' = col[1],'Total population' = col[2]))
+        
+  }
+  
+  #pl <- pl + scale_linetype_manual(labels = c("psavert", "uempmed"),values = c("psavert"="#00ba38", "uempmed"="#f8766d"))
+  
+  #pl <- pl + scale_colour_manual(values = c("purple", "green", "blue"),
+  #                               guide = guide_legend(override.aes = list(
+  #                                 linetype = c("solid","dashed"),
+  #                                 shape = c(NA,NA))))
   
   #pl <- pl + expand_limits(x = (max(dframe$Year)+5))
+  
+  #pl <- pl + scale_fill_manual(labels = paste("long", c(5, 10, 15)),
+  #                      guide = guide_legend(
+  #                        direction = "horizontal",
+  #                        title.position = "top",
+  #                        label.position = "bottom",
+  #                        label.hjust = 0.5,
+  #                        label.vjust = 1,
+  #                        label.theme = element_text(angle = 90)
+  #                      ))
+  
   pl <- pl + coord_cartesian(xlim = c(min(dframe$Year), (max(dframe$Year)+5)), clip = 'off')
   pl <- pl + theme_classic() 
   pl <- pl + theme(text = element_text(size=20),
-                   plot.margin = unit(c(1,3,1,1), "cm"))
+                   plot.margin = unit(c(1,2,1,1), "cm"),
+                   axis.text.y = element_text(angle = 90,margin = margin(t = 0, r = 20, b = 0, l = 30),vjust = 0.5),
+                   axis.text.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0),vjust = 1),
+                   #legend.title = element_text(size = 20),
+                   legend.title = element_blank(),
+                   legend.position = "bottom",
+                   legend.box = "vertical"
+                   )
   pl <- pl + ylab("Population size")
+  
+  pl <- pl + labs(fill = "Dose (mg)")
+  
+  pl <- pl + scale_fill_manual(name = "Dose", labels = c("A", "B", "C"))
+  
+  #Add title if needed
+  if(add.title)  pl <- pl + labs(title="Modelled population dynamics")
+  
+
   windows("",width = width,height = height)
   pl
   
