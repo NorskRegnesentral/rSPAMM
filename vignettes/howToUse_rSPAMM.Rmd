@@ -252,7 +252,7 @@ names(res)
 
 A table for the most interesting quantities needed can be made by running:
 ```{r eval = FALSE}
-partab <- par.table(results=res, dat=data, tab2flex=FALSE) 
+partab <- par.table(results=res, dat=data) 
 ```
 ```{r include = FALSE}
 partab <- par.table(results=res, dat=data, tab2flex=FALSE) 
@@ -262,6 +262,56 @@ partab
 ```
 
 ## Visualize the modelled population dynamics
+In this section we will show how to create graphics to present the various output of the modelling results. To display the modelled pup abundance and the 1+ abundance you run the following command:
+```{r eval = FALSE}
+plot.N(res,data)
+```
+![Modelled pup abundance and 1+ abundance.](figures/model_fit.png){ width=98%}
+(MARTIN: Kanskje vi skal legge til at vi kan vise Ntot også slik at vi får pups og Ntot? Ser også ut til at N70 og Nlim blir beregnet ut fra N1 og ikke Ntot så dette bør vi kanskje endre på. Bare gi meg et vink så kan jeg ta meg av dette. Skal vi også ha en option der brukeren kan spesifisere farge i tilfelle man noen ganger trenger sort hvitt (eller bare sette en option hvor man velger farge eller gråtone? Mest fleksibelt med å velge farge selv, men man kan gjøre begge deler, altså spesifisere farge selv OG ha en option som "overrider" den hvor man spesifiserer farge eller gråtone). Skal vi legge inn en mulighet for å slå av og på legend - eller modifisere teksten?)
+
+You can also plot the fit to the pup abundance and the 1+ abundance separately by specifying that in the *component* variable:
+```{r eval = FALSE}
+plot.N(res,data,component = c("N0"))
+```
+![Modelled pup abundance.](figures/fitted_pup_abundance.png){ width=98%}
+
+```{r eval = FALSE}
+plot.N(res,data,component = c("N1"))
+```
+![Modelled abundance.](figures/fitted_adult_abun.png){ width=98%}
+
+You can also choose to not plot the future projections by setting *projections = FALSE* . 
+```{r eval = FALSE}
+plot.N(res,data,projections = FALSE)
+```
+![Modelled pup and 1+ abundance  withouth projections.](figures/fitted_abun_no_proj.png){ width=98%}
+
+The confidence intervals can be turned off by setting *conf.int = FALSE* and the horizontal lines for $N_{lim}$, $N_{50}$ and $N_{70}$ can be turned off by setting *plot.Nlims = FALSE* For other options you can run *?plot.N*.
+
+If you want to visualize certain types of data you can plot the historical catch level used, the fecundity vector and the birth ogive curves for each time period. To plot the catch data run the *plot.catch()* function:
+```{r eval = FALSE}
+plot.catch(catch = data$Cdata)
+```
+![Reported catch levels of pups and 1+ animals with bars next to each other.](figures/catch_data_dodge.png){ width=98%}
+
+
+Default the bars are next to each other, but the bars can be plotted on top of each other by setting *position = "stack"*:
+```{r eval = FALSE}
+plot.catch(catch = data$Cdata,position = "stack")
+```
+![Reported catch levels of pups and 1+ animals with bars on top of each other.](figures/catch_data_stack.png){ width=98%}
+
+If you want to explore the birth ogive data used for various periods you can run the *plot.Pmat()* function:
+```{r eval = FALSE}
+plot.Pmat(dat = data)
+```
+![Birth ogive for different periods.](figures/birth_ogive.png){ width=98%}
+
+Since fecundity rates is not available for all years they are interpolated between missing years. You can plot the fecundity rates used in the modelling by running *plot.fecundity()*. Default it plots both the linear interpolated fecundity rates and the observed fecundity ratesfor a given population.
+```{r eval = FALSE}
+plot.fecundity(dat = data)
+```
+![Fecundity rates used in the modelling.](figures/fecundity.png){ width=98%}
 
 
 ## Exploring various catch options

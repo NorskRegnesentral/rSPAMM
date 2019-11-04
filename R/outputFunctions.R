@@ -39,10 +39,10 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
             rgb(x[1], x[2], x[3], alpha=alpha))  
   }
   
-  windows("",width = width,height = height)
+  #windows("",width = width,height = height)
   
-  require(RColorBrewer)
-  theCols <- brewer.pal(max(c(3, length(component))), 'Dark2')
+  #require(RColorBrewer)
+  theCols <- RColorBrewer::brewer.pal(max(c(3, length(component))), 'Dark2')
   
   if(length(xLim)==1) xLim <- range(results$years)
   
@@ -65,10 +65,11 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
         yLim[2] <- max(uCI[span])
       }  
     }
+    par(mar=c(5,6,4,2)+0.1)
     
     plot(results$years, results$rep.matrix[results$indN1,1],
          type = "l",xlab = "Year",ylab = "Abundance",
-         col=theCols[1], lwd=2, lty=2, xlim=xLim, ylim=yLim, axes=FALSE)
+         col=theCols[1], lwd=2, lty=2, xlim=xLim, ylim=yLim, axes=FALSE,cex.lab = 1.5)
     if(!projections | !mean.proj) lines(results$years, results$rep.matrix[results$indN1,1], lwd=2, lty=2, col='white')
     axis(1)
     axis(2, at=pretty(par('usr')[c(3,4)]), 
@@ -123,8 +124,8 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
         }  
       }
       plot(results$years, results$rep.matrix[results$indN0,1],
-           type = "l",xlab = "",ylab = "Abundance",
-           col=theCols[2], lwd=2, lty=2, xlim=xLim, ylim=yLim, axes=FALSE)
+           type = "l",xlab = "Year",ylab = "Abundance",
+           col=theCols[2], lwd=2, lty=2, xlim=xLim, ylim=yLim, axes=FALSE,cex.lab = 1.5)
       if(!projections | !mean.proj) lines(results$years, results$rep.matrix[results$indN0,1], lwd=2, lty=2, col='white')
       axis(1)
       axis(2, at=pretty(par('usr')[c(3,4)]), 
@@ -363,7 +364,7 @@ plot.res.ggplot <- function(res=res,dat=data,component=c('N0', 'N1'),
   if(add.title)  pl <- pl + labs(title="Modelled population dynamics")
   
 
-  windows("",width = width,height = height)
+  #windows("",width = width,height = height)
   pl
   
   }
@@ -372,54 +373,110 @@ plot.res.ggplot <- function(res=res,dat=data,component=c('N0', 'N1'),
 #' Plot the reported catch data
 #'
 #' Plot the reported catch data.
-#' @param results Output from fitted model
-#' @param dat Original data on estimated pup production (set to NA if these are not to be included).
-#' @param component Which population component to plot. Can be either 'N0' for pups, 'N1' for adults, or a vector with both.
-#' @param xLim Manually set the x axis extent, overrides the default which is the extent of the plotted data.
-#' @param yLim Manually set the y axis extent, overrides the default which is the extent of the plotted data.
-#' @param plot.legend Add legend to plot (TRUE/FALSE)
-#' @param plot.Nlims True/False
-#' @param projections Plot projections (TRUE/FALSE)
-#' @param mean.proj True/False
+#' @param catch Reported catcj data
+#' @param position Position of bars: If Pup catch and 1+ catch next to each other use position = "dodge" (default). On top of each other use position = "stack"
+#' @param width Figure width
+#' @param height Figure height
 #' @return plot Returns a plot of predicted population size for different population components
 #' @keywords population model
 #' @export
 #' @examples
-#' plot.N(res, data)
+#' plot.catch(data$Cdata)
 
-plot.catch <- function(res=res,dat=data,component=c('N0', 'N1'),
-                     xLim=NA,yLim=NA,plot.legend=TRUE,plot.Nlims=TRUE, projections=TRUE,width = 9,height = 7)
+plot.catch <- function(catch = cdata,width = 9,height = 7,position = "dodge")
 {
   library(ggplot2)
-  #Create a data frame for the results
-    
+  
+  theCols <- RColorBrewer::brewer.pal(3, 'Dark2')
+  
+  dfpups = data.frame("Year" = catch[,1],"Catches" = catch[,2],id = "Pup catch")
+  dfOnePluss = data.frame("Year" = catch[,1],"Catches" = catch[,3],id = "1+ catch")
+  
+  dfcatch = rbind.data.frame(dfpups,dfOnePluss)
+  
+  #pl <- ggplot(data = dfcatch,aes(x = Year,fill = id))
+  
+  #pl <- pl + geom_col(aes(y = Catches),position = "dodge")
+  
+  pl <- ggplot2::ggplot(data = dfcatch, aes(x = Year))
+  pl <- pl + ggplot2::geom_col(aes(y = Catches/1000, fill = id),position = position)
+  #pl <- pl + scale_colour_discrete(values = c('Pup catch' = "red",'1+ catch' = "blue"))
+  pl <- pl + ggplot2::theme_classic() 
+  pl <- pl + ggplot2::theme(text = element_text(size=20),
+                   plot.margin = unit(c(1,2,1,1), "cm"),
+                   axis.text.y = element_text(angle = 90,margin = margin(t = 0, r = 20, b = 0, l = 30),vjust = 0.5),
+                   axis.text.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0),vjust = 1),
+                   #legend.title = element_text(size = 20),
+                   legend.title = element_blank(),
+                   #legend.position = "bottom",
+                   #legend.box = "vertical"
+  )
+  pl <- pl + ggplot2::ylab("Catch level (in 1000)")
+  pl <- pl + ggplot2::scale_fill_manual(values = c(theCols[1], theCols[2]))
+  #pl <- pl + labs(fill = "Dose (mg)")
+  
+  #pl <- pl + scale_fill_manual(name = "Dose", labels = c("A", "B", "C"))
+  
+  
+  #windows("",width = 15,height = 7)
+  pl
+  
 }
 
 
 #' Plot fecundity data
 #'
 #' Plot the fecundity data used in the model fit.
-#' @param results Output from fitted model
-#' @param dat Original data on estimated pup production (set to NA if these are not to be included).
-#' @param component Which population component to plot. Can be either 'N0' for pups, 'N1' for adults, or a vector with both.
-#' @param xLim Manually set the x axis extent, overrides the default which is the extent of the plotted data.
-#' @param yLim Manually set the y axis extent, overrides the default which is the extent of the plotted data.
-#' @param plot.legend Add legend to plot (TRUE/FALSE)
-#' @param plot.Nlims True/False
-#' @param projections Plot projections (TRUE/FALSE)
-#' @param mean.proj True/False
+#' @param data Data object used in model fit
+#' @param include.observations Plot the observed fecundity rates with 95% confidence intervals (default = TRUE)
+#' @param population If include.observations is TRUE, define which population you want to use.
+
 #' @return plot Returns a plot of predicted population size for different population components
-#' @keywords population model
+#' @keywords fecundity data
 #' @export
 #' @examples
-#' plot.N(res, data)
+#' plot.fecundity(res, data)
 
-plot.fecundity <- function(results=res,dat=data,component=c('N0', 'N1'),
-                     xLim=NA,yLim=NA,plot.legend=TRUE,plot.Nlims=TRUE, projections=TRUE, conf.int = TRUE)
+plot.fecundity <- function(dat = data,include.observations = TRUE, population = "harpeast")
 {
-  library(ggplot2)
+
+
+  par(mar=c(5,6,4,2)+0.1)
+  plot(dat$Cdata[,1],dat$Ftmp,type = "l",lwd = 3, col = "royalblue", xlab='Year', ylab='Fecundity rate',ylim=c(0,1), axes=F,cex.lab=1.5)
+  if(include.observations){
+    fecundity <- read.table(paste("Data/",population,"/fecundity.dat",sep = ""),header = FALSE)
+    segments(fecundity[,1], 
+             fecundity[,2]-(1.96*(fecundity[,3]*fecundity[,2])),
+             fecundity[,1],
+             fecundity[,2]+(1.96*(fecundity[,3]*fecundity[,2])),
+             col="steelblue")
+    segments(fecundity[,1]-0.5, 
+             fecundity[,2]-(1.96*(fecundity[,3]*fecundity[,2])),
+             fecundity[,1]+0.5,
+             fecundity[,2]-(1.96*(fecundity[,3]*fecundity[,2])),
+             col="steelblue")
+    segments(fecundity[,1]-0.5, 
+             fecundity[,2]+(1.96*(fecundity[,3]*fecundity[,2])),
+             fecundity[,1]+0.5,
+             fecundity[,2]+(1.96*(fecundity[,3]*fecundity[,2])),
+             col="steelblue")
+    
+    points(fecundity[,1],fecundity[,2],
+           pch=21, bg="steelblue", cex=1.5)
+    
+    
+  }
   
+  axis(1)
+  axis(2, at=pretty(par('usr')[c(3,4)]), 
+       labels=format(pretty(par('usr')[c(3,4)]), scientific=FALSE))
+  abline(h=par('usr')[3])
+  abline(v=par('usr')[1])
   
+  if(include.observations){
+    legend('bottomright', legend = c("Fecundity used in model","Observed fecundity"),lty = c(1,1),pch = c(NA,19),lwd=c(3,2),bg = c(NA,"steelblue"),col = c("royalblue","steelblue"), bty='n', cex=1.3)
+  }
+    #box()
 }
 
 #' Create table with key parameters from fitted population model 
@@ -484,13 +541,14 @@ par.table <- function(results=res, dat=data, tab2flex=FALSE) {
 plot.Pmat <- function(dat=data, highlight.last=TRUE) {
   opal <- palette()
   palette(RColorBrewer::brewer.pal(8, 'Dark2'))
+  par(mar=c(5,6,4,2)+0.1)
   matplot(t(dat$Pmat), type='l', lty=1, col='grey',
           xlab='Age (years)',
           ylab='Proportion of mature females',
-          ylim=c(0,1), axes=F)
-  axis(1)
+          ylim=c(0,1), axes=F,cex.lab=1.5)
+  axis(1,at=seq(0, 20, by=2))
   axis(2, at=seq(0, 1, by=0.2))
-  box()
+  #box()
   ymat <- match(dat$Pper$Pstart, dat$Cdata[,1])
   matlines(t(dat$Pmat[ymat,]), lty=1, col=c(1:length(ymat)), lwd=2)
   if(highlight.last) {
@@ -508,11 +566,11 @@ plot.Pmat <- function(dat=data, highlight.last=TRUE) {
   if(highlight.last) {
     legend('bottomright', lwd=c(rep(2, length(ymat)-1), 3, 1), 
            col=c(c(1:(length(ymat)-1)), 'black', 'grey'), 
-           c(leglab, 'Between periods'), bty='n', cex=0.7)
+           c(leglab, 'Between periods'), bty='n', cex=1.1)
   } else {
     legend('bottomright', lwd=c(rep(2, length(ymat)), 1), 
            col=c(c(1:length(ymat)), 'grey'), 
-           c(leglab, 'Between periods'), bty='n', cex=0.7)
+           c(leglab, 'Between periods'), bty='n', cex=1.1)
   }
   palette(opal)       
 }

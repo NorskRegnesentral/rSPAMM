@@ -12,7 +12,6 @@ LazyData: true
 RoxygenNote: 6.1.1
 Imports:
   pacman,
-    TMB,
-    RColorBrewer
+    TMB
 Suggests: knitr,rmarkdown
 VignetteBuilder: knitr
