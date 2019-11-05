@@ -16,6 +16,27 @@ knitr::opts_chunk$set(echo = TRUE)
 The purpose of this vignette is to show how to use the *rSPAMM* package for assessment of various harp and hooded seal populations. It will guide you through the model fitting, obtaining estimated quantities, finding and exploring, various catch options, how to structure the data set, and how to visualize the modelled population dynamics. We also present the model which is used (Martin: burde dette være appendix istedet eller er det OK slik?).
 
 ## The population dynamics model
+The population model is an age-structured population dynamics model. For initiation of the model it is assumed that the population had a stable age structure in year $y_0 = 1945$, i.e.,
+$$
+N_{i,y_0} = N_{y_0}s_{1+}^{i-1}(1-s_{1+}), \quad i = 1,\ldots,A-1,
+$$
+$$
+N_{A,y_0}=N_{y_0}s_{1+}^{A-1}.
+$$
+Here $A$ is the maximum age group containing seals aged $A$ and higher, and set to 20 years, and $N_{y_0}$ is the estimated initial population size in year $y_0$. The model is parameterized by the natural mortalities $M_0$ and $M_{1+}$ for the pups and seals of 1 year and older, respectively. These mortalities determine the survival probabilities $s_0 = \exp(-M_0)$ and $s_{1+} = \exp(-M_{1+})$.
+
+The model has the following set of recursion equations:
+
+
+Since available data do not allow for more detailed age-dependence in survival to be estimated it is assumed that the mortality rates are age-independent within the 1+ group. The $C_{a,y}$ are the age-specific catch numbers. Catch records are aggregated over age, and only provide information about the annual number of pups and number of 1+ seals caught. To obtain $C_{a,y}$ we assume that the age-distribution in the catch follows the modelled age distribution and employ *pro rata* rules in the model:
+
+where $N_{1+,y} = \sum_{y=1}^A N_{a,y}$, with $N_{a,y}$ being the number of individuals ate age $a$ in year $y$.
+
+
+The modelled pup abundance is given by
+
+where $N_{a,y}/2$ is the number of females ate age $a$ in year $y$, $F_y$ is the time-varying fecundity rates and $p_{a,y}$ are the time-varying age specific proportions of mature females.
+
 
 ## Installation of the *rSPAMM* package and how to update it
 The most recent version of *rSPAMM* is hosted on a git repository at [https://github.com/NorskRegnesentral/rSPAMM.git](https://github.com/NorskRegnesentral/rSPAMM.git).
