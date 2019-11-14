@@ -6,7 +6,7 @@
 #' @param years_of_prediction Number of years in the future to project the model. Default is 15 years.
 #' @param Fpast Which fecundity rate to use in past estimations. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise available estimates (linearly interpolated) are used.
 #' @param Fproj Which fecundity rate to use in future projections. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise a fixed Fproj can be set.
-#' @param catch_quota Catch quota for 0 and 1+animals to be used in future projections. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise a fixed Fproj can be set.
+#' @param catch_quota Catch quota for 0 and 1+animals to be used in future projections. catch_quota = "mean" uses mean value of observed catch for the last 5 years.
 #' @param return_fec Return entire fecundity table, including information on years of sampling. Useful for plotting etc.
 #' @return data List of loaded data ready for TMB.
 #' @keywords input, data
@@ -15,7 +15,7 @@
 #' load.data(population = "harpeast")
 
 load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15,
-                      Fpast='est', Fproj = 'mean', catch_quota='mean', return_fec=F)
+                      Fpast='est', Fproj = 'mean', catch_quota=c(0,0), return_fec=F)
 {
   # Read in data ---------------
 

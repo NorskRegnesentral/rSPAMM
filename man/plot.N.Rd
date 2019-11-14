@@ -4,10 +4,20 @@
 \alias{plot.N}
 \title{Plot estimated population sizes from optimized population model for harp seals and hooded seals}
 \usage{
-\method{plot}{N}(results = res, dat = data, component = c("N0",
-  "N1"), xLim = NA, yLim = NA, plot.legend = TRUE,
-  plot.Nlims = TRUE, projections = TRUE, mean.proj = FALSE,
-  width = 13, height = 7, conf.int = TRUE)
+\method{plot}{N}(
+  results = res,
+  dat = data,
+  component = c("N0", "N1"),
+  xLim = NA,
+  yLim = NA,
+  plot.legend = TRUE,
+  plot.Nlims = TRUE,
+  projections = TRUE,
+  mean.proj = FALSE,
+  width = 13,
+  height = 7,
+  conf.int = TRUE
+)
 }
 \arguments{
 \item{results}{Output from fitted model}

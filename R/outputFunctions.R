@@ -39,7 +39,7 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
             rgb(x[1], x[2], x[3], alpha=alpha))  
   }
   
-  #windows("",width = width,height = height)
+  windows("",width = width,height = height)
   
   #require(RColorBrewer)
   theCols <- RColorBrewer::brewer.pal(max(c(3, length(component))), 'Dark2')
@@ -77,7 +77,7 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
     abline(h=par('usr')[3])
     abline(v=par('usr')[1])
     if(plot.Nlims) {
-      Nlims <- c(0.3, 0.5, 0.7)*max(results$rep.matrix[results$indN1,1]) 
+      Nlims <- c(0.3, 0.5, 0.7)*max(results$rep.matrix[results$indNTot,1]) 
       abline(h=Nlims, col='lightgrey')
       text(par('usr')[2], Nlims[1], expression(N[lim]), xpd=NA, adj=0, cex=0.9)
       text(par('usr')[2], Nlims[2], expression(N[50]), xpd=NA, adj=0, cex=0.9)
@@ -498,14 +498,14 @@ par.table <- function(results=res, dat=data, tab2flex=FALSE) {
              results$N0Current, 
              results$N1Current,
              results$NTotCurrent,
-             results$D1, results$D1New)
+             results$D1, results$DNmax)
   sds <- c(round(results$rep.matrix[results$indN1[1],2]), 
            results$rep.matrix[3,2],
            results$rep.matrix[2,2], 
            results$N0Current.sd, 
            results$N1Current.sd, 
            results$NTotCurrent.sd, 
-           results$D1.sd, results$D1New.sd)
+           results$D1.sd, results$DNmax.sd)
   
   parNames <- c(paste0('N', results$years[1]),
                 'M0', 'M1+', 

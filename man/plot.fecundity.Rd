@@ -4,29 +4,14 @@
 \alias{plot.fecundity}
 \title{Plot fecundity data}
 \usage{
-\method{plot}{fecundity}(results = res, dat = data,
-  component = c("N0", "N1"), xLim = NA, yLim = NA,
-  plot.legend = TRUE, plot.Nlims = TRUE, projections = TRUE,
-  conf.int = TRUE)
+\method{plot}{fecundity}(dat = data, include.observations = TRUE, population = "harpeast")
 }
 \arguments{
-\item{results}{Output from fitted model}
+\item{include.observations}{Plot the observed fecundity rates with 95% confidence intervals (default = TRUE)}
 
-\item{dat}{Original data on estimated pup production (set to NA if these are not to be included).}
+\item{population}{If include.observations is TRUE, define which population you want to use.}
 
-\item{component}{Which population component to plot. Can be either 'N0' for pups, 'N1' for adults, or a vector with both.}
-
-\item{xLim}{Manually set the x axis extent, overrides the default which is the extent of the plotted data.}
-
-\item{yLim}{Manually set the y axis extent, overrides the default which is the extent of the plotted data.}
-
-\item{plot.legend}{Add legend to plot (TRUE/FALSE)}
-
-\item{plot.Nlims}{True/False}
-
-\item{projections}{Plot projections (TRUE/FALSE)}
-
-\item{mean.proj}{True/False}
+\item{data}{Data object used in model fit}
 }
 \value{
 plot Returns a plot of predicted population size for different population components
@@ -35,7 +20,7 @@ plot Returns a plot of predicted population size for different population compon
 Plot the fecundity data used in the model fit.
 }
 \examples{
-plot.N(res, data)
+plot.fecundity(res, data)
 }
-\keyword{model}
-\keyword{population}
+\keyword{data}
+\keyword{fecundity}

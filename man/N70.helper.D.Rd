@@ -4,8 +4,7 @@
 \alias{N70.helper.D}
 \title{Internal helper function for finding N70 quota}
 \usage{
-N70.helper.D(Tot, population, quota,
-  root.dir = "C:/Users/a5406/Documents/Populasjonsmodellering/rSPAMM/rSPAMM-master")
+N70.helper.D(Tot, population, quota)
 }
 \arguments{
 \item{Tot}{Total annual catch for population projections}
@@ -13,8 +12,6 @@ N70.helper.D(Tot, population, quota,
 \item{population}{Choose which population to run the model on (harpwest,harpeast,hooded).}
 
 \item{quota}{Proportional catch of 0 and 1+ animals}
-
-\item{root.dir}{Root directory for population model files}
 }
 \value{
 minD07 Minimum found for difference between the depletion coefficient D and 0.7

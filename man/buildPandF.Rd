@@ -4,8 +4,14 @@
 \alias{buildPandF}
 \title{Build P and F}
 \usage{
-buildPandF(Fdat = fecundity, cdata = catch_data, Fproj = Fproj,
-  Pdat = Pdat, Pper = Pper, return.periods = T)
+buildPandF(
+  Fdat = fecundity,
+  cdata = catch_data,
+  Fproj = Fproj,
+  Pdat = Pdat,
+  Pper = Pper,
+  return.periods = T
+)
 }
 \arguments{
 \item{Fdat}{Observed fecundity data}

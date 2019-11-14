@@ -4,11 +4,21 @@
 \alias{plot.res.ggplot}
 \title{Plot modelled population dynamics}
 \usage{
-\method{plot}{res.ggplot}(res = res, dat = data, component = c("N0",
-  "N1"), xLim = NA, yLim = NA, plot.legend = TRUE,
-  plot.Nlims = TRUE, col = c("royalblue", "darkred", "steelblue"),
-  projections = TRUE, conf.int = TRUE, add.title = TRUE,
-  width = 13, height = 7)
+\method{plot}{res.ggplot}(
+  res = res,
+  dat = data,
+  component = c("N0", "N1"),
+  xLim = NA,
+  yLim = NA,
+  plot.legend = TRUE,
+  plot.Nlims = TRUE,
+  col = c("royalblue", "darkred", "steelblue"),
+  projections = TRUE,
+  conf.int = TRUE,
+  add.title = TRUE,
+  width = 13,
+  height = 7
+)
 }
 \arguments{
 \item{dat}{Original data on estimated pup production (set to NA if these are not to be included).}

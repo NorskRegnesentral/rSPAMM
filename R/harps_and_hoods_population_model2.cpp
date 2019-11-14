@@ -79,12 +79,13 @@ Type objective_function<Type>::operator() ()
   vector<Type> Ft(Nc+Npred+2);
   vector<Type> b(Npriors);                      //Concatenation of parameters
   Type D1 = Type(0.0);
-  Type D1New = Type(0.0);
+  Type DNmax = Type(0.0);
   Type N0CurrentYear = Type(0.0);
 
   Type N1CurrentYear = Type(0.0);
   Type NTotCurrentYear = Type(0.0);
-
+  Type NTotmax = Type(0.0);
+  Type NTotPred = Type(0.0);
 
   // Preliminary calculations - Preparations of Catch data and fecundity rates
   Catch(0,0) = 1945;
@@ -200,6 +201,7 @@ Type objective_function<Type>::operator() ()
    N0(i) = posfun(N0(i)-Catch(i,1),Type(1.0)) + Catch(i,1);
 
    // Calculate the D(1+) statistic
+   NTotPred = Type(0.0);
    if(Catch(i,0)==Catch(Nc+1,0))
    {
      D1 = 1/(N1(i));
@@ -207,17 +209,32 @@ Type objective_function<Type>::operator() ()
      N1CurrentYear = N1(i);
      NTotCurrentYear = (N0(i)+N1(i));
    }
+   
    if(Catch(i,0)==Catch(Nc+Npred+1,0)){
      D1 *= (N1(i));
-     D1New = (N1(i)+N0(i));
+     DNmax = (N1(i)+N0(i));
+     NTotPred = DNmax;
    }
 
  }
+ 
  
  for(int i=0;i<Nc+Npred+2;i++)
  {
    NTot(i) = (N0(i) + N1(i));
  }
+ 
+ NTotmax = 0.0;
+ 
+ for(int i=0;i<Nc+1;i++)
+ {
+   if(NTot(i) > NTotmax){
+     NTotmax = NTot(i);
+     //maxind = i;
+   }
+ }
+ 
+ DNmax /= NTotmax;
  
  //--------------------------------
  // Likelihood contribution
@@ -267,7 +284,9 @@ Type objective_function<Type>::operator() ()
   ADREPORT(N1CurrentYear)
   ADREPORT(NTotCurrentYear)
   ADREPORT(D1)
-  ADREPORT(D1New)
+  ADREPORT(DNmax)
+  ADREPORT(NTotPred)
+  ADREPORT(NTotmax)
   REPORT(Catch)
   return nll;
 

@@ -106,7 +106,7 @@ model.results <- function(dat=data, object=obj, optimized=opt)
   indN1 = which(rep.rnames=="N1");indN1 <- indN1[-1]
   indNTot = which(rep.rnames=="NTot");indNTot <- indNTot[-1]
   indD1 = which(rep.rnames=="D1");
-  indD1New = which(rep.rnames=="D1New");   #NEED TO BE FIXED
+  indDNmax = which(rep.rnames=="DNmax");   
 
 ##  indN0Current = which(rep.rnames=="N0CurrentYear");
 ##  indN1Current = which(rep.rnames=="N1CurrentYear");
@@ -137,12 +137,12 @@ model.results <- function(dat=data, object=obj, optimized=opt)
   
   
   D1 = rep.matrix[indD1,1]
-  D1New = rep.matrix[indD1New,1]
+  DNmax = rep.matrix[indDNmax,1]
   N0Current = rep.matrix[indN0Current,1]
   N1Current = rep.matrix[indN1Current,1]
   NTotCurrent = rep.matrix[indNTotCurrent,1]
   D1.sd = rep.matrix[indD1,2]
-  D1New.sd = rep.matrix[indD1New,2]
+  DNmax.sd = rep.matrix[indDNmax,2]
   N0Current.sd = rep.matrix[indN0Current,2]
   N1Current.sd = rep.matrix[indN1Current,2]
   NTotCurrent.sd = rep.matrix[indNTotCurrent,2]
@@ -153,11 +153,11 @@ model.results <- function(dat=data, object=obj, optimized=opt)
   N1Current.sd <- rep.matrix[indN1[cur.yr],2]
     
   res = list(rep=rep, rep.matrix=rep.matrix, rep.rnames=rep.rnames, indN0=indN0,
-       indN1=indN1, indNTot=indNTot, indD1=indD1, indD1New=indD1New, indN0Current=indN0Current,
+       indN1=indN1, indNTot=indNTot, indD1=indD1, indNmax=indDNmax, indN0Current=indN0Current,
        indN1Current=indN1Current, indNTotCurrent=indNTotCurrent, 
        years=yrs, Kest=Kest,Kest.sd = Kest.sd, Mest=Mest,Mest.sd=Mest.sd, M0est=M0est, M0est.sd = M0est.sd, 
-       D1=D1, D1New=D1New, N0Current=N0Current, N1Current=N1Current, 
-       NTotCurrent=NTotCurrent, D1.sd=D1.sd, D1New.sd=D1New.sd,
+       D1=D1, DNmax=DNmax, N0Current=N0Current, N1Current=N1Current, 
+       NTotCurrent=NTotCurrent, D1.sd=D1.sd, DNmax.sd=DNmax.sd,
        N0Current.sd=N0Current.sd, N1Current.sd=N1Current.sd, NTotCurrent.sd=NTotCurrent.sd)
   return(res)
   }

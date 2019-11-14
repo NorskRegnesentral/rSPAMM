@@ -4,19 +4,19 @@
 #' @param Tot Total annual catch for population projections 
 #' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
 #' @param quota Proportional catch of 0 and 1+ animals
-#' @param root.dir Root directory for population model files
 #' @return minD Minimum found for difference between the depletion coefficient D and 1
 #' @keywords population model
 #' @export
 
-eq.quota.helper.D <- function(Tot,population,quota, root.dir="C:/Users/a5406/Documents/Populasjonsmodellering/rSPAMM/rSPAMM-master")
+eq.quota.helper.D <- function(Tot,population,quota)
 {
   # Function called from find.eq.quota, that should be used!
-  parameters <- load.initial.values(population)
-  obj <- load.model.object(data, parameters, template='harps_and_hoods_population_model2')
-  opt <- nlminb(obj$par,obj$fn,obj$gr)
-  rep<-sdreport(obj, getJointPrecision=TRUE)
-  abs(1-rep$value[match('D1', names(rep$value))])
+  dataD <- load.data(population=population, catch_quota=Tot*quota)
+  parametersD <- load.initial.values(population)
+  objD <- load.model.object(dataD, parametersD)
+  optD <- nlminb(objD$par,objD$fn,objD$gr)
+  repD<-sdreport(objD, getJointPrecision=TRUE)
+  abs(1-repD$value[match('D1', names(repD$value))])
 }
 
 
@@ -26,21 +26,20 @@ eq.quota.helper.D <- function(Tot,population,quota, root.dir="C:/Users/a5406/Doc
 #' @param Tot Total annual catch for population projections 
 #' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
 #' @param quota Proportional catch of 0 and 1+ animals
-#' @param root.dir Root directory for population model files
 #' @return minN Minimum found for difference between current and projected 1+ population size
 #' @keywords population model
 #' @export
 
-eq.quota.helper.N1 <- function(Tot,population,quota, root.dir="C:/Users/a5406/Documents/Populasjonsmodellering/rSPAMM/rSPAMM-master")
+eq.quota.helper.N1 <- function(Tot,population,quota)
 {
   # Function called from find.eq.quota, that should be used!
-  data <- load.data(population=population, catch_quota=Tot*quota)
-  parameters <- load.initial.values(population)
-  obj <- load.model.object(data, parameters, template='harps_and_hoods_population_model2')
-  opt <- nlminb(obj$par,obj$fn,obj$gr)
-  rep<-sdreport(obj, getJointPrecision=TRUE)
-  N1Cur <- rep$value[match("N1CurrentYear", names(rep$value))]
-  N1Proj <- rep$value[match("D1New", names(rep$value))]
+  dataN1 <- load.data(population=population, catch_quota=Tot*quota)
+  parametersN1 <- load.initial.values(population)
+  objN1 <- load.model.object(dataN1, parametersN1)
+  optN1 <- nlminb(objN1$par,objN1$fn,objN1$gr)
+  repN1<-sdreport(objN1, getJointPrecision=TRUE)
+  N1Cur <- repN1$value[match("N1CurrentYear", names(repN1$value))]
+  N1Proj <- repN1$value[match("D1New", names(repN1$value))]
   abs(N1Cur-N1Proj)
 }
 
@@ -52,12 +51,12 @@ eq.quota.helper.N1 <- function(Tot,population,quota, root.dir="C:/Users/a5406/Do
 #' @param MAX Maximum extent of search window for total catch 
 #' @param quota Proportional catch of 0 and 1+ animals
 #' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
-#' @param method Set whether D-based (depletion coefficient D) or N-based (1+ population size) criterion should be used for optimisation 
+#' @param method Set whether D-based (depletion coefficient D) or N-based (1+ population size) criterion should be used for optimisation  (Dbased/Nbased)
 #' @return qEq Optimum quota for achieving equilibrium projected population size
 #' @keywords population model
 #' @export
 
-find.eq.quota <- function(MIN=1000,MAX=40000,quota=c(0,1),population="harpwest",method = "Dbased")
+find.eq.quota <- function(MIN=1000,MAX=40000,quota=c(0,1),population="harpeast",method = "Dbased")
 {
   # Function to find equilibrium quota
   quota = quota/sum(quota)
@@ -83,34 +82,30 @@ find.eq.quota <- function(MIN=1000,MAX=40000,quota=c(0,1),population="harpwest",
 #' @param Tot Total annual catch for population projections 
 #' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
 #' @param quota Proportional catch of 0 and 1+ animals
-#' @param root.dir Root directory for population model files
 #' @return minN70 Minimum found for difference between N70 and the projected total population size
 #' @keywords population model
 #' @export
 
-N70.helper.Nmax <- function(Tot,population,quota, root.dir="C:/Users/a5406/Documents/Populasjonsmodellering/rSPAMM/rSPAMM-master")
+N70.helper.Nmax <- function(Tot,population,quota)
 {
-  data <- load.data(population=population, catch_quota=Tot*quota)
-  parameters <- load.initial.values(population)
-  obj <- load.model.object(data, parameters, template='harps_and_hoods_population_model2')
-  opt <- nlminb(obj$par,obj$fn,obj$gr)
-  rep <- sdreport(obj, getJointPrecision=TRUE)
-
-  indNTot <- which(names(rep$value)=="NTot")
-  indNTot <- indNTot[-1]
-  indCur <- diff(range(data$Cdata[,1]))+1
-  NTot <- rep$value[indNTot]
-  NTotSD <- rep$sd[indNTot]
-  N70 <- 0.7*max(NTot[c(1:indCur)])
+  dataNmax <- load.data(population=population, catch_quota=Tot*quota)
+  parametersNmax <- load.initial.values(population)
   
-  ##Npred <- NTot[indCur+10]-qnorm(1-0.1)*NTotSD[indCur+10]
-  ## Above line from original code. Changed to qnorm(1-0.2) 
-  ## to reflect criterion of 80% rather than 90% probability
+  objNmax <- load.model.object(dataNmax, parametersNmax)
+  optNmax <- nlminb(objNmax$par,objNmax$fn,objNmax$gr)
+  repNmax <- sdreport(objNmax, getJointPrecision=TRUE)
+
+  indNTot <- which(names(repNmax$value)=="NTot")
+  indNTot <- indNTot[-1]
+  indCur <- diff(range(dataNmax$Cdata[,1]))+1
+  NTot <- repNmax$value[indNTot]
+  NTotSD <- repNmax$sd[indNTot]
+  N70 <- 0.7*max(NTot[c(1:indCur)])
   
   Npred <- NTot[indCur+15]-qnorm(1-0.1)*NTotSD[indCur+15]
   
   if(Npred>0) {
-    abs(N70-Npred)
+    return(abs(N70-Npred))
   } else {
     99999
   }  
@@ -123,36 +118,26 @@ N70.helper.Nmax <- function(Tot,population,quota, root.dir="C:/Users/a5406/Docum
 #' @param Tot Total annual catch for population projections 
 #' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
 #' @param quota Proportional catch of 0 and 1+ animals
-#' @param root.dir Root directory for population model files
 #' @return minD07 Minimum found for difference between the depletion coefficient D and 0.7
 #' @keywords population model
 #' @export
 
-N70.helper.D <- function(Tot,population,quota, root.dir="C:/Users/a5406/Documents/Populasjonsmodellering/rSPAMM/rSPAMM-master")
+N70.helper.D <- function(Tot,population,quota)
 {
   # Function called from find.N70 that should be used!
-  data <- load.data(population=population, catch_quota=Tot*quota)
-  parameters <- load.initial.values(population)
-  obj <- load.model.object(data, parameters, template='harps_and_hoods_population_model2')
-  opt <- nlminb(obj$par,obj$fn,obj$gr)
-  rep <- sdreport(obj, getJointPrecision=TRUE)
+  dataD <- load.data(population=population, catch_quota=Tot*quota)
+  parametersD <- load.initial.values(population)
+  objD <- load.model.object(dataD, parametersD)
+  optD <- nlminb(objD$par,objD$fn,objD$gr)
+  repD <- sdreport(objD, getJointPrecision=TRUE)
   
-  indNTot <- which(names(rep$value)=="NTot")
-  indNTot <- indNTot[-1]
-  indCur <- diff(range(data$Cdata[,1]))+1
-  NTot <- rep$value[indNTot]
-  NTotSD <- rep$sd[indNTot]
-  N70 <- 0.7*max(NTot[c(1:indCur)])
   
-  D1 <- rep$value[match('D1', names(rep$value))]
-  D1SD <- rep$sd[match('D1', names(rep$value))]
-  ## Dpred = D1New-qnorm(1-0.1)*std$Dnew.std
-  ## Above line from original code. Changed to qnorm(1-0.2) 
-  ## to reflect criterion of 80% rather than 90% probability
-  Dpred = D1-qnorm(1-0.1)*D1SD
+  DNmax <- repD$value[match('DNmax', names(repD$value))]
+  DNmaxSD <- repD$sd[match('DNmax', names(repD$value))]
+  Dpred = DNmax-qnorm(1-0.1)*DNmaxSD
   
   if(Dpred>0) {
-    abs(0.7-Dpred)
+    return(abs(0.7-Dpred))
   } else {
     99999
   }  
@@ -166,12 +151,12 @@ N70.helper.D <- function(Tot,population,quota, root.dir="C:/Users/a5406/Document
 #' @param MAX Maximum extent of search window for total catch 
 #' @param quota Proportional catch of 0 and 1+ animals
 #' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
-#' @param method Set whether D-based (depletion coefficient D) or N-based (total population size) criterion should be used for optimisation 
+#' @param method Set whether D-based (depletion coefficient D) or N-based (total population size) criterion should be used for optimisation (Dbased,Nbased)
 #' @return q70 Optimum quota for achieving projected size of 70% of maximum population size
 #' @keywords population model
 #' @export
 
-find.N70.quota <- function(MIN=5000,MAX=50000,quota=c(0,1),population="harpwest",method = "Dbased")
+find.N70.quota <- function(MIN=5000,MAX=50000,quota=c(0,1),population="harpeast",method = "Dbased")
 {
   # Function to find 70% quota
   quota = quota/sum(quota)
@@ -181,8 +166,13 @@ find.N70.quota <- function(MIN=5000,MAX=50000,quota=c(0,1),population="harpwest"
   if (method == "Nbased") {
     tmp = optimize(N70.helper.Nmax,lower=MIN,upper=MAX,population=population,quota=quota,tol=50)
   }
-  cat("N70 quota for",population,"(pups,adults,total):",round(tmp$minimum*quota),sum(round(tmp$minimum*quota)),"\n")
-  
+  #cat("N70 quota for",population,"(pups,adults,total):",round(tmp$minimum*quota),sum(round(tmp$minimum*quota)),"\n")
+  cat("-----------------------------------------------------\n\n")
+  cat("N70 quota for",population,":\n")
+  cat("Pups:  ",round(tmp$minimum*quota)[1],"\n")
+  cat("Adults:",round(tmp$minimum*quota)[2],"\n")
+  cat("Total :",sum(round(tmp$minimum*quota)),"\n\n")
+  cat("-----------------------------------------------------")
   tmp$minimum*quota
 }
 

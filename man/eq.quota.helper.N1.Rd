@@ -4,8 +4,7 @@
 \alias{eq.quota.helper.N1}
 \title{Internal helper function for finding equilibrium quota}
 \usage{
-eq.quota.helper.N1(Tot, population, quota,
-  root.dir = "C:/Users/a5406/Documents/Populasjonsmodellering/rSPAMM/rSPAMM-master")
+eq.quota.helper.N1(Tot, population, quota)
 }
 \arguments{
 \item{Tot}{Total annual catch for population projections}
@@ -13,8 +12,6 @@ eq.quota.helper.N1(Tot, population, quota,
 \item{population}{Choose which population to run the model on (harpwest,harpeast,hooded).}
 
 \item{quota}{Proportional catch of 0 and 1+ animals}
-
-\item{root.dir}{Root directory for population model files}
 }
 \value{
 minN Minimum found for difference between current and projected 1+ population size

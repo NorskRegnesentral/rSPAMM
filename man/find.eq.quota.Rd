@@ -4,8 +4,13 @@
 \alias{find.eq.quota}
 \title{Main function for finding equilibrium quota}
 \usage{
-find.eq.quota(MIN = 1000, MAX = 40000, quota = c(0, 1),
-  population = "harpwest", method = "Dbased")
+find.eq.quota(
+  MIN = 1000,
+  MAX = 40000,
+  quota = c(0, 1),
+  population = "harpeast",
+  method = "Dbased"
+)
 }
 \arguments{
 \item{MIN}{Minimum extent of search window for total catch}
@@ -16,7 +21,7 @@ find.eq.quota(MIN = 1000, MAX = 40000, quota = c(0, 1),
 
 \item{population}{Choose which population to run the model on (harpwest,harpeast,hooded).}
 
-\item{method}{Set whether D-based (depletion coefficient D) or N-based (1+ population size) criterion should be used for optimisation}
+\item{method}{Set whether D-based (depletion coefficient D) or N-based (1+ population size) criterion should be used for optimisation  (Dbased/Nbased)}
 }
 \value{
 qEq Optimum quota for achieving equilibrium projected population size

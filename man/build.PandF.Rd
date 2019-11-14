@@ -4,8 +4,14 @@
 \alias{build.PandF}
 \title{Construct time varying fecundity rates and birth ogives}
 \usage{
-build.PandF(Fdat = fecundity, Fproj = Fproj, Pdat = Pdat,
-  Pper = Pper, years = years, return.periods = T)
+build.PandF(
+  Fdat = fecundity,
+  Fproj = Fproj,
+  Pdat = Pdat,
+  Pper = Pper,
+  years = years,
+  return.periods = T
+)
 }
 \arguments{
 \item{Fdat}{Observed fecundity rates.}

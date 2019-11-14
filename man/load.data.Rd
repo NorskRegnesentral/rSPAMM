@@ -4,9 +4,15 @@
 \alias{load.data}
 \title{Load and prepare data}
 \usage{
-load.data(population = "harpeast", Amax = 20,
-  years_of_prediction = 15, Fpast = "est", Fproj = "mean",
-  catch_quota = "mean", return_fec = F)
+load.data(
+  population = "harpeast",
+  Amax = 20,
+  years_of_prediction = 15,
+  Fpast = "est",
+  Fproj = "mean",
+  catch_quota = "mean",
+  return_fec = F
+)
 }
 \arguments{
 \item{population}{Choose which population to run the model on (harpwest,harpeast,hooded).}
@@ -19,7 +25,7 @@ load.data(population = "harpeast", Amax = 20,
 
 \item{Fproj}{Which fecundity rate to use in future projections. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise a fixed Fproj can be set.}
 
-\item{catch_quota}{Catch quota for 0 and 1+animals to be used in future projections. Fproj = "mean" uses mean value of observed fecundity rates. Otherwise a fixed Fproj can be set.}
+\item{catch_quota}{Catch quota for 0 and 1+animals to be used in future projections. catch_quota = "mean" uses mean value of observed catch for the last 5 years.}
 
 \item{return_fec}{Return entire fecundity table, including information on years of sampling. Useful for plotting etc.}
 }

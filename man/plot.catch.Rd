@@ -4,8 +4,7 @@
 \alias{plot.catch}
 \title{Plot the reported catch data}
 \usage{
-\method{plot}{catch}(catch = cdata, width = 9, height = 7,
-  position = "dodge")
+\method{plot}{catch}(catch = cdata, width = 9, height = 7, position = "dodge")
 }
 \arguments{
 \item{catch}{Reported catcj data}

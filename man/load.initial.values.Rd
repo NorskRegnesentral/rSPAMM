@@ -4,8 +4,13 @@
 \alias{load.initial.values}
 \title{Load initial values}
 \usage{
-load.initial.values(population = "harpeast", fromFile = TRUE,
-  Kinit = 2e+06, Minit = 0.09, M0init = 0.27)
+load.initial.values(
+  population = "harpeast",
+  fromFile = TRUE,
+  Kinit = 2e+06,
+  Minit = 0.09,
+  M0init = 0.27
+)
 }
 \arguments{
 \item{population}{Choose which population to run the model on (harpwest,harpeast,hooded).}

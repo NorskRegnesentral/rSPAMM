@@ -4,8 +4,13 @@
 \alias{find.N70.quota}
 \title{Main function for finding N70 quota}
 \usage{
-find.N70.quota(MIN = 5000, MAX = 50000, quota = c(0, 1),
-  population = "harpwest", method = "Dbased")
+find.N70.quota(
+  MIN = 5000,
+  MAX = 50000,
+  quota = c(0, 1),
+  population = "harpeast",
+  method = "Dbased"
+)
 }
 \arguments{
 \item{MIN}{Minimum extent of search window for total catch}
@@ -16,7 +21,7 @@ find.N70.quota(MIN = 5000, MAX = 50000, quota = c(0, 1),
 
 \item{population}{Choose which population to run the model on (harpwest,harpeast,hooded).}
 
-\item{method}{Set whether D-based (depletion coefficient D) or N-based (total population size) criterion should be used for optimisation}
+\item{method}{Set whether D-based (depletion coefficient D) or N-based (total population size) criterion should be used for optimisation (Dbased,Nbased)}
 }
 \value{
 q70 Optimum quota for achieving projected size of 70% of maximum population size

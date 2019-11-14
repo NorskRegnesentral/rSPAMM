@@ -13,29 +13,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ## Overview
-The purpose of this vignette is to show how to use the *rSPAMM* package for assessment of various harp and hooded seal populations. It will guide you through the model fitting, obtaining estimated quantities, finding and exploring, various catch options, how to structure the data set, and how to visualize the modelled population dynamics. We also present the model which is used (Martin: burde dette være appendix istedet eller er det OK slik?).
-
-## The population dynamics model
-The population model is an age-structured population dynamics model. For initiation of the model it is assumed that the population had a stable age structure in year $y_0 = 1945$, i.e.,
-$$
-N_{i,y_0} = N_{y_0}s_{1+}^{i-1}(1-s_{1+}), \quad i = 1,\ldots,A-1,
-$$
-$$
-N_{A,y_0}=N_{y_0}s_{1+}^{A-1}.
-$$
-Here $A$ is the maximum age group containing seals aged $A$ and higher, and set to 20 years, and $N_{y_0}$ is the estimated initial population size in year $y_0$. The model is parameterized by the natural mortalities $M_0$ and $M_{1+}$ for the pups and seals of 1 year and older, respectively. These mortalities determine the survival probabilities $s_0 = \exp(-M_0)$ and $s_{1+} = \exp(-M_{1+})$.
-
-The model has the following set of recursion equations:
-
-
-Since available data do not allow for more detailed age-dependence in survival to be estimated it is assumed that the mortality rates are age-independent within the 1+ group. The $C_{a,y}$ are the age-specific catch numbers. Catch records are aggregated over age, and only provide information about the annual number of pups and number of 1+ seals caught. To obtain $C_{a,y}$ we assume that the age-distribution in the catch follows the modelled age distribution and employ *pro rata* rules in the model:
-
-where $N_{1+,y} = \sum_{y=1}^A N_{a,y}$, with $N_{a,y}$ being the number of individuals ate age $a$ in year $y$.
-
-
-The modelled pup abundance is given by
-
-where $N_{a,y}/2$ is the number of females ate age $a$ in year $y$, $F_y$ is the time-varying fecundity rates and $p_{a,y}$ are the time-varying age specific proportions of mature females.
+The purpose of this vignette is to show how to use the *rSPAMM* package for assessment of various harp and hooded seal populations. It will guide you through the model fitting, obtaining estimated quantities, finding and exploring, various catch options, how to structure the data set, and how to visualize the modelled population dynamics. We also present the model used.
 
 
 ## Installation of the *rSPAMM* package and how to update it
@@ -422,10 +400,134 @@ pbrCatch
 
 where n0 is the current population size, n1 is the current 1+ population size, se0 is the standard deviation of the estimated current pup abundance, and se1 is the standard deviation of the estimated current 1+ abundance. Recall from the Table above that these quantities could be found using the *par.tab* command.
 
+Re-run the model using this catch level
+```{r eval = FALSE}
+datPBR <- load.data(population, pbrCatch)
+objPBR <- load.model.object(dat=datPBR)
+optPBR <- run.model(objPBR)
+resPBR <- model.results(datPBR, objPBR, optPBR)
+partPBR <- par.table(resPBR, datPBR) 
+```
+
+
 ## Appendix
 
 ### The population dynamics model
-Martin: kunne lagt modellen her istedet for i begynnelsen. Vet ikke hva som er best.
+The population model is an age-structured population dynamics model. For initiation of the model it is assumed that the population had a stable age structure in year $y_0 = 1945$, i.e.,
+$$
+N_{i,y_0} = N_{y_0}s_{1+}^{i-1}(1-s_{1+}), \quad i = 1,\ldots,A-1,
+$$
+$$
+N_{A,y_0}=N_{y_0}s_{1+}^{A-1}.
+$$
+Here $A$ is the maximum age group containing seals aged $A$ and higher, and set to 20 years, and $N_{y_0}$ is the estimated initial population size in year $y_0$. The model is parameterized by the natural mortalities $M_0$ and $M_{1+}$ for the pups and seals of 1 year and older, respectively. These mortalities determine the survival probabilities $s_0 = \exp(-M_0)$ and $s_{1+} = \exp(-M_{1+})$.
+
+The model has the following set of recursion equations:
+$$
+N_{a,y}=\left(N_{0,y-1}-C_{0,y-1}\right)s_0,
+$$
+$$
+N_{a,y}=\left(N_{a-1,y-1}-C_{a-1,y-1}\right)s_{1+},\quad a=2,\ldots,A-1,
+$$
+$$
+N_{A,y}=\left[\left(N_{A-1,y-1}-C_{a-1,y-1}\right)+\left(N_{A,y-1}-C_{A,y-1}\right)\right]s_{1+}.
+$$
+Since available data do not allow for more detailed age-dependence in survival to be estimated it is assumed that the mortality rates are age-independent within the 1+ group. The $C_{a,y}$ are the age-specific catch numbers. Catch records are aggregated over age, and only provide information about the annual number of pups and number of 1+ seals caught. To obtain $C_{a,y}$ we assume that the age-distribution in the catch follows the modelled age distribution and employ *pro rata* rules in the model:
+$$
+C_{a,y} = C_{1+,y}\frac{N_{a,y}}{N_{1+,y}},\quad a = 1,\ldots,A.
+$$
+
+where $N_{1+,y} = \sum_{y=1}^A N_{a,y}$, with $N_{a,y}$ being the number of individuals ate age $a$ in year $y$.
+
+
+The modelled pup abundance is given by
+$$
+N_{0,y}=\frac{F_y}{2}\sum_{a=1}^Ap_{a,y}N_{a.y},
+$$
+
+where $N_{a,y}/2$ is the number of females ate age $a$ in year $y$, $F_y$ is the time-varying fecundity rates and $p_{a,y}$ are the time-varying age specific proportions of mature females.
+
+The model is fitted to the survey pup production estimates and the fecundity rates by maximum likelihood. Assuming normality for the pup production estimates, their contribution to the log-likelihood function is
+$$
+\sum_y-\log(\sigma_{0,y})-\frac{1}{2}\frac{\left(N_{0,y}-n_{0,y}\right)^2}{\left(\sigma_{0,y}\right)^2},
+$$
+where $n_{0,y}$ and $\sigma_{0,y}$ denote the survey pup production count and corresponding standard error for year $y$. 
+
+The model has a Bayesian flavour as priors are imposed on some of the parameters. A vague normal prior is assumed for the initial population size $N_{y_0}$. A truncated normal prior was used for both the pup mortalities $M_0$ and $M_{1+}$.
+
+All parameter estimates are found by maximizing the likelihood function using the R package *TMB*.
+
 
 ### Complete code for assessment
-Legge til kode som summerer alle stegene for en komplett analyse.
+Below shows an complete example of assessment of the Harp seal population in the East Ice.
+```{r eval = FALSE}
+# Load the R package
+library(rSPAMM)
+
+# Define which population to carry out the assessment for
+population = 'harpeast'
+
+# Load all data for the specified population
+data <- load.data(population = population,catch_quota=c(0,0))
+
+# Load and prepare all parameters that needs to be estimated
+parameters <- load.initial.values(population = population)
+
+# Load the model object
+obj = load.model.object(dat = data,par = parameters)
+
+# Run the assessment model
+opt <- run.model(object = obj)
+
+# Get the model results
+res <- model.results(dat = data,object = obj,optimized = opt)
+
+# Create a summary table for relevant estimates estimates
+partab <- par.table(results=res, dat=data) 
+
+# Visualize the modelled population dynamics. 
+# Note if plotting with future projections this assumes no
+# catch the next fifteen years
+plot.N(res,data)
+
+# Exploring various catch options
+
+# Find the equilibrium catch level
+EquilibriumCatch <- find.eq.quota(population=population,MIN = 1000, MAX = 70000)
+
+# Re-run the model to get the correct future projections
+# assuming equilibrium catch level in the future and plot the results
+datEq <- load.data(population, catch_quota=EquilibriumCatch)
+objEq <- load.model.object(dat=datEq)
+optEq <- run.model(objEq)
+resEq <- model.results(datEq, objEq, optEq)
+partEq <- par.table(resEq, datEq) 
+plot.N(resEq,datEq)
+
+
+# Find N70 catch level
+catchN70 <- find.N70.quota(population=population)
+
+# Re-run the model to get the correct future projections
+# assuming N70 catch level in the future and plot the results
+dat70 <- load.data(population, catch_quota=catchN70)
+obj70 <- load.model.object(dat=dat70)
+opt70 <- run.model(obj70)
+res70 <- model.results(dat70, obj70, opt70)
+part70 <- par.table(res70, dat70) 
+plot.N(res70,dat70)
+
+# Find the PBR catch level
+pbrCatch <- PBR(n0=partab[4,3], n1=partab[5,3], se0=partab[4,4], se1=partab[5,4])
+
+# Re-run the model to get the correct future projections
+# assuming PBR catch level in the future and plot the results
+datPBR <- load.data(population, catch_quota = c(pbrCatch$p0,pbrCatch$p1))
+objPBR <- load.model.object(dat=datPBR)
+optPBR <- run.model(objPBR)
+resPBR <- model.results(datPBR, objPBR, optPBR)
+partPBR <- par.table(resPBR, datPBR) 
+plot.N(resPBR,datPBR)
+
+```
+
