@@ -10,7 +10,7 @@ load.data(
   years_of_prediction = 15,
   Fpast = "est",
   Fproj = "mean",
-  catch_quota = "mean",
+  catch_quota = c(0, 0),
   return_fec = F
 )
 }

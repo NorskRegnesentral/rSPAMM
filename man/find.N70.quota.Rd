@@ -9,7 +9,7 @@ find.N70.quota(
   MAX = 50000,
   quota = c(0, 1),
   population = "harpeast",
-  method = "Dbased"
+  method = "Nbased"
 )
 }
 \arguments{
