@@ -27,7 +27,9 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
 
 
   dyn.load(dynlib(paste0("R/", template)))
-
+  #dyn.unload(dynlib(paste0("R/", template)))
+  #dyn.unload(dynlib("R/harps_and_hoods_population_model2"))
+  
   cat('\n\nDone!\n')
   flush.console()
   
@@ -107,7 +109,7 @@ model.results <- function(dat=data, object=obj, optimized=opt)
   indNTot = which(rep.rnames=="NTot");indNTot <- indNTot[-1]
   indD1 = which(rep.rnames=="D1");
   indDNmax = which(rep.rnames=="DNmax");   
-
+  indNTotmax = which(rep.rnames == "NTotmax")
 ##  indN0Current = which(rep.rnames=="N0CurrentYear");
 ##  indN1Current = which(rep.rnames=="N1CurrentYear");
 ##  indNTotCurrent = which(rep.rnames=="NTotCurrentYear");
@@ -141,6 +143,7 @@ model.results <- function(dat=data, object=obj, optimized=opt)
   N0Current = rep.matrix[indN0Current,1]
   N1Current = rep.matrix[indN1Current,1]
   NTotCurrent = rep.matrix[indNTotCurrent,1]
+  NTotmax = rep.matrix[indNTotmax,1]
   D1.sd = rep.matrix[indD1,2]
   DNmax.sd = rep.matrix[indDNmax,2]
   N0Current.sd = rep.matrix[indN0Current,2]
@@ -157,7 +160,7 @@ model.results <- function(dat=data, object=obj, optimized=opt)
        indN1Current=indN1Current, indNTotCurrent=indNTotCurrent, 
        years=yrs, Kest=Kest,Kest.sd = Kest.sd, Mest=Mest,Mest.sd=Mest.sd, M0est=M0est, M0est.sd = M0est.sd, 
        D1=D1, DNmax=DNmax, N0Current=N0Current, N1Current=N1Current, 
-       NTotCurrent=NTotCurrent, D1.sd=D1.sd, DNmax.sd=DNmax.sd,
+       NTotCurrent=NTotCurrent, NTotmax = NTotmax, D1.sd=D1.sd, DNmax.sd=DNmax.sd,
        N0Current.sd=N0Current.sd, N1Current.sd=N1Current.sd, NTotCurrent.sd=NTotCurrent.sd)
   return(res)
   }

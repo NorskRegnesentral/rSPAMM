@@ -93,15 +93,16 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
     }
     
     if(conf.int){
-      polygon(c(c(results$years[1]:max(dat$pupProductionData[,1])), 
-              rev(c(results$years[1]:max(dat$pupProductionData[,1])))), 
-            c(lCI[c(1:(max(dat$pupProductionData[,1])-results$years[1]+1))],
-              rev(uCI[c(1:(max(dat$pupProductionData[,1])-results$years[1]+1))])),
+      polygon(c(c(results$years[1]:(max(dat$Cdata[,1])+1)), 
+              rev(c(results$years[1]:(max(dat$Cdata[,1])+1)))), 
+            c(lCI[c(1:((max(dat$Cdata[,1])+1)-results$years[1]+1))],
+              rev(uCI[c(1:((max(dat$Cdata[,1])+1)-results$years[1]+1))])),
             col=add.alpha(theCols[1], 0.5), border=NA)
     }
      
-    lines(c(results$years[1]:max(dat$pupProductionData[,1])), results$rep.matrix[indN1back,1],
-          col=theCols[1], lwd=2)
+    #lines(c(results$years[1]:max(dat$pupProductionData[,1])),results$rep.matrix[indN1back,1],
+    #      col=theCols[1], lwd=2)
+    lines((dat$Cdata[1,1]:(max(dat$Cdata[,1])+1)), results$rep.matrix[results$indN1[1:(length(dat$Cdata[,1])+1)]],col=theCols[1], lwd=2)
     
   } 
   
@@ -126,7 +127,7 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
       plot(results$years, results$rep.matrix[results$indN0,1],
            type = "l",xlab = "Year",ylab = "Abundance",
            col=theCols[2], lwd=2, lty=2, xlim=xLim, ylim=yLim, axes=FALSE,cex.lab = 1.5)
-      if(!projections | !mean.proj) lines(results$years, results$rep.matrix[results$indN0,1], lwd=2, lty=2, col='white')
+      if(!projections | !mean.proj) lines(results$years, results$rep.matrix[results$indN0,1], lwd=2, lty=2, col=theCols[2])
       axis(1)
       axis(2, at=pretty(par('usr')[c(3,4)]), 
            labels=format(pretty(par('usr')[c(3,4)]), scientific=FALSE))
@@ -144,15 +145,16 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
     }  
     
     if(conf.int){
-    polygon(c(c(results$years[1]:max(dat$pupProductionData[,1])), 
-              rev(c(results$years[1]:max(dat$pupProductionData[,1])))), 
-            c(plCI[c(1:(max(dat$pupProductionData[,1])-results$years[1]+1))],
-              rev(puCI[c(1:(max(dat$pupProductionData[,1])-results$years[1]+1))])),
+    polygon(c(c(results$years[1]:(max(dat$Cdata[,1])+0)), 
+              rev(c(results$years[1]:(max(dat$Cdata[,1])+0)))), 
+            c(plCI[c(1:((max(dat$Cdata[,1])+0)-results$years[1]+1))],
+              rev(puCI[c(1:((max(dat$Cdata[,1])+0)-results$years[1]+1))])),
             col=add.alpha(theCols[2], 0.5), border=NA)
     }
     
-    lines(c(results$years[1]:max(dat$pupProductionData[,1])), results$rep.matrix[indN0back,1],
-          col=theCols[2], lwd=2)
+    #lines(c(results$years[1]:max(dat$pupProductionData[,1])), results$rep.matrix[indN0back,1],
+    #      col=theCols[2], lwd=2)
+    lines((dat$Cdata[1,1]:(max(dat$Cdata[,1])+0)), results$rep.matrix[results$indN0[1:(length(dat$Cdata[,1])+0)]],col=theCols[2], lwd=2)
     
   } 
   
@@ -213,6 +215,7 @@ plot.N <- function(results=res,dat=data,component=c('N0', 'N1'),
   }
   options(scipen=0)
 }
+
 
 
 
@@ -537,8 +540,8 @@ par.table <- function(results=res, dat=data, tab2flex=FALSE) {
 #' @keywords birth ogive
 #' @export
 #' @examples
-#' plot.Pmat()
-plot.Pmat <- function(dat=data, highlight.last=TRUE) {
+#' plot.ogive()
+plot.ogive <- function(dat=data, highlight.last=TRUE) {
   opal <- palette()
   palette(RColorBrewer::brewer.pal(8, 'Dark2'))
   par(mar=c(5,6,4,2)+0.1)

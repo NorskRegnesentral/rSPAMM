@@ -37,7 +37,7 @@ partEq <- par.table(resEq, datEq)
 ## Find N70 quota: 
 
 ## 0% pups:
-q70 <- find.N70.quota(population='harpeast', method='Dbased')
+q70 <- find.N70.quota(population='harpeast', method='Nbased')
 dat70 <- load.data('harpeast', catch_quota=q70)
 obj70 <- load.model.object(dat=dat70, template='harps_and_hoods_population_model2')
 opt70 <- run.model(obj70)
@@ -46,12 +46,17 @@ part70 <- par.table(res70, dat70)
 
 ## PBR quotas:
 
-pbr.05 <- PBR(n0=partab[4,3], n1=partab[5,3], se0=partab[4,4], se1=partab[5,4],
+pbrCatch <- PBR(n0=partab[4,3], n1=partab[5,3], se0=partab[4,4], se1=partab[5,4],
               rMax=0.12, Fr=0.5,quota=partab[c(4,5),3]/partab[6,3])
 
-n0=n0, n1=n1, se0=se0, se1=se1,
-rMax=0.12, Fr=0.5, quota=c(0,1)
+#n0=n0, n1=n1, se0=se0, se1=se1,
+#rMax=0.12, Fr=0.5, quota=c(0,1)
 
+datPBR <- load.data("harpeast", catch_quota = c(pbrCatch$p0,pbrCatch$p1))
+objPBR <- load.model.object(dat=datPBR)
+optPBR <- run.model(objPBR)
+resPBR <- model.results(datPBR, objPBR, optPBR)
+partPBR <- par.table(resPBR, datPBR)
 #######
 # Plot catch data
 # Plot fecundity data

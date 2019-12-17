@@ -224,17 +224,17 @@ Type objective_function<Type>::operator() ()
    NTot(i) = (N0(i) + N1(i));
  }
  
- NTotmax = 0.0;
- 
+ NTotmax = Type(0.0);
+ //Type maxind = 0;
  for(int i=0;i<Nc+1;i++)
  {
-   if(NTot(i) > NTotmax){
-     NTotmax = NTot(i);
+   if(Type(NTot(i)) > NTotmax){
+     NTotmax = Type(NTot(i));
      //maxind = i;
    }
  }
- 
- DNmax /= NTotmax;
+ //NTotmax = NTot(CppAD::Integer(maxind));
+ //DNmax /= NTot(CppAD::Integer(maxind));
  
  //--------------------------------
  // Likelihood contribution

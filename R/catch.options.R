@@ -156,7 +156,7 @@ N70.helper.D <- function(Tot,population,quota)
 #' @keywords population model
 #' @export
 
-find.N70.quota <- function(MIN=5000,MAX=50000,quota=c(0,1),population="harpeast",method = "Dbased")
+find.N70.quota <- function(MIN=5000,MAX=50000,quota=c(0,1),population="harpeast",method = "Nbased")
 {
   # Function to find 70% quota
   quota = quota/sum(quota)

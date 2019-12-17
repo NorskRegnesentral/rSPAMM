@@ -217,7 +217,7 @@ M0est.sd                Standard deviation of the estimated pup mortality
 
 D1                      Estimated depletion coefficient
 
-D1New                   Estimated of depletion coefficient
+D1Nmax                   Estimated of depletion coefficient using Nmax and Npred
 
 N0Current               Estimated pup abundance for the current year
 
@@ -227,7 +227,7 @@ NtotCurrent             Estimated total abundance for the current year
 
 D1.sd                   Standard deviation of estimated D
 
-D1New.sd                Standard deviation of estimated D
+D1Nmax.sd                Standard deviation of estimated D using Nmax and Npred
 
 N0Current               Standard deviation of current pup abundance
 
@@ -265,8 +265,8 @@ In this section we will show how to create graphics to present the various outpu
 ```{r eval = FALSE}
 plot.N(res,data)
 ```
-![Modelled pup abundance and 1+ abundance.](figures/model_fit.png){ width=98%}
-(MARTIN: Kanskje vi skal legge til at vi kan vise Ntot også slik at vi får pups og Ntot? Ser også ut til at N70 og Nlim blir beregnet ut fra N1 og ikke Ntot så dette bør vi kanskje endre på. Bare gi meg et vink så kan jeg ta meg av dette. Skal vi også ha en option der brukeren kan spesifisere farge i tilfelle man noen ganger trenger sort hvitt (eller bare sette en option hvor man velger farge eller gråtone? Mest fleksibelt med å velge farge selv, men man kan gjøre begge deler, altså spesifisere farge selv OG ha en option som "overrider" den hvor man spesifiserer farge eller gråtone). Skal vi legge inn en mulighet for å slå av og på legend - eller modifisere teksten?)
+![Modelled pup abundance and 1+ abundance.](figures/fitted_N0_N1_with_projections.png){ width=98%}
+
 
 You can also plot the fit to the pup abundance and the 1+ abundance separately by specifying that in the *component* variable:
 ```{r eval = FALSE}
@@ -285,7 +285,7 @@ plot.N(res,data,projections = FALSE)
 ```
 ![Modelled pup and 1+ abundance  withouth projections.](figures/fitted_abun_no_proj.png){ width=98%}
 
-The confidence intervals can be turned off by setting *conf.int = FALSE* and the horizontal lines for $N_{lim}$, $N_{50}$ and $N_{70}$ can be turned off by setting *plot.Nlims = FALSE* For other options you can run *?plot.N*.
+The confidence intervals can be turned off by setting *conf.int = FALSE* and the horizontal lines for $N_{lim}$, $N_{50}$ and $N_{70}$ can be turned off by setting *plot.Nlims = FALSE*. For other options you can run *?plot.N*.
 
 If you want to visualize certain types of data you can plot the historical catch level used, the fecundity vector and the birth ogive curves for each time period. To plot the catch data run the *plot.catch()* function:
 ```{r eval = FALSE}
@@ -300,9 +300,9 @@ plot.catch(catch = data$Cdata,position = "stack")
 ```
 ![Reported catch levels of pups and 1+ animals with bars on top of each other.](figures/catch_data_stack.png){ width=98%}
 
-If you want to explore the birth ogive data used for various periods you can run the *plot.Pmat()* function:
+If you want to explore the birth ogive data used for various periods you can run the *plot.ogive()* function:
 ```{r eval = FALSE}
-plot.Pmat(dat = data)
+plot.ogive(dat = data)
 ```
 ![Birth ogive for different periods.](figures/birth_ogive.png){ width=98%}
 
@@ -408,7 +408,9 @@ optPBR <- run.model(objPBR)
 resPBR <- model.results(datPBR, objPBR, optPBR)
 partPBR <- par.table(resPBR, datPBR) 
 ```
+![](figures/EqCatch.png){ width=98%} ![](figures/N70catch.png){ width=98%}![](figures/PBR_catch.png){ width=98%}
 
+![Projections for various catch options. (a) Equilibrium catch level, (b) N70 catch level, and (c) PBR catch level.](figures/CatchOptions.png){ width=98%}
 
 ## Appendix
 
