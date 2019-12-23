@@ -1,5 +1,5 @@
 ---
-title: "How to use the *rSPAMM* package"
+title: "How to use the *rSPAMM* package for assessment of harp and hooded seals populations"
 author: "T. A. Øigård and M. Biuw"
 date: "`r Sys.Date()`" 
 output: 
@@ -7,17 +7,16 @@ output:
     toc: true
     number_sections: true
 vignette: >
-    %\VignetteIndexEntry{How to use the *rSPAMM* package}
+    %\VignetteIndexEntry{How to use the *rSPAMM* package for assessment of harp and hooded seal populations}
     %\VignetteEngine{knitr::rmarkdown}
     \usepackage[utf8]{inputenc}
 ---
 
-```{r include=FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-```{r setup, include=FALSE}
+```{r include=FALSE}
 library(rSPAMM)
-library(TMB)
 ```
 # Overview
 The purpose of this vignette is to show how to use the *rSPAMM* package for assessment of various harp and hooded seal populations. It will guide you through the model fitting, obtaining estimated quantities, finding and exploring, various catch options, how to structure the data set, and how to visualize the modelled population dynamics. We also present the model used.
@@ -41,7 +40,6 @@ source("install_rSPAMM.R")
 The *rSPAMM* package is now installed. To load the package type
 ```{r eval = FALSE}
 library(rSPAMM)
-library(TMB)
 ```
 
 If you want to update the package to the most recent version you find the Git menu in the panel to the top right corner of RStudio. From there you click on the Pull button and then it will download the most recent version of *rSPAMM*. You have to install the package again by sourcing the installation script again.
@@ -56,7 +54,7 @@ All data that is described below will be loaded and used by the model to fit the
 ## Catch data
 Catch data are found in the file *catch_data.dat* and the content of the file looks like this:
 ```{r echo = FALSE}
-catch_data <- read.table(paste("Data/harpeast/catch_data.dat",sep = ""),header = FALSE)
+catch_data <- read.table(paste("Data/catch_data.dat",sep = ""),header = FALSE)
 head(catch_data)
 ```
 The first column contains the year, the seccond column contains the catch of pups, and the third column contains the catch of the 1+ population.
@@ -154,19 +152,13 @@ When compiling the model a model object, a *.dll* file is created and this has t
 obj = load.model.object(dat = data,par = parameters)
 ```
 ```{r eval = TRUE, echo = FALSE,include = FALSE}
-obj = load.model.object(dat = data,par = parameters)
-#load(file = "obj_object")
+obj = load.model.object(dat = data,par = parameters,template='harps_and_hoods_population_model2')
 ```
 The *obj* object is an object containing the log-likelihood value and the gradient for the initial parameters. This is used by fitting the model using an ordinary built in optimization routine in R. The default optimization routine used is *nlminb*, but this can be changed. (MARTIN: bør vi legge inn en mulighet til å endre optimiseringsrutiner). The content of the *obj* object looks like this:
 ```{r}
 names(obj)
 ```
 The value of the log likelihood and the gradient of the log likelihood for a given set of parameters can be explored by
-```{r eval = FALSE}
-obj$fn()
-
-obj$gr()
-```
 ```{r}
 obj$fn()
 
@@ -181,7 +173,7 @@ opt <- run.model(object = obj)
 
 When the model is fitted some key information will be written to screen. This key information show whether the model converged, what type of convergence and estimates of the parameters that describes the modelled population dynamics. It might look like this:
 ```{r echo = FALSE}
-opt = nlminb(obj$par,obj$fn,obj$gr)
+opt <- run.model(object = obj)
 ```
 
 

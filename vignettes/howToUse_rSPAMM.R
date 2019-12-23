@@ -1,20 +1,47 @@
-## ----setup, include=FALSE------------------------------------------------
+## ----include=FALSE------------------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 
+## ----setup, include=FALSE-----------------------------------------------------
+library(rSPAMM)
+library(TMB)
 
-## ----eval = FALSE--------------------------------------------------------
-## source("install_rSPAMM.R")
+## ----eval = FALSE-------------------------------------------------------------
+#  source("install_rSPAMM.R")
 
+## ----eval = FALSE-------------------------------------------------------------
+#  library(rSPAMM)
+#  library(TMB)
 
-## ----eval = FALSE--------------------------------------------------------
-## library(rSPAMM)
+## ----echo = FALSE-------------------------------------------------------------
+catch_data <- read.table(paste("Data/harpeast/catch_data.dat",sep = ""),header = FALSE)
+head(catch_data)
 
+## ----echo = FALSE-------------------------------------------------------------
+pup_production <- read.table(paste("Data/harpeast/pup_production.dat",sep = ""),header = FALSE)
+pup_production
 
-## ----eval = FALSE--------------------------------------------------------
-## data <- load.data(population = "harpeast")
+## ----echo = FALSE-------------------------------------------------------------
+fecundity <- read.table(paste("Data/harpeast/fecundity.dat",sep = ""),header = FALSE)
+fecundity
 
+## ----echo = FALSE-------------------------------------------------------------
+# Birth ogives for different periods
+Pdat <- read.table(paste("Data/harpeast/wgharp.ogi",sep = ""),sep = "",header = TRUE)
+# Which periods the various birth ogives applies to
+Pper <- read.table(paste("Data/harpeast/wgharp.ogp",sep = ""),header = TRUE)
+Pdat
 
-## ----eval = TRUE,echo=FALSE----------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
+Pper
+
+## ----echo = FALSE-------------------------------------------------------------
+priors <- read.table(paste("Data/harpeast/priors.dat",sep = ""),header = FALSE)
+priors
+
+## ----eval = FALSE-------------------------------------------------------------
+#  data <- load.data(population = "harpeast")
+
+## ----eval = TRUE,echo=FALSE---------------------------------------------------
 library(rSPAMM)
 
 #Set population
@@ -22,76 +49,21 @@ population = 'harpeast'
 #Load the data
 data <- load.data(population = population)
 
-
-## ----eval = TRUE---------------------------------------------------------
+## ----eval = TRUE--------------------------------------------------------------
 names(data)
 
-
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 data$Amax
 
 data$pupProductionData
 
 
-
-## ----eval = TRUE---------------------------------------------------------
+## ----eval = TRUE--------------------------------------------------------------
 parameters <- load.initial.values(population = population)
 
-
-## ----eval = TRUE---------------------------------------------------------
+## ----eval = TRUE--------------------------------------------------------------
 parameters
 
-
-## ----eval = FALSE--------------------------------------------------------
-## obj = load.model.object(dat = data,par = parameters)
-
-## ----eval = TRUE, echo = FALSE,include = FALSE---------------------------
-obj = load.model.object(dat = data,par = parameters,template='harps_and_hoods_population_model2')
-
-
-## ------------------------------------------------------------------------
-names(obj)
-
-
-## ------------------------------------------------------------------------
-obj$fn()
-
-obj$gr()
-
-
-## ----eval = FALSE--------------------------------------------------------
-## opt <- run.model(object = obj)
-
-
-## ----echo = FALSE--------------------------------------------------------
-opt <- run.model(object = obj)
-
-
-## ----eval = FALSE--------------------------------------------------------
-## res <- model.results(dat = data,object = obj,optimized = opt)
-
-## ----echo = FALSE,include = FALSE----------------------------------------
-res <- model.results(dat = data,object = obj,optimized = opt)
-
-
-## ------------------------------------------------------------------------
-names(res)
-
-
-## ----eval = FALSE--------------------------------------------------------
-## partab <- par.table(results=res, dat=data, tab2flex=FALSE)
-
-## ----include = FALSE-----------------------------------------------------
-partab <- par.table(results=res, dat=data, tab2flex=FALSE) 
-
-## ------------------------------------------------------------------------
-partab 
-
-
-## ----cars----------------------------------------------------------------
-summary(cars)
-
-
-## ----pressure, echo=FALSE------------------------------------------------
-plot(pressure)
+## ----eval = FALSE-------------------------------------------------------------
+#  obj = load.model.object(dat = data,par = parameters)
 
