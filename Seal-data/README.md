@@ -5,3 +5,4 @@
 #### T. A. Øigård and M. Biuw
 
 # Overview
+This folder contains data which can be analyzed by the *rSPAMM* package. For details regarding the the content of the data sets see the instruction [manual](https://github.com/NorskRegnesentral/rSPAMM/blob/master/R-package/README.md) for the package.
