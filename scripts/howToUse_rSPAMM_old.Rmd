@@ -1,5 +1,15 @@
 ---
-output: github_document
+title: "How to use the *rSPAMM* package"
+author: "T. A. Øigård and M. Biuw"
+date: "`r Sys.Date()`" 
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: true
+vignette: >
+    %\VignetteIndexEntry{How to use the *rSPAMM* package}
+    %\VignetteEngine{knitr::rmarkdown}
+    \usepackage[utf8]{inputenc}
 ---
 
 ```{r include=FALSE}
@@ -9,14 +19,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(rSPAMM)
 library(TMB)
 ```
-
-<img src="man/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
-
-
-# The rSPAMM package
-#### T. A. Øigård and M. Biuw
-
-
 # Overview
 The purpose of this vignette is to show how to use the *rSPAMM* package for assessment of various harp and hooded seal populations. It will guide you through the model fitting, obtaining estimated quantities, finding and exploring, various catch options, how to structure the data set, and how to visualize the modelled population dynamics. We also present the model used.
 
@@ -155,8 +157,6 @@ obj = load.model.object(dat = data,par = parameters)
 obj = load.model.object(dat = data,par = parameters)
 #load(file = "obj_object")
 ```
-The first time you run this command it will be slow as it has to compile the C++ TMB code.
-
 The *obj* object is an object containing the log-likelihood value and the gradient for the initial parameters. This is used by fitting the model using an ordinary built in optimization routine in R. The default optimization routine used is *nlminb*, but this can be changed. (MARTIN: bør vi legge inn en mulighet til å endre optimiseringsrutiner). The content of the *obj* object looks like this:
 ```{r}
 names(obj)
@@ -192,11 +192,11 @@ In addition to the estimated parameters needed to describe the modelled populati
 ----------------------------------------------------
 Variable name           Description
 -----------------       ----------------------------
-rep                     Estimated quantities
+rep                     Check it out
 
-rep.matrix              Matrix containing estimated quantities
+rep.matrix              Check
 
-rep.names               Names of estimated quantities
+rep.names               check
 
 indN0                   Indexes of where the fitted pup population is found in the
                         rep.matrix
@@ -263,7 +263,7 @@ The *res* object is a list containing all the estimates of the quantities listed
 names(res)
 ```
 
-A table for the most relevant quantities needed can be made by running:
+A table for the most interesting quantities needed can be made by running:
 ```{r eval = FALSE}
 partab <- par.table(results=res, dat=data) 
 ```
@@ -279,25 +279,25 @@ In this section we will show how to create graphics to present the various outpu
 ```{r eval = FALSE}
 plot.N(res,data)
 ```
-![Modelled pup abundance and 1+ abundance.](vignettes/figures/fitted_N0_N1_with_projections.png){ width=98%}
+![Modelled pup abundance and 1+ abundance.](figures/fitted_N0_N1_with_projections.png){ width=98%}
 
 
 You can also plot the fit to the pup abundance and the 1+ abundance separately by specifying that in the *component* variable:
 ```{r eval = FALSE}
 plot.N(res,data,component = c("N0"))
 ```
-![Modelled pup abundance.](vignettes/figures/fitted_pup_abundance.png){ width=98%}
+![Modelled pup abundance.](figures/fitted_pup_abundance.png){ width=98%}
 
 ```{r eval = FALSE}
 plot.N(res,data,component = c("N1"))
 ```
-![Modelled abundance.](vignettes/figures/fitted_adult_abun.png){ width=98%}
+![Modelled abundance.](figures/fitted_adult_abun.png){ width=98%}
 
 You can also choose to not plot the future projections by setting *projections = FALSE* . 
 ```{r eval = FALSE}
 plot.N(res,data,projections = FALSE)
 ```
-![Modelled pup and 1+ abundance  withouth projections.](vignettes/figures/fitted_abun_no_proj.png){ width=98%}
+![Modelled pup and 1+ abundance  withouth projections.](figures/fitted_abun_no_proj.png){ width=98%}
 
 The confidence intervals can be turned off by setting *conf.int = FALSE* and the horizontal lines for $N_{lim}$, $N_{50}$ and $N_{70}$ can be turned off by setting *plot.Nlims = FALSE*. For other options you can run *?plot.N*.
 
@@ -305,26 +305,26 @@ If you want to visualize certain types of data you can plot the historical catch
 ```{r eval = FALSE}
 plot.catch(catch = data$Cdata)
 ```
-![Reported catch levels of pups and 1+ animals with bars next to each other.](vignettes/figures/catch_data_dodge.png){ width=98%}
+![Reported catch levels of pups and 1+ animals with bars next to each other.](figures/catch_data_dodge.png){ width=98%}
 
 
 Default the bars are next to each other, but the bars can be plotted on top of each other by setting *position = "stack"*:
 ```{r eval = FALSE}
 plot.catch(catch = data$Cdata,position = "stack")
 ```
-![Reported catch levels of pups and 1+ animals with bars on top of each other.](vignettes/figures/catch_data_stack.png){ width=98%}
+![Reported catch levels of pups and 1+ animals with bars on top of each other.](figures/catch_data_stack.png){ width=98%}
 
 If you want to explore the birth ogive data used for various periods you can run the *plot.ogive()* function:
 ```{r eval = FALSE}
 plot.ogive(dat = data)
 ```
-![Birth ogive for different periods.](vignettes/figures/birth_ogive.png){ width=98%}
+![Birth ogive for different periods.](figures/birth_ogive.png){ width=98%}
 
 Since fecundity rates is not available for all years they are interpolated between missing years. You can plot the fecundity rates used in the modelling by running *plot.fecundity()*. Default it plots both the linear interpolated fecundity rates and the observed fecundity ratesfor a given population.
 ```{r eval = FALSE}
 plot.fecundity(dat = data)
 ```
-![Fecundity rates used in the modelling.](vignettes/figures/fecundity.png){ width=98%}
+![Fecundity rates used in the modelling.](figures/fecundity.png){ width=98%}
 
 
 # Exploring various catch options
@@ -422,8 +422,9 @@ optPBR <- run.model(objPBR)
 resPBR <- model.results(datPBR, objPBR, optPBR)
 partPBR <- par.table(resPBR, datPBR) 
 ```
+![](figures/EqCatch.png){ width=98%} ![](figures/N70catch.png){ width=98%}![](figures/PBR_catch.png){ width=98%}
 
-![Projections for various catch options. (a) Equilibrium catch level, (b) N70 catch level, and (c) PBR catch level.](vignettes/figures/CatchOptions.png){ width=98%}
+![Projections for various catch options. (a) Equilibrium catch level, (b) N70 catch level, and (c) PBR catch level.](figures/CatchOptions.png){ width=98%}
 
 # Appendix
 
