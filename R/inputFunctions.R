@@ -70,6 +70,55 @@ load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15
   return(data)
 }
 
+#' Download Repository Data
+#'
+#' Downloading the most updated data on harp seals in the West Ice (along the coast of Greenland) and in the East Ice (the White Sea) and the Hooded seal population in the West Ice from the Seal Data repository.
+#' @param url The URL of the data repository.
+#' @param chooseFolder Logical parameter if you want to specify to which folder to download the data.
+#' @return A folder containing the Data for the various populations and a Scripts folder for an example of complete analysis of the data.
+#' @keywords input, data
+#' @export
+#' @examples
+#' get.data(url = "")
+
+downloadData <- function(url = "",chooseFolder = TRUE)
+{
+  if(chooseFolder){
+    wdFolder = choose.dir()
+    if(!is.na(wdFolder)) setwd(wdFolder)
+  }
+  
+  cat("\n Downloading data from repository...")
+  download.file(url = "https://github.com/NorskRegnesentral/HarpAndHoodSealData/archive/master.zip",
+                destfile = "main.zip")
+  unzip("main.zip")
+  
+  #Cleaning up
+  cat("\n Cleaning up files....\n")
+  currentFolder = paste(getwd(),"/HarpAndHoodedSealData-master/",sep = "")
+  newFolder = getwd()
+  
+  newFolder = ""
+  setwd(paste0(getwd(),"/HarpAndHoodSealData-master/"))
+  currentFolder = getwd()
+  setwd('..')
+  newFolder = getwd()
+  newFolder = "../"
+  
+  file.copy(from = file.path(currentFolder,
+                             list.files(currentFolder)),
+            to = newFolder,
+            overwrite = TRUE,
+            recursive = TRUE,
+            copy.mode = TRUE)
+  
+  if (file.exists("main.zip")) 
+    #Delete file if it exists
+    file.remove("main.zip")
+}
+
+
+
 
 #' Construct time varying fecundity rates and birth ogives
 #'

@@ -1,3 +1,0 @@
-TODO list
-
-- Add a script (folder) to the data repository for analyzing data
