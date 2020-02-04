@@ -81,7 +81,8 @@ load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15
 #' @examples
 #' get.data(url = "")
 
-downloadData <- function(url = "",chooseFolder = TRUE)
+downloadData <- function(url = "https://github.com/NorskRegnesentral/HarpAndHoodSealData/archive/master.zip",
+                         chooseFolder = TRUE)
 {
   if(chooseFolder){
     wdFolder = choose.dir()
@@ -89,21 +90,21 @@ downloadData <- function(url = "",chooseFolder = TRUE)
   }
   
   cat("\n Downloading data from repository...")
-  download.file(url = "https://github.com/NorskRegnesentral/HarpAndHoodSealData/archive/master.zip",
+  download.file(url = url,
                 destfile = "main.zip")
   unzip("main.zip")
   
   #Cleaning up
   cat("\n Cleaning up files....\n")
-  currentFolder = paste(getwd(),"/HarpAndHoodedSealData-master/",sep = "")
-  newFolder = getwd()
+  #currentFolder = paste(getwd(),"/HarpAndHoodedSealData-master/",sep = "")
+  #newFolder = getwd()
   
-  newFolder = ""
+  #newFolder = ""
   setwd(paste0(getwd(),"/HarpAndHoodSealData-master/"))
   currentFolder = getwd()
   setwd('..')
   newFolder = getwd()
-  newFolder = "../"
+  #newFolder = "../"
   
   file.copy(from = file.path(currentFolder,
                              list.files(currentFolder)),
@@ -115,6 +116,20 @@ downloadData <- function(url = "",chooseFolder = TRUE)
   if (file.exists("main.zip")) 
     #Delete file if it exists
     file.remove("main.zip")
+  
+  if (file.exists("HarpAndHoodSealData.Rproj")) 
+    #Delete file if it exists
+    file.remove("HarpAndHoodSealData.Rproj")
+
+    if (file.exists("README.md")) 
+    #Delete file if it exists
+    file.remove("README.md")
+
+  if (file.exists("HarpAndHoodSealData-master")) 
+  #Delete file if it exists
+  unlink("HarpAndHoodSealData-master",recursive = TRUE)
+  
+  
 }
 
 
