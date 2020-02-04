@@ -16,3 +16,4 @@
 #' data("harpeastDemo")
 #'
 #'
+"harpeastDemo"
