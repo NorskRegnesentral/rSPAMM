@@ -12,7 +12,6 @@ LazyData: TRUE
 URL: https://github.com/NorskRegnesentral/rSPAMM
 RoxygenNote: 7.0.0
 Imports:
-  pacman,
   TMB, 
   RcppEigen,
   ggplot2
