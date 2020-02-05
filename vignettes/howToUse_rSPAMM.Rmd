@@ -23,7 +23,7 @@ The purpose of this vignette is to show how to use the *rSPAMM* package for asse
 
 
 
-The *rSPAMM* package is now installed. To load the package type
+To load the *rSPAMM* package type
 ```{r eval = TRUE}
 library(rSPAMM)
 ```
@@ -38,6 +38,9 @@ To load the demo data:
 data("harpeastDemo")
 ```
 
+```{r}
+test = run.model(dat = harpeast$data,par = harpeast$par)
+```
 
 
 The population dynamics model use historical catch records, fecundity rates, age specific proportions of mature females, and estimates of pup production to estimate the population size trajectory. Two types of reproductive data are used in the model: information on the proportion of females that are mature at a given age (i.e., maturity ogive) and the proportion of mature females that are pregnant at a given year (i.e. fecundity rate). In this section we will describe what type of data is used, which data files are needed, and the format the various data are stored.
