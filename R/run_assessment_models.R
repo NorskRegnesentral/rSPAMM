@@ -76,7 +76,7 @@ run.model <- function(dat = data,par = parameters,print.to.screen = TRUE)
   }
 
     
-  obj <- MakeADFun(data=dat,parameters=par,DLL="harps_and_hoods_population_model2",silent = TRUE)
+  obj <- TMB::MakeADFun(data=dat,parameters=par,DLL="harps_and_hoods_population_model2",silent = TRUE)
   
   opt = nlminb(obj$par,obj$fn,obj$gr)
   
