@@ -79,8 +79,7 @@ load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15
 #' @keywords input, data
 #' @export
 #' @examples
-#' get.data(url = "")
-
+#' downloadData(url = "")
 downloadData <- function(url = "https://github.com/NorskRegnesentral/HarpAndHoodSealData/archive/master.zip",
                          chooseFolder = TRUE)
 {

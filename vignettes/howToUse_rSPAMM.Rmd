@@ -30,7 +30,10 @@ library(rSPAMM)
 
 # Data used by the population dynamics model and how to load them
 
-## Load demo data
+The population dynamics model use historical catch records, fecundity rates, age specific proportions of mature females, and estimates of pup production to estimate the population size trajectory. Two types of reproductive data are used in the model: information on the proportion of females that are mature at a given age (i.e., maturity ogive) and the proportion of mature females that are pregnant at a given year (i.e. fecundity rate). In this section we will describe what type of data is used, which data files are needed, and the format the various data are stored.
+
+
+## Demo data
 When installing the *rSPAMM* package a demo data set is included so that how to use the package can be explored. The demo data is reproductive data, catch data, pup production estimates and priors used for population dynamics modelling of the harp seal population in the East Ice (White Sea).
 
 To load the demo data:
@@ -38,17 +41,33 @@ To load the demo data:
 data("harpeastDemo")
 ```
 
+The demo data is a list called *harpeast* containing two lists called *data* and *parameters*. The *data* list contains the data needed to fit the population dynamics model and the *parameters* list contains the parameters estimated by the model along with initial values of them.
+
 ```{r}
-test = run.model(dat = harpeast$data,par = harpeast$par)
+names(harpeast$data)
+
+names(harpeast$parameters)
 ```
 
+# Full data set
+The latest version of the most recent data on the harps and hooded seal population in the West Ice and the harp seal population in the east ice has a separate GitHub repository called [HarpAndHoodedSealData](https://www.github.com/NorskRegnesentral/HarpAndHoodedSealData).
 
-The population dynamics model use historical catch records, fecundity rates, age specific proportions of mature females, and estimates of pup production to estimate the population size trajectory. Two types of reproductive data are used in the model: information on the proportion of females that are mature at a given age (i.e., maturity ogive) and the proportion of mature females that are pregnant at a given year (i.e. fecundity rate). In this section we will describe what type of data is used, which data files are needed, and the format the various data are stored.
+To download the complete data set run the following command:
+```{r eval = FALSE}
+downloadData()
+```
+When you run this command you can run it as it is and you will be asked to specify a folder where the data is stored. You can even decide to create a new folder if needed. If you already have prepared a folder for where to download the data and has set working directory to this folder you should use the option *chooseFolder = FALSE*, i.e.,
+```{r eval = FALSE}
+downloadData(chooseFolder = FALSE)
+```
+After downloading the data repository you will have a *Data* folder and a *Scripts* folder. The *Data* folder contains the various harp and hooded seal data and the *Scripts* folder contains useful examples on how to perform a complete assessment.
 
-# Data files
+
+
+## Data files
 All data that is described below will be loaded and used by the model to fit the population dynamics. All data sets are found in the *Data/* folder separated into folders for each population.
 
-## Catch data
+### Catch data
 Catch data are found in the file *catch_data.dat* and the content of the file looks like this:
 ```{r echo = FALSE}
 catch_data <- read.table(paste("Data/harpeast/catch_data.dat",sep = ""),header = FALSE)
@@ -56,7 +75,7 @@ head(catch_data)
 ```
 The first column contains the year, the seccond column contains the catch of pups, and the third column contains the catch of the 1+ population.
 
-## Pup production estimates
+### Pup production estimates
 Estimated pup production is found in the file *pup_production.dat*. The content of the file looks like this: 
 ```{r echo = FALSE}
 pup_production <- read.table(paste("Data/harpeast/pup_production.dat",sep = ""),header = FALSE)
@@ -64,7 +83,7 @@ pup_production
 ```
 In the first column you see the survey year, in the seccond column you see the estimated pup production, and in the third the estimated CV of that survey is given.
 
-## Fecundity data
+### Fecundity data
 Fecundity data is found in the *fecundity.dat* file. The content of the file looks like this:
 ```{r echo = FALSE}
 fecundity <- read.table(paste("Data/harpeast/fecundity.dat",sep = ""),header = FALSE)
@@ -72,7 +91,7 @@ fecundity
 ```
 In the first column you have the year for when the fecundity is estimated, in the seccond column you have the estimated fecundity, and in the thirst column you have the estimated standard error of the fecundity estimate.
 
-## Birth ogive
+### Birth ogive
 In the files *wgharp.ogi* and *wgharp.ogp* you find the birth ogive data, and the from which time periods the birth ogive curves applies for. The content of the *wgharp.ogi* looks like
 
 ```{r echo = FALSE}
@@ -88,7 +107,7 @@ Pper
 ```
 The first column denotes the start of the time period a given birth ogive curve applies for, and the second column denotes the end of the time period the birth ogive curve is valid. The reason for this is that usually data for several years are pooled together when estimating the birth ogive curve in order to ensure enough data to obtain a reasonable estimated of the birth ogive. Note that the number of rows in the *wgharp.ogp* file corresponds to the number of columns in the *wgharp.ogi* file (minus 1 since one column represents the age group).
 
-## Priors used
+### Priors used
 Priors used for the various parameters are specified in the *priors.dat* file. The content of the file looks like this:
 
 ```{r echo = FALSE}
@@ -99,7 +118,7 @@ Each row specify mean and the standard deviation of a Gaussian prior used for a 
 
 
 
-## Loading the data
+## Loading the full data set
 In order to load the data you have to specify which population you want to load the data for. The various alternatives are *harpeast*, *harpwest*, and *hooded* (which is the hooded seal population in the West Ice - the ice along the east coast of Greenland). In the examples that follows we will use the *harpeast* population. To load the data used you run the following command:
 ```{r eval = FALSE}
 data <- load.data(population = "harpeast")

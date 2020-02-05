@@ -54,7 +54,9 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
 #' Run the loaded population model for harp seals and hooded seals
 #'
 #' Optimize the model object.
-#' @param obj Model object to be optimized.
+#' @param dat The data used for optimizing the model.
+#' @param par The initial values of the parameters to be estimated.
+#' @param print2screen Logical parameter to decide wether to output results to screen.
 #' @return Output from optimized model.
 #' @keywords population model
 #' @export
