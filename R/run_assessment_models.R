@@ -62,10 +62,23 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
 #' run.model()
 
 
-run.model <- function(object=obj,print.to.screen = TRUE)
+run.model <- function(dat = data,par = parameters,print.to.screen = TRUE)
 {
   
-  opt = nlminb(object$par,object$fn,object$gr)
+  #Load C part---------------------
+  tmbDir <- system.file("libs", package = "rSPAMM")
+  if(Sys.info()["sysname"] =="Windows")dyn.load(paste(tmbDir,"/x64/rSPAMM",sep = ""))
+  if(Sys.info()["sysname"] =="Linux")dyn.load(paste(tmbDir,"/.so",sep = ""))
+  #-----------------------------------
+  
+  if('Pper' %in% names(dat)) {
+    dat <- dat[-match('Pper', names(dat))]
+  }
+
+    
+  obj <- MakeADFun(data=dat,parameters=par,DLL="harps_and_hoods_population_model2",silent = TRUE)
+  
+  opt = nlminb(obj$par,obj$fn,obj$gr)
   
   #Print relevant output to screen
   if(print.to.screen){

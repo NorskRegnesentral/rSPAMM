@@ -15,6 +15,9 @@ Imports:
   TMB, 
   RcppEigen,
   ggplot2
+LinkingTo: 
+  TMB, 
+  RcppEigen
 Suggests: 
   knitr,
   rmarkdown
