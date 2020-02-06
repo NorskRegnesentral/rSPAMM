@@ -207,11 +207,12 @@ The optimization routine used is *nlminb*. (MARTIN: bør vi legge inn en mulighe
 To fit the model run:
 
 ```{r}
-opt <- run.model(dat = data, par = parameters)
+optobj <- run.model(dat = data, par = parameters)
 ```
 
 When the model is fitted some key information will be written to screen. This key information show whether the model converged, what type of convergence and estimates of the parameters that describes the modelled population dynamics.
 
+The *run.model* function returns a list containing the model object *obj* and the final optimized opject *opt*.
 
 ## Obtaining the estimated quantities
 In addition to the estimated parameters needed to describe the modelled population dynamics of a population the model fit also provides the user with other relevant quantities. The Table below lists the various quantities obtained.
@@ -279,7 +280,7 @@ NtotCurrent             Standard deviation of current total abundance
 
 The model results can be obtained by running:
 ```{r}
-res <- model.results(dat = data,object = obj,optimized = opt)
+res <- model.results(dat = data,optobject = optobj)
 ```
 The *res* object is a list containing all the estimates of the quantities listed in the Table above.
 
@@ -288,13 +289,9 @@ names(res)
 ```
 
 A table for the most interesting quantities needed can be made by running:
-```{r eval = FALSE}
-partab <- par.table(results=res, dat=data) 
-```
-```{r include = FALSE}
-partab <- par.table(results=res, dat=data, tab2flex=FALSE) 
-```
 ```{r}
+partab <- par.table(results=res, dat=data) 
+
 partab 
 ```
 

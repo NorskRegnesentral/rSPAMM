@@ -95,8 +95,10 @@ run.model <- function(dat = data,par = parameters,print.to.screen = TRUE)
     } else cat('\nOptimization did not converge \n')
     cat('\n--------------------------------------------------\n')
   }
-  
-  return(opt)
+  retlist = list()
+  retlist$obj = obj
+  retlist$opt = opt
+  return(retlist)
   
 }
 
@@ -105,19 +107,20 @@ run.model <- function(dat = data,par = parameters,print.to.screen = TRUE)
 #'
 #' Get model results.
 #' @param dat Data object that was used to fit the model
-#' @param object The TMB model object
-#' @param optimized Output from the optimization
-#' @param to.file Logical, whether to return results to the workspace (default) or save to file. NOT YET IMPLEMENTED!
+#' @param optobject The TMB model object and the output from the optimization (a list)
 #' @return results Results returned to the workspace or saved to file.
 #' @keywords population model
 #' @export
 #' @examples
 #' load.model.object(population = "harpeast")
 
-model.results <- function(dat=data, object=obj, optimized=opt) 
+model.results <- function(data, optobject) 
 {
-  rep<-sdreport(object, getJointPrecision=TRUE)
-  rep.matrix <- summary(rep)
+  object = optobject$obj
+  opt = optobject$opt
+  
+  rep=sdreport(object, getJointPrecision=TRUE)
+  rep.matrix = summary(rep)
   rep.rnames = rownames(rep.matrix)
   indN0 = which(rep.rnames=="N0");indN0 <- indN0[-1]
   indN1 = which(rep.rnames=="N1");indN1 <- indN1[-1]
