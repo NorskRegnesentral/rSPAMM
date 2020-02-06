@@ -62,8 +62,7 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
 #' @export
 #' @examples
 #' run.model()
-
-run.model <- function(dat = data,par = parameters,print.to.screen = TRUE)
+run.model <- function(data = data,par = parameters,print.to.screen = TRUE)
 {
   
   #Load C part---------------------
@@ -72,12 +71,12 @@ run.model <- function(dat = data,par = parameters,print.to.screen = TRUE)
   if(Sys.info()["sysname"] =="Linux")dyn.load(paste(tmbDir,"/.so",sep = ""))
   #-----------------------------------
   
-  if('Pper' %in% names(dat)) {
-    dat <- dat[-match('Pper', names(dat))]
+  if('Pper' %in% names(data)) {
+    data <- data[-match('Pper', names(data))]
   }
 
     
-  obj <- TMB::MakeADFun(data=dat,parameters=par,DLL="rSPAMM",silent = TRUE)
+  obj <- TMB::MakeADFun(data=data,parameters=par,DLL="rSPAMM",silent = TRUE)
   
   opt = nlminb(obj$par,obj$fn,obj$gr)
   

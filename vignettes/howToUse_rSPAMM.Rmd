@@ -207,7 +207,7 @@ The optimization routine used is *nlminb*. (MARTIN: bør vi legge inn en mulighe
 To fit the model run:
 
 ```{r}
-optobj <- run.model(dat = data, par = parameters)
+optobj <- run.model(data = data, par = parameters)
 ```
 
 When the model is fitted some key information will be written to screen. This key information show whether the model converged, what type of convergence and estimates of the parameters that describes the modelled population dynamics.
