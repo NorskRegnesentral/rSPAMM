@@ -13,9 +13,11 @@ eq.quota.helper.D <- function(Tot,population,quota)
   # Function called from find.eq.quota, that should be used!
   dataD <- load.data(population=population, catch_quota=Tot*quota)
   parametersD <- load.initial.values(population)
-  objD <- load.model.object(dataD, parametersD)
+  #objD <- load.model.object(dataD, parametersD)
+  objD <- TMB::MakeADFun(data=dataD,parameters=parametersD,DLL="rSPAMM",silent = TRUE)
+  
   optD <- nlminb(objD$par,objD$fn,objD$gr)
-  repD<-sdreport(objD, getJointPrecision=TRUE)
+  repD<-TMB::sdreport(objD, getJointPrecision=TRUE)
   abs(1-repD$value[match('D1', names(repD$value))])
 }
 
@@ -35,9 +37,12 @@ eq.quota.helper.N1 <- function(Tot,population,quota)
   # Function called from find.eq.quota, that should be used!
   dataN1 <- load.data(population=population, catch_quota=Tot*quota)
   parametersN1 <- load.initial.values(population)
-  objN1 <- load.model.object(dataN1, parametersN1)
+  #objN1 <- load.model.object(dataN1, parametersN1)  
+  objN1 <- TMB::MakeADFun(data=dataN1,parameters=parametersN1,DLL="rSPAMM",silent = TRUE)
+
+  
   optN1 <- nlminb(objN1$par,objN1$fn,objN1$gr)
-  repN1<-sdreport(objN1, getJointPrecision=TRUE)
+  repN1<-TMB::sdreport(objN1, getJointPrecision=TRUE)
   N1Cur <- repN1$value[match("N1CurrentYear", names(repN1$value))]
   N1Proj <- repN1$value[match("D1New", names(repN1$value))]
   abs(N1Cur-N1Proj)
@@ -91,9 +96,11 @@ N70.helper.Nmax <- function(Tot,population,quota)
   dataNmax <- load.data(population=population, catch_quota=Tot*quota)
   parametersNmax <- load.initial.values(population)
   
-  objNmax <- load.model.object(dataNmax, parametersNmax)
+  #objNmax <- load.model.object(dataNmax, parametersNmax)
+  objNmax <- TMB::MakeADFun(data=dataNmax,parameters=parametersNmax,DLL="rSPAMM",silent = TRUE)
+  
   optNmax <- nlminb(objNmax$par,objNmax$fn,objNmax$gr)
-  repNmax <- sdreport(objNmax, getJointPrecision=TRUE)
+  repNmax <- TMB::sdreport(objNmax, getJointPrecision=TRUE)
 
   indNTot <- which(names(repNmax$value)=="NTot")
   indNTot <- indNTot[-1]
@@ -127,9 +134,11 @@ N70.helper.D <- function(Tot,population,quota)
   # Function called from find.N70 that should be used!
   dataD <- load.data(population=population, catch_quota=Tot*quota)
   parametersD <- load.initial.values(population)
-  objD <- load.model.object(dataD, parametersD)
+  #objD <- load.model.object(dataD, parametersD)
+  objD <- TMB::MakeADFun(data=dataD,parameters=parametersD,DLL="rSPAMM",silent = TRUE)
+  
   optD <- nlminb(objD$par,objD$fn,objD$gr)
-  repD <- sdreport(objD, getJointPrecision=TRUE)
+  repD <- TMB::sdreport(objD, getJointPrecision=TRUE)
   
   
   DNmax <- repD$value[match('DNmax', names(repD$value))]
