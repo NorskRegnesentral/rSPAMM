@@ -2,22 +2,24 @@
 #'
 #' Finding D-based equilibrium quota
 #' @param Tot Total annual catch for population projections 
-#' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
+#' @param dataD The data to be analyzed
+#' @param parametersD Parameters used for the model
 #' @param quota Proportional catch of 0 and 1+ animals
 #' @return minD Minimum found for difference between the depletion coefficient D and 1
 #' @keywords population model
 #' @export
 
-eq.quota.helper.D <- function(Tot,population,quota)
+eq.quota.helper.D <- function(Tot,dataD,parametersD,quota = c(0,1))
 {
   # Function called from find.eq.quota, that should be used!
-  dataD <- load.data(population=population, catch_quota=Tot*quota)
-  parametersD <- load.initial.values(population)
+  #dataD <- load.data(population=population, catch_quota=Tot*quota)
+  #parametersD <- load.initial.values(population)
+  dataD$CQuota = Tot*quota
   #objD <- load.model.object(dataD, parametersD)
-  objD <- TMB::MakeADFun(data=dataD,parameters=parametersD,DLL="rSPAMM",silent = TRUE)
+  objD = TMB::MakeADFun(data=dataD,parameters=parametersD,DLL="rSPAMM",silent = TRUE)
   
-  optD <- nlminb(objD$par,objD$fn,objD$gr)
-  repD<-TMB::sdreport(objD, getJointPrecision=TRUE)
+  optD = nlminb(objD$par,objD$fn,objD$gr)
+  repD = TMB::sdreport(objD, getJointPrecision=TRUE)
   abs(1-repD$value[match('D1', names(repD$value))])
 }
 
@@ -26,25 +28,29 @@ eq.quota.helper.D <- function(Tot,population,quota)
 #'
 #' Finding N-based equilibrium quota
 #' @param Tot Total annual catch for population projections 
-#' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
+#' @param dataD The data to be analyzed
+#' @param parametersD Parameters used for the model
 #' @param quota Proportional catch of 0 and 1+ animals
 #' @return minN Minimum found for difference between current and projected 1+ population size
 #' @keywords population model
 #' @export
 
-eq.quota.helper.N1 <- function(Tot,population,quota)
+eq.quota.helper.N1 <- function(Tot,dataN1,parametersN1,quota)
 {
   # Function called from find.eq.quota, that should be used!
-  dataN1 <- load.data(population=population, catch_quota=Tot*quota)
-  parametersN1 <- load.initial.values(population)
+  #dataN1 <- load.data(population=population, catch_quota=Tot*quota)
+  #parametersN1 <- load.initial.values(population)
+  dataN1$CQuota = Tot*quota
+  
   #objN1 <- load.model.object(dataN1, parametersN1)  
-  objN1 <- TMB::MakeADFun(data=dataN1,parameters=parametersN1,DLL="rSPAMM",silent = TRUE)
+  objN1 = TMB::MakeADFun(data=dataN1,parameters=parametersN1,DLL="rSPAMM",silent = TRUE)
 
   
-  optN1 <- nlminb(objN1$par,objN1$fn,objN1$gr)
-  repN1<-TMB::sdreport(objN1, getJointPrecision=TRUE)
-  N1Cur <- repN1$value[match("N1CurrentYear", names(repN1$value))]
-  N1Proj <- repN1$value[match("D1New", names(repN1$value))]
+  optN1 = nlminb(objN1$par,objN1$fn,objN1$gr)
+  repN1 = TMB::sdreport(objN1, getJointPrecision=TRUE)
+  N1Cur = repN1$value[match("N1CurrentYear", names(repN1$value))]
+  N1Proj = repN1$value[max(which(names(repN1$value) == "N1"))]
+  #N1Proj = repN1$value[match("DNmax", names(repN1$value))]
   abs(N1Cur-N1Proj)
 }
 
@@ -54,25 +60,31 @@ eq.quota.helper.N1 <- function(Tot,population,quota)
 #' Finding D-based or N-based equilibrium quota
 #' @param MIN Minimum extent of search window for total catch 
 #' @param MAX Maximum extent of search window for total catch 
+#' @param data The data to be analyzed
+#' @param parameters Parameters used for the model
 #' @param quota Proportional catch of 0 and 1+ animals
-#' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
 #' @param method Set whether D-based (depletion coefficient D) or N-based (1+ population size) criterion should be used for optimisation  (Dbased/Nbased)
 #' @return qEq Optimum quota for achieving equilibrium projected population size
 #' @keywords population model
 #' @export
 
-find.eq.quota <- function(MIN=1000,MAX=40000,quota=c(0,1),population="harpeast",method = "Dbased")
+find.eq.quota <- function(MIN=1000,
+                          MAX=40000,
+                          quota=c(0,1),
+                          data = data,
+                          parameters = parameters,
+                          method = "Dbased")
 {
   # Function to find equilibrium quota
   quota = quota/sum(quota)
   if (method == "Dbased"){
-    tmp = optimize(eq.quota.helper.D,lower=MIN,upper=MAX,population=population,quota=quota,tol=50)
+    tmp = optimize(eq.quota.helper.D,lower=MIN,upper=MAX,dataD = data, parametersD = parameters,quota=quota,tol=50)
   } else
   {
-    tmp = optimize(eq.quota.helper.N1,lower=MIN,upper=MAX,population=population,quota=quota,tol=50)
+    tmp = optimize(eq.quota.helper.N1,lower=MIN,upper=MAX,dataN1 = data, parametersN1 = parameters,quota=quota,tol=50)
   }
   cat("-----------------------------------------------------\n\n")
-  cat("Equilibrium quota for",population,":\n")
+  cat("Estimated equilibrium:\n")
   cat("Pups:  ",round(tmp$minimum*quota)[1],"\n")
   cat("Adults:",round(tmp$minimum*quota)[2],"\n")
   cat("Total :",sum(round(tmp$minimum*quota)),"\n\n")
@@ -91,25 +103,25 @@ find.eq.quota <- function(MIN=1000,MAX=40000,quota=c(0,1),population="harpeast",
 #' @keywords population model
 #' @export
 
-N70.helper.Nmax <- function(Tot,population,quota)
+N70.helper.Nmax <- function(Tot,dataNmax,parametersNmax,quota)
 {
-  dataNmax <- load.data(population=population, catch_quota=Tot*quota)
-  parametersNmax <- load.initial.values(population)
-  
+  #dataNmax <- load.data(population=population, catch_quota=Tot*quota)
+  #parametersNmax <- load.initial.values(population)
+  dataN1$CQuota = Tot*quota
   #objNmax <- load.model.object(dataNmax, parametersNmax)
-  objNmax <- TMB::MakeADFun(data=dataNmax,parameters=parametersNmax,DLL="rSPAMM",silent = TRUE)
+  objNmax = TMB::MakeADFun(data=dataNmax,parameters=parametersNmax,DLL="rSPAMM",silent = TRUE)
   
-  optNmax <- nlminb(objNmax$par,objNmax$fn,objNmax$gr)
-  repNmax <- TMB::sdreport(objNmax, getJointPrecision=TRUE)
+  optNmax = nlminb(objNmax$par,objNmax$fn,objNmax$gr)
+  repNmax = TMB::sdreport(objNmax, getJointPrecision=TRUE)
 
-  indNTot <- which(names(repNmax$value)=="NTot")
-  indNTot <- indNTot[-1]
-  indCur <- diff(range(dataNmax$Cdata[,1]))+1
-  NTot <- repNmax$value[indNTot]
-  NTotSD <- repNmax$sd[indNTot]
-  N70 <- 0.7*max(NTot[c(1:indCur)])
+  indNTot = which(names(repNmax$value)=="NTot")
+  indNTot = indNTot[-1]
+  indCur = diff(range(dataNmax$Cdata[,1]))+1
+  NTot = repNmax$value[indNTot]
+  NTotSD = repNmax$sd[indNTot]
+  N70 = 0.7*max(NTot[c(1:indCur)])
   
-  Npred <- NTot[indCur+15]-qnorm(1-0.1)*NTotSD[indCur+15]
+  Npred = NTot[indCur+15]-qnorm(1-0.1)*NTotSD[indCur+15]
   
   if(Npred>0) {
     return(abs(N70-Npred))
@@ -123,17 +135,20 @@ N70.helper.Nmax <- function(Tot,population,quota)
 #'
 #' Finding D-based N70 quota
 #' @param Tot Total annual catch for population projections 
-#' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
+#' @param dataD The data to be analyzed
+#' @param parametersD Parameters used for the model
 #' @param quota Proportional catch of 0 and 1+ animals
 #' @return minD07 Minimum found for difference between the depletion coefficient D and 0.7
 #' @keywords population model
 #' @export
 
-N70.helper.D <- function(Tot,population,quota)
+N70.helper.D <- function(Tot,dataD,parametersD,quota)
 {
   # Function called from find.N70 that should be used!
-  dataD <- load.data(population=population, catch_quota=Tot*quota)
-  parametersD <- load.initial.values(population)
+  #dataD <- load.data(population=population, catch_quota=Tot*quota)
+  #parametersD <- load.initial.values(population)
+  dataD$CQuota = Tot*quota
+  
   #objD <- load.model.object(dataD, parametersD)
   objD <- TMB::MakeADFun(data=dataD,parameters=parametersD,DLL="rSPAMM",silent = TRUE)
   
@@ -159,31 +174,60 @@ N70.helper.D <- function(Tot,population,quota)
 #' @param MIN Minimum extent of search window for total catch 
 #' @param MAX Maximum extent of search window for total catch 
 #' @param quota Proportional catch of 0 and 1+ animals
-#' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
+#' @param data The data to be analyzed
+#' @param parameters Parameters used for the model
 #' @param method Set whether D-based (depletion coefficient D) or N-based (total population size) criterion should be used for optimisation (Dbased,Nbased)
 #' @return q70 Optimum quota for achieving projected size of 70% of maximum population size
 #' @keywords population model
 #' @export
 
-find.N70.quota <- function(MIN=5000,MAX=50000,quota=c(0,1),population="harpeast",method = "Nbased")
+find.N70.quota <- function(MIN=5000,
+                           MAX=50000,
+                           quota=c(0,1),
+                           data = data,
+                           parameters = parameters,
+                           method = "Nbased")
 {
+  #Check if current population is below N70
+  #If current population is below N70 return
+  objTest = TMB::MakeADFun(data=data,parameters=parameters,DLL="rSPAMM",silent = TRUE)
+  optTest = nlminb(objTest$par,objTest$fn,objTest$gr)
+  repTest = TMB::sdreport(objTest, getJointPrecision=TRUE)
+  
+  indNTot = which(names(repTest$value)=="NTot")
+  indNTot = indNTot[-1]
+  indCur = diff(range(data$Cdata[,1]))+1
+  NTot = repTest$value[indNTot]
+  NTotCur = NTot[indCur]
+  N70 = 0.7*max(NTot[c(1:indCur)])
+  if(NTotCur>N70) isAbove = TRUE else isAbove = FALSE
+  
+  
   # Function to find 70% quota
-  quota = quota/sum(quota)
-  if (method == "Dbased"){
-    tmp = optimize(N70.helper.D,lower=MIN,upper=MAX,population=population,quota=quota,tol=50)
+  if(isAbove){
+    quota = quota/sum(quota)
+    if (method == "Dbased"){
+      tmp = optimize(N70.helper.D,lower=MIN,upper=MAX,dataD = data,parametersD = parameters,quota=quota,tol=50)
+    }
+    if (method == "Nbased") {
+      tmp = optimize(N70.helper.Nmax,lower=MIN,upper=MAX,dataNmax=data,parametersNmax=parameters,quota=quota,tol=50)
+    }
+    #cat("N70 quota for",population,"(pups,adults,total):",round(tmp$minimum*quota),sum(round(tmp$minimum*quota)),"\n")
+    cat("-----------------------------------------------------\n\n")
+    cat("Estimated N70 quota:\n")
+    cat("Pups:  ",round(tmp$minimum*quota)[1],"\n")
+    cat("Adults:",round(tmp$minimum*quota)[2],"\n")
+    cat("Total :",sum(round(tmp$minimum*quota)),"\n\n")
+    cat("-----------------------------------------------------")
+    tmp$minimum*quota
+  } else{
+    cat("\n -------------------------------------------------------------------------\n\n")
+    cat(" Current population size is below N70 so no catch level will be estimated.\n")
+    cat("\n -------------------------------------------------------------------------\n\n")
+    return(NA)
   }
-  if (method == "Nbased") {
-    tmp = optimize(N70.helper.Nmax,lower=MIN,upper=MAX,population=population,quota=quota,tol=50)
-  }
-  #cat("N70 quota for",population,"(pups,adults,total):",round(tmp$minimum*quota),sum(round(tmp$minimum*quota)),"\n")
-  cat("-----------------------------------------------------\n\n")
-  cat("N70 quota for",population,":\n")
-  cat("Pups:  ",round(tmp$minimum*quota)[1],"\n")
-  cat("Adults:",round(tmp$minimum*quota)[2],"\n")
-  cat("Total :",sum(round(tmp$minimum*quota)),"\n\n")
-  cat("-----------------------------------------------------")
-  tmp$minimum*quota
 }
+
 
 
 #' Function for finding PBR quota
