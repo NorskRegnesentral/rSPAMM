@@ -389,7 +389,7 @@ size is below $N{70}$. Because of this there is no point estimating the $N{70}$ 
 This example assume that zero pups are in the catch and that all catch are 1 year old animals or more. To change he proportion of pups and 1+ animals in the catch you use the *quota* variable, i.e., use *quota = c(0.15,0.85)* to find the $N{70}$ catch level assuming 15% pups and 85% 1+ animals in the catch:
 
 If the $N{70}$ population size was below the current population size you could re-run the model using the estimated $N{70}$ catch level 
-```{r}
+```{r eval=FALSE}
 data$CQuota = catchN70
 optN70 = run.model(data = data, par = parameters)
 resN70 = model.results(data = data,optobject = optN70)

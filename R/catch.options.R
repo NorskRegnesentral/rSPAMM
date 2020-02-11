@@ -221,9 +221,10 @@ find.N70.quota <- function(MIN=5000,
     cat("-----------------------------------------------------")
     tmp$minimum*quota
   } else{
-    cat("\n -------------------------------------------------------------------------\n\n")
-    cat(" Current population size is below N70 so no catch level will be estimated.\n")
-    cat("\n -------------------------------------------------------------------------\n\n")
+    cat("\n ---------------------------------------\n\n")
+    cat(" Current population size is below N70.\n")
+    cat(" No catch level will be estimated.\n")
+    cat("\n ---------------------------------------\n\n")
     return(NA)
   }
 }

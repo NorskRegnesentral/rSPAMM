@@ -39,7 +39,8 @@ plot.N <- function(results=res,data=data,component=c('N0', 'N1'),
             rgb(x[1], x[2], x[3], alpha=alpha))  
   }
   
-  windows("",width = width,height = height)
+  graphDev(width = width,height = height)
+  #windows("",width = width,height = height)
   
   #require(RColorBrewer)
   theCols <- RColorBrewer::brewer.pal(max(c(3, length(component))), 'Dark2')
@@ -219,158 +220,6 @@ plot.N <- function(results=res,data=data,component=c('N0', 'N1'),
 
 
 
-#' Plot modelled population dynamics
-#'
-#' Plot population trajectories. This function does not work properly, use plot.N() instead.
-#' @param results Output from fitted model
-#' @param data Original data on estimated pup production (set to NA if these are not to be included).
-#' @param component Which population component to plot. Can be either 'N0' for pups, 'N1' for adults, or a vector with both.
-#' @param xLim Manually set the x axis extent, overrides the default which is the extent of the plotted data.
-#' @param yLim Manually set the y axis extent, overrides the default which is the extent of the plotted data.
-#' @param plot.legend Add legend to plot (TRUE/FALSE)
-#' @param plot.Nlims Plot horizontal lines indicating 30%, 50% and 70% of 1+ population True/False
-#' @param col Specify colors used for (pups,1+,error bars)
-#' @param projections Plot projections (TRUE/FALSE)
-#' @param add.title Add title to figure (TRUE/FALSE)
-#' @return plot Returns a plot of predicted population size for different population components
-#' @keywords population model
-#' @export
-#' @examples
-#' plot.res(res, data)
-
-plot.res.ggplot <- function(res=res,data=data,component=c('N0', 'N1'),
-                   xLim=NA,yLim=NA,plot.legend=TRUE,
-                   plot.Nlims=TRUE, 
-                   col = c("royalblue","darkred","steelblue"),
-                   projections=TRUE, 
-                   conf.int = TRUE,
-                   add.title = TRUE,
-                   width = 13,
-                   height = 7)
-{
-  require(ggplot2)
-  
-  if(projections){
-  }
-  
-  dframe <- data.frame(Year = res$years,
-                       N0 = as.vector(res$rep.matrix[res$indN0,1]),
-                       N0sd = as.vector(res$rep.matrix[res$indN0,2]),
-                       N1 = as.vector(res$rep.matrix[res$indN1,1]),
-                       N1sd = as.vector(res$rep.matrix[res$indN1,2])
-                       )
-  
-  
-  dframe$Ntot = dframe$N0 + dframe$N1
-  dframe$Ntotsd = sqrt(dframe$N0sd^2+dframe$N1sd^2)
-  dframe$N0LL = dframe$N0 - 1.96*dframe$N0sd
-  dframe$N0UL = dframe$N0 + 1.96*dframe$N0sd
-  dframe$N1LL = dframe$N1 - 1.96*dframe$N1sd
-  dframe$N1UL = dframe$N1 + 1.96*dframe$N1sd
-  dframe$NtotLL = dframe$Ntot - 1.96*dframe$Ntotsd
-  dframe$NtotUL = dframe$Ntot + 1.96*dframe$Ntotsd
-  
-  dfN0 = data.frame(Year = dframe$Year,Abun = dframe$N0,id = 'Pup population')
-  dfN1 = data.frame(Year = dframe$Year,Abun = dframe$N1,id = '1+ population')
-  dfNtot = data.frame(Year = dframe$Year,Abun = dframe$Ntot,id = "Total population")
-  dfPupsbig = data.frame(Year = dframe$Year,Abun = NA,id = "Pup production estimates")
-  dfPupsbig$Abun[which(dframe$Year %in% dfpups$Year)] = data$pupProductionData[,2]
-  
-  #Find out which components to plot
-  if(length(component)>1){
-    if(("N0" %in% component) & ("N1" %in% component))   dfall <- rbind.data.frame(dfN0,dfN1)
-    if(("N0" %in% component) & ("Ntot" %in% component))   dfall <- rbind.data.frame(dfN0,dfNtot)
-  }
-  
-  
-  dfpups <- data.frame(Year = data$pupProductionData[,1],Pups = data$pupProductionData[,2],sd = data$pupProductionData[,2]*data$pupProductionData[,3])
-  dfpups$LL = dfpups[,"Pups"]-1.96*dfpups[,"sd"]
-  dfpups$UL = dfpups[,"Pups"]+1.96*dfpups[,"sd"]
-  
-  maxYear = max(dframe$Year)
-  maxN = max(dframe$N1)
-  
-  pl <- ggplot(data = dframe,aes(x = Year))
-  if(plot.Nlims){
-    pl <- pl + geom_segment(aes(x=min(dframe$Year),xend=maxYear,y=(0.3*maxN),yend=(0.3*maxN)),color = "lightgrey",size = 0.5)
-    pl <- pl + geom_segment(aes(x=min(dframe$Year),xend=maxYear,y=(0.5*maxN),yend=(0.5*maxN)),color = "lightgrey",size = 0.5)
-    pl <- pl + geom_segment(aes(x=min(dframe$Year),xend=maxYear,y=(0.7*maxN),yend=(0.7*maxN)),color = "lightgrey",size = 0.5)
-    
-    #  geom_hline(yintercept = 0.3*max(dframe$N1),color = "lightgrey",size = 0.5)
-    #pl <- pl + geom_hline(yintercept = 0.5*max(dframe$N1),color = "lightgrey",size = 0.5)
-    #pl <- pl + geom_hline(yintercept = 0.7*max(dframe$N1),color = "lightgrey",size = 0.5)
-    pl <- pl + geom_text(x = (max(dframe$Year)+10),y = 0.3*max(dframe$N1),label = (expression(N[lim])),size = 5)
-    pl <- pl + geom_text(x = (max(dframe$Year)+10),y = 0.5*max(dframe$N1),label = (expression(N[50])), size = 5)
-    pl <- pl + geom_text(x = (max(dframe$Year)+10),y = 0.7*max(dframe$N1),label = (cexpression(N[70])), size = 5)
-  }
-  
-  # Add confidence intervals
-  if(conf.int){
-    if("N0" %in% component) pl <- pl  + geom_ribbon(data=dframe,aes(ymin=N0LL,ymax=N0UL,x=Year),fill = col[1],alpha = 0.3)
-    if("N1" %in% component) pl <- pl  + geom_ribbon(data=dframe,aes(ymin=N1LL,ymax=N1UL,x=Year),fill = col[2],alpha = 0.3)
-    if("Ntot" %in% component) pl <- pl  + geom_ribbon(data=dframe,aes(ymin=NtotLL,ymax=NtotUL,x=Year),fill = col[2],alpha = 0.3)
-  }
-
-
-  #If only one component is plottet, plot the right one
-  if(length(component) == 1){
-    if("N0" %in% component) pl  <- pl + geom_line(data = dframe,aes(x = Year,y = N0),color = col[1],size = 1.5)
-    if("N0" %in% component) pl  <- pl + geom_point(data = dfpups,aes(x=Year,y = Pups,col = "red"),size = 3,color = col[3]) 
-    if("N0" %in% component) pl  <- pl + geom_errorbar(data =dfpups,aes(x = Year,ymin = LL,ymax = UL), color = col[3],size = 1)                     
-    if("N1" %in% component) pl  <- pl + geom_line(data = dframe,aes(x = Year,y = N1),color = col[2],size = 1.5) 
-    if("Ntot" %in% component) pl  <- pl + geom_line(data = dframe,aes(x = Year,y = Ntot),color = col[2],size = 1.5) 
-  } else {
-        #Plot multiple lines
-        pl <- pl + geom_line(data = dfall,aes(x = Year,y = Abun,colour = id),size = 1.5)
-        if(("N0" %in% component) & ("N1" %in% component)) pl <- pl + scale_colour_manual(values = c('Pup population' = col[1],'1+ population' = col[2]))
-        if(("N0" %in% component) & ("Ntot" %in% component)) pl <- pl + scale_colour_manual(values = c('Pup population' = col[1],'Total population' = col[2]))
-        
-  }
-  
-  #pl <- pl + scale_linetype_manual(labels = c("psavert", "uempmed"),values = c("psavert"="#00ba38", "uempmed"="#f8766d"))
-  
-  #pl <- pl + scale_colour_manual(values = c("purple", "green", "blue"),
-  #                               guide = guide_legend(override.aes = list(
-  #                                 linetype = c("solid","dashed"),
-  #                                 shape = c(NA,NA))))
-  
-  #pl <- pl + expand_limits(x = (max(dframe$Year)+5))
-  
-  #pl <- pl + scale_fill_manual(labels = paste("long", c(5, 10, 15)),
-  #                      guide = guide_legend(
-  #                        direction = "horizontal",
-  #                        title.position = "top",
-  #                        label.position = "bottom",
-  #                        label.hjust = 0.5,
-  #                        label.vjust = 1,
-  #                        label.theme = element_text(angle = 90)
-  #                      ))
-  
-  pl <- pl + coord_cartesian(xlim = c(min(dframe$Year), (max(dframe$Year)+5)), clip = 'off')
-  pl <- pl + theme_classic() 
-  pl <- pl + theme(text = element_text(size=20),
-                   plot.margin = unit(c(1,2,1,1), "cm"),
-                   axis.text.y = element_text(angle = 90,margin = margin(t = 0, r = 20, b = 0, l = 30),vjust = 0.5),
-                   axis.text.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0),vjust = 1),
-                   #legend.title = element_text(size = 20),
-                   legend.title = element_blank(),
-                   legend.position = "bottom",
-                   legend.box = "vertical"
-                   )
-  pl <- pl + ylab("Population size")
-  
-  pl <- pl + labs(fill = "Dose (mg)")
-  
-  pl <- pl + scale_fill_manual(name = "Dose", labels = c("A", "B", "C"))
-  
-  #Add title if needed
-  if(add.title)  pl <- pl + labs(title="Modelled population dynamics")
-  
-
-  #windows("",width = width,height = height)
-  pl
-  
-  }
 
 
 #' Plot the reported catch data
@@ -433,7 +282,6 @@ plot.catch <- function(catch = cdata,width = 9,height = 7,position = "dodge")
 #' @param data Data object used in model fit
 #' @param include.observations Plot the observed fecundity rates with 95% confidence intervals (default = TRUE)
 #' @param population If include.observations is TRUE, define which population you want to use.
-
 #' @return plot Returns a plot of predicted population size for different population components
 #' @keywords fecundity data
 #' @export
@@ -442,7 +290,6 @@ plot.catch <- function(catch = cdata,width = 9,height = 7,position = "dodge")
 
 plot.fecundity <- function(dat = data,include.observations = TRUE, population = "harpeast")
 {
-
 
   par(mar=c(5,6,4,2)+0.1)
   plot(dat$Cdata[,1],dat$Ftmp,type = "l",lwd = 3, col = "royalblue", xlab='Year', ylab='Fecundity rate',ylim=c(0,1), axes=F,cex.lab=1.5)
@@ -576,5 +423,25 @@ plot.ogive <- function(dat=data, highlight.last=TRUE) {
            c(leglab, 'Between periods'), bty='n', cex=1.1)
   }
   palette(opal)       
+}
+
+# Prephare graphical device for a given OS
+# @param width Width of the graphical window
+# @param height Height of the grapchical window
+# @return The an OS dependent graphical window
+graphDev = function(width = 7,height = 5) {
+  
+  system = Sys.info()
+  if(system['sysname']=="Windows"){
+    windows(width = 7,height = 5)
+  }
+  
+  if(system['sysname']=="Linux"){
+    X11(width = 7,height = 5)
+  }
+  
+  if(system['sysname']=="Darwin"){
+    quartz("",width = 7,height = 5)
+  }
 }
 
