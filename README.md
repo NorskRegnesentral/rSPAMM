@@ -1,4 +1,4 @@
-<img src="R-package/man/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
+<img src="vignettes/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
 
 # The rSPAMM package
 
@@ -24,6 +24,8 @@ These dependencies will be automatically installed when installing the rSPAMM pa
 The most recent version of *rSPAMM* is hosted on a git repository at
 <https://github.com/NorskRegnesentral/rSPAMM.git>.
 
+
+To install the R-package directly from the repository use the following command (note: the R-package devtools has to be installed first)
 ``` r
 devtools::install_github("https://github.com/NorskRegnesentral/rSPAMM.git")
 ``` 
