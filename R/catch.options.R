@@ -246,8 +246,14 @@ find.N70.quota <- function(MIN=5000,
 #' @keywords population model
 #' @export
 
-PBR <- function(n0=n0, n1=n1, se0=se0, se1=se1,
-                rMax=0.12, Fr=0.5, quota=c(0.15,1-0.15), cv=NA) {
+PBR <- function(n0=n0, 
+                n1=n1, 
+                se0=se0, 
+                se1=se1,
+                rMax=0.12, 
+                Fr=0.5, 
+                quota=c(0.14,1-0.14), 
+                cv=NA) {
   
   if(is.na(cv)) cv <- sqrt((se0^2) + (se1^2)+(2*se0*se1))/(n0+n1)
   
@@ -256,5 +262,6 @@ PBR <- function(n0=n0, n1=n1, se0=se0, se1=se1,
   
   quota <- as.vector(quota)
   
-  list(Nmin=Nmin, CV=cv, PBR=pbr, p0=round(pbr*quota[1]), p1=round(pbr*quota[2]))
+  list(Nmin=Nmin, CV=cv, PBR=pbr, n0catch=round(pbr*quota[1]), n1catch=round(pbr*quota[2]))
+  
 }

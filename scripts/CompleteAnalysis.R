@@ -80,5 +80,23 @@ data$CQuota = catchN70
 optN70 = run.model(data = data, par = parameters)
 resN70 = model.results(data = data,optobject = optN70)
 
-#Plot the estimated future trajectory using equilibrium catch level
+#Plot the estimated future trajectory using the N70 catch level
 plot.N(resN70,data)
+
+#--------------------------
+
+#Find the PBR catch level
+#In this example we are assuming 14% pups 
+#and 86% 1+ animals in the catch
+pbrCatch = PBR(n0=partab[4,3], 
+               n1=partab[5,3], 
+               se0=partab[4,4], 
+               se1=partab[5,4])
+
+#Re-run the model using the PBR catch level
+data$CQuota = c(pbrCatch$n0catch,pbrCatch$n1catch)
+optPBR = run.model(data = data, par = parameters)
+resPBR = model.results(data = data,optobject = optPBR)
+
+#Plot the estimated future trajectory using PBR catch level
+plot.N(resPBR,data)

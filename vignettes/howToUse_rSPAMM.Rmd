@@ -394,22 +394,20 @@ data$CQuota = catchN70
 optN70 = run.model(data = data, par = parameters)
 resN70 = model.results(data = data,optobject = optN70)
 
-#Plot the estimated future trajectory using equilibrium catch level
+#Plot the estimated future trajectory using the N70 catch level
 plot.N(resN70,data)
 ```
 
 ## The Potential Biological Removals (PBR) catch level
 Potential Biological Removals has been defined as:
 $$PBR=\frac{1}{2}R_{max}F_rN_{min},$$
-where $R_{max}$ is the maximum rate of increase for the population (default to 0.12 for pinnipeds), $F_r$ is the recovery factor with values between 0.1 and 1 (default to 0.5), and $N_{min}$ is the estimated population size using 20% percentile of the log-normal distribution. The PBR catch level assumes that the age structure of the removals is proportional to the age composition of the population (i.e. 15% based on the current population estimates). To find the PBR catch level using the default parameters you run:
-```{r eval = FALSE}
-pbrCatch <- PBR(n0=n0, n1=n1, se0=se0, se1=se1)
-```
-```{r include = FALSE}
-pbrCatch <- PBR(n0=partab[4,3], n1=partab[5,3], se0=partab[4,4], se1=partab[5,4],
-              rMax=0.12, Fr=0.5,quota=partab[c(4,5),3]/partab[6,3])
-```
-```{r echo = FALSE}
+where $R_{max}$ is the maximum rate of increase for the population (default to 0.12 for pinnipeds), $F_r$ is the recovery factor with values between 0.1 and 1 (default to 0.5), and $N_{min}$ is the estimated population size using 20% percentile of the log-normal distribution. The PBR catch level assumes that the age structure of the removals is proportional to the age composition of the population (i.e. 14% ). To find the PBR catch level using the default parameters you run:
+```{r}
+pbrCatch = PBR(n0=partab[4,3], 
+               n1=partab[5,3], 
+               se0=partab[4,4], 
+               se1=partab[5,4])
+
 pbrCatch
 ```
 
@@ -418,13 +416,15 @@ pbrCatch
 where n0 is the current population size, n1 is the current 1+ population size, se0 is the standard deviation of the estimated current pup abundance, and se1 is the standard deviation of the estimated current 1+ abundance. Recall from the Table above that these quantities could be found using the *par.tab* command.
 
 Re-run the model using this catch level
-```{r eval = FALSE}
-datPBR <- load.data(population, pbrCatch)
-objPBR <- load.model.object(dat=datPBR)
-optPBR <- run.model(objPBR)
-resPBR <- model.results(datPBR, objPBR, optPBR)
-partPBR <- par.table(resPBR, datPBR) 
+```{r}
+data$Quota = c(pbrCatch$n0catch,pbrCatch$n1catch)
+optPBR = run.model(data = data, par = parameters)
+resPBR = model.results(data = data,optobject = optPBR)
+
+#Plot the estimated future trajectory using PBR catch level
+plot.N(resPBR,data)
 ```
+
 ![](figures/EqCatch.png){ width=98%} ![](figures/N70catch.png){ width=98%}![](figures/PBR_catch.png){ width=98%}
 
 ![Projections for various catch options. (a) Equilibrium catch level, (b) N70 catch level, and (c) PBR catch level.](figures/CatchOptions.png){ width=98%}
