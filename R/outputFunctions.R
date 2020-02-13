@@ -12,6 +12,8 @@
 #' @param mean.proj True/False
 #' @param width Width of the figure
 #' @param height Height of the figure
+#' @param conf.int Logical parameter to decide wether to plot 95 percent confidence interval or not
+#' @param grDev Logical parameter to decide wether to open a OS independent graphical window
 #' @return plot Returns a plot of predicted population size for different population components
 #' @keywords population model
 #' @export
@@ -29,7 +31,8 @@ plotRes <- function(results=res,
                     mean.proj=FALSE,
                     width = 13, 
                     height = 7,
-                    conf.int = TRUE)
+                    conf.int = TRUE,
+                    grDev = TRUE)
 {
   if(projections) {
     span <- c(1:length(results$indN0))
@@ -46,7 +49,7 @@ plotRes <- function(results=res,
             rgb(x[1], x[2], x[3], alpha=alpha))  
   }
   
-  graphDev(width = width,height = height)
+  if(grDev) graphDev(width = width,height = height)
   #windows("",width = width,height = height)
   
   #require(RColorBrewer)

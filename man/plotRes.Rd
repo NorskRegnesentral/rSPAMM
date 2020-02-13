@@ -16,7 +16,8 @@ plotRes(
   mean.proj = FALSE,
   width = 13,
   height = 7,
-  conf.int = TRUE
+  conf.int = TRUE,
+  grDev = TRUE
 )
 }
 \arguments{
@@ -41,6 +42,10 @@ plotRes(
 \item{width}{Width of the figure}
 
 \item{height}{Height of the figure}
+
+\item{conf.int}{Logical parameter to decide wether to plot 95 percent confidence interval or not}
+
+\item{grDev}{Logical parameter to decide wether to open a OS independent graphical window}
 }
 \value{
 plot Returns a plot of predicted population size for different population components
