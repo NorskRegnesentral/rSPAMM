@@ -287,7 +287,7 @@ plotCatch <- function(catch = cdata,width = 9,height = 7,position = "dodge")
 #'
 #' Plot the fecundity data used in the model fit.
 #' @param data Data object used in model fit
-#' @param include.observations Plot the observed fecundity rates with 95% confidence intervals (default = TRUE)
+#' @param include.observations Plot the observed fecundity rates with 95 percent confidence intervals (default = TRUE)
 #' @param population If include.observations is TRUE, define which population you want to use.
 #' @return plot Returns a plot of predicted population size for different population components
 #' @keywords fecundity data

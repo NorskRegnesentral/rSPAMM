@@ -7,7 +7,7 @@
 plotFecundity(dat = data, include.observations = TRUE, population = "harpeast")
 }
 \arguments{
-\item{include.observations}{Plot the observed fecundity rates with 95% confidence intervals (default = TRUE)}
+\item{include.observations}{Plot the observed fecundity rates with 95 percent confidence intervals (default = TRUE)}
 
 \item{population}{If include.observations is TRUE, define which population you want to use.}
 
