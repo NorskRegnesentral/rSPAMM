@@ -16,13 +16,20 @@
 #' @keywords population model
 #' @export
 #' @examples
-#' plot.N(res, data)
+#' plotRes(res, data)
 
-plot.N <- function(results=res,data=data,component=c('N0', 'N1'),
-                   xLim=NA,yLim=NA,plot.legend=TRUE,
-                   plot.Nlims=TRUE, projections=TRUE, 
-                   mean.proj=FALSE,width = 13, height = 7,
-                   conf.int = TRUE)
+plotRes <- function(results=res,
+                    data=data,
+                    component=c('N0', 'N1'),
+                    xLim=NA,
+                    yLim=NA,
+                    plot.legend=TRUE,
+                    plot.Nlims=TRUE, 
+                    projections=TRUE, 
+                    mean.proj=FALSE,
+                    width = 13, 
+                    height = 7,
+                    conf.int = TRUE)
 {
   if(projections) {
     span <- c(1:length(results$indN0))
@@ -233,9 +240,9 @@ plot.N <- function(results=res,data=data,component=c('N0', 'N1'),
 #' @keywords population model
 #' @export
 #' @examples
-#' plot.catch(data$Cdata)
+#' plotCatch(data$Cdata)
 
-plot.catch <- function(catch = cdata,width = 9,height = 7,position = "dodge")
+plotCatch <- function(catch = cdata,width = 9,height = 7,position = "dodge")
 {
   library(ggplot2)
   
@@ -286,9 +293,11 @@ plot.catch <- function(catch = cdata,width = 9,height = 7,position = "dodge")
 #' @keywords fecundity data
 #' @export
 #' @examples
-#' plot.fecundity(res, data)
+#' plotFecundity(res, data)
 
-plot.fecundity <- function(dat = data,include.observations = TRUE, population = "harpeast")
+plotFecundity <- function(dat = data,
+                           include.observations = TRUE, 
+                           population = "harpeast")
 {
 
   par(mar=c(5,6,4,2)+0.1)
@@ -387,8 +396,8 @@ par.table <- function(results=res, dat=data, tab2flex=FALSE) {
 #' @keywords birth ogive
 #' @export
 #' @examples
-#' plot.ogive()
-plot.ogive <- function(dat=data, highlight.last=TRUE) {
+#' plotOgive()
+plotOgive <- function(dat=data, highlight.last=TRUE) {
   opal <- palette()
   palette(RColorBrewer::brewer.pal(8, 'Dark2'))
   par(mar=c(5,6,4,2)+0.1)
