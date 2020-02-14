@@ -32,7 +32,7 @@ plotRes <- function(results=res,
                     width = 13, 
                     height = 7,
                     conf.int = TRUE,
-                    grDev = TRUE)
+                    grDev = FALSE)
 {
   if(projections) {
     span <- c(1:length(results$indN0))
