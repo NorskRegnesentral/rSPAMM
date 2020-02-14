@@ -364,7 +364,7 @@ plotCatch(catch = data$Cdata,position = "stack")
 ***
 
 If you want to explore the birth ogive data used for various periods you can run the `plotOgive()` function:
-```{r}
+```{r fig.height=4}
 plotOgive(dat = data)
 ```
 
@@ -373,9 +373,12 @@ plotOgive(dat = data)
 <!-- ![Birth ogive for different periods.](figures/birth_ogive.png){ width=98%} -->
 
 Since fecundity rates is not available for all years they are interpolated between missing years. You can plot the fecundity rates used in the modelling by running `plotFecundity()`. Default it plots both the linear interpolated fecundity rates and the observed fecundity ratesfor a given population.
-```{r}
+```{r fig.height=4}
 plotFecundity(dat = data)
 ```
+
+***
+
 <!-- ![Fecundity rates used in the modelling.](figures/fecundity.png){ width=98%} -->
 
 
@@ -465,6 +468,109 @@ plotRes(resPBR,data)
 
 # Appendix
 
+## Complete code for assessment
+This section contains a script for a complete analysis of the harp seal population in the East Ice (in the White Sea) using the `rSPAMM` package.
+```{r eval = FALSE}
+#Load the rSPAMM package
+library(rSPAMM)
+
+###################
+# Data
+###################
+# You can choose to use either the demo data which is 
+# included in the rSPAMM package or loading the full data
+
+#Use this if analysing the demo data.
+#Loading demo data and parameters
+data("harpeastDemo")
+data = harpeast$data
+parameters = harpeast$parameters
+
+
+#Use this if analysing latest version of the
+#complete data set
+#Download full data
+downloadData()
+#Loading the data
+data <- load.data(population = "harpeast")
+#Loading the parameters
+parameters <- load.initial.values(population = "harpeast")
+
+
+##################
+# Model fitting
+##################
+#Run the model
+optobj <- run.model(data = data, par = parameters)
+
+#Obtain the results
+res <- model.results(data = data,optobject = optobj)
+
+#Create a nice table with the results
+partab <- par.table(results=res, dat=data) 
+
+#Plot the results (both the pup model fit and the N1+ population)
+plotRes(res,data,grDev = TRUE)
+
+
+##################
+# Catch options
+##################
+
+#Find the equilibrium catch level
+#In this example we are assuming 15% pups 
+#and 85% 1+ animals in the catch
+EquilibriumCatch = find.eq.quota(data = data,
+                                  parameters = parameters, 
+                                  quota = c(0.15,0.85))
+
+#Rerun the model using the estimated equilibrium catch level
+data$CQuota = EquilibriumCatch
+optEq = run.model(data = data, par = parameters)
+resEq = model.results(data = data,optobject = optEq)
+
+#Plot the estimated future trajectory using equilibrium catch level
+plotRes(resEq,data,grDev = TRUE)
+
+#--------------------------
+
+#Find the N70 catch level
+catchN70 = find.N70.quota(data = data,
+                          parameters = parameters, 
+                          quota = c(0,1))
+
+#For this population it turns out that the current population
+#size is below N70. Because of this there is no point estimating
+#the N70 catch level.
+
+#If the current population size was above N70 you could
+#rerun the model using the estimated N70 catch level
+data$CQuota = catchN70
+optN70 = run.model(data = data, par = parameters)
+resN70 = model.results(data = data,optobject = optN70)
+
+#Plot the estimated future trajectory using the N70 catch level
+plotRes(resN70,data,grDev = TRUE)
+
+#--------------------------
+
+#Find the PBR catch level
+#In this example we are assuming 14% pups 
+#and 86% 1+ animals in the catch
+pbrCatch = PBR(n0=partab[4,3], 
+               n1=partab[5,3], 
+               se0=partab[4,4], 
+               se1=partab[5,4])
+
+#Re-run the model using the PBR catch level
+data$CQuota = c(pbrCatch$n0catch,pbrCatch$n1catch)
+optPBR = run.model(data = data, par = parameters)
+resPBR = model.results(data = data,optobject = optPBR)
+
+#Plot the estimated future trajectory using PBR catch level
+plotRes(resPBR,data,grDev = TRUE)
+```
+
 ## The population dynamics model
 The population model is an age-structured population dynamics model. For initiation of the model it is assumed that the population had a stable age structure in year $y_0 = 1945$, i.e.,
 $$
@@ -509,78 +615,3 @@ where $n_{0,y}$ and $\sigma_{0,y}$ denote the survey pup production count and co
 The model has a Bayesian flavour as priors are imposed on some of the parameters. A vague normal prior is assumed for the initial population size $N_{y_0}$. A truncated normal prior was used for both the pup mortalities $M_0$ and $M_{1+}$.
 
 All parameter estimates are found by maximizing the likelihood function using the R package `TMB`.
-
-
-## Complete code for assessment
-Below shows an complete example of assessment of the Harp seal population in the East Ice.
-```{r eval = FALSE}
-# Load the R package
-library(rSPAMM)
-
-# Define which population to carry out the assessment for
-population = 'harpeast'
-
-# Load all data for the specified population
-data <- load.data(population = population,catch_quota=c(0,0))
-
-# Load and prepare all parameters that needs to be estimated
-parameters <- load.initial.values(population = population)
-
-# Load the model object
-obj = load.model.object(dat = data,par = parameters)
-
-# Run the assessment model
-opt <- run.model(object = obj)
-
-# Get the model results
-res <- model.results(dat = data,object = obj,optimized = opt)
-
-# Create a summary table for relevant estimates estimates
-partab <- par.table(results=res, dat=data) 
-
-# Visualize the modelled population dynamics. 
-# Note if plotting with future projections this assumes no
-# catch the next fifteen years
-plotRes(res,data)
-
-# Exploring various catch options
-
-# Find the equilibrium catch level
-EquilibriumCatch <- find.eq.quota(population=population,MIN = 1000, MAX = 70000)
-
-# Re-run the model to get the correct future projections
-# assuming equilibrium catch level in the future and plot the results
-datEq <- load.data(population, catch_quota=EquilibriumCatch)
-objEq <- load.model.object(dat=datEq)
-optEq <- run.model(objEq)
-resEq <- model.results(datEq, objEq, optEq)
-partEq <- par.table(resEq, datEq) 
-plotRes(resEq,datEq)
-
-
-# Find N70 catch level
-catchN70 <- find.N70.quota(population=population)
-
-# Re-run the model to get the correct future projections
-# assuming N70 catch level in the future and plot the results
-dat70 <- load.data(population, catch_quota=catchN70)
-obj70 <- load.model.object(dat=dat70)
-opt70 <- run.model(obj70)
-res70 <- model.results(dat70, obj70, opt70)
-part70 <- par.table(res70, dat70) 
-plotRes(res70,dat70)
-
-# Find the PBR catch level
-pbrCatch <- PBR(n0=partab[4,3], n1=partab[5,3], se0=partab[4,4], se1=partab[5,4])
-
-# Re-run the model to get the correct future projections
-# assuming PBR catch level in the future and plot the results
-datPBR <- load.data(population, catch_quota = c(pbrCatch$p0,pbrCatch$p1))
-objPBR <- load.model.object(dat=datPBR)
-optPBR <- run.model(objPBR)
-resPBR <- model.results(datPBR, objPBR, optPBR)
-partPBR <- par.table(resPBR, datPBR) 
-plotRes(resPBR,datPBR)
-
-```
-
