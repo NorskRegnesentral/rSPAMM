@@ -297,7 +297,6 @@ plotCatch <- function(catch = cdata,
 #' Plot the fecundity data used in the model fit.
 #' @param data Data object used in model fit
 #' @param include.observations Plot the observed fecundity rates with 95 percent confidence intervals (default = TRUE)
-#' @param population If include.observations is TRUE, define which population you want to use.
 #' @return plot Returns a plot of predicted population size for different population components
 #' @keywords fecundity data
 #' @export
@@ -305,31 +304,32 @@ plotCatch <- function(catch = cdata,
 #' plotFecundity(res, data)
 
 plotFecundity <- function(dat = data,
-                           include.observations = TRUE, 
-                           population = "harpeast")
+                          include.observations = TRUE, 
+                          grDev = FALSE)
 {
 
+  if(grDev) graphDev(width = width,height = height)
   par(mar=c(5,6,4,2)+0.1)
   plot(dat$Cdata[,1],dat$Ftmp,type = "l",lwd = 3, col = "royalblue", xlab='Year', ylab='Fecundity rate',ylim=c(0,1), axes=F,cex.lab=1.5)
   if(include.observations){
-    fecundity <- read.table(paste("Data/",population,"/fecundity.dat",sep = ""),header = FALSE)
-    segments(fecundity[,1], 
-             fecundity[,2]-(1.96*(fecundity[,3]*fecundity[,2])),
-             fecundity[,1],
-             fecundity[,2]+(1.96*(fecundity[,3]*fecundity[,2])),
+    #fecundity <- read.table(paste("vignettes/data/",population,"/fecundity.dat",sep = ""),header = FALSE)
+    segments(dat$fecundity[,1], 
+             dat$fecundity[,2]-(1.96*(dat$fecundity[,3]*dat$fecundity[,2])),
+             dat$fecundity[,1],
+             dat$fecundity[,2]+(1.96*(dat$fecundity[,3]*dat$fecundity[,2])),
              col="steelblue")
-    segments(fecundity[,1]-0.5, 
-             fecundity[,2]-(1.96*(fecundity[,3]*fecundity[,2])),
-             fecundity[,1]+0.5,
-             fecundity[,2]-(1.96*(fecundity[,3]*fecundity[,2])),
+    segments(dat$fecundity[,1]-0.5, 
+             dat$fecundity[,2]-(1.96*(dat$fecundity[,3]*dat$fecundity[,2])),
+             dat$fecundity[,1]+0.5,
+             dat$fecundity[,2]-(1.96*(dat$fecundity[,3]*dat$fecundity[,2])),
              col="steelblue")
-    segments(fecundity[,1]-0.5, 
-             fecundity[,2]+(1.96*(fecundity[,3]*fecundity[,2])),
-             fecundity[,1]+0.5,
-             fecundity[,2]+(1.96*(fecundity[,3]*fecundity[,2])),
+    segments(dat$fecundity[,1]-0.5, 
+             dat$fecundity[,2]+(1.96*(dat$fecundity[,3]*dat$fecundity[,2])),
+             dat$fecundity[,1]+0.5,
+             dat$fecundity[,2]+(1.96*(dat$fecundity[,3]*dat$fecundity[,2])),
              col="steelblue")
     
-    points(fecundity[,1],fecundity[,2],
+    points(dat$fecundity[,1],dat$fecundity[,2],
            pch=21, bg="steelblue", cex=1.5)
     
     
@@ -402,13 +402,19 @@ par.table <- function(results=res, dat=data, tab2flex=FALSE) {
 #' Plot the birth ogive curves for various time periods.
 #' @param dat input data for the model
 #' @param highlight.last Highlist last observed birth ogive curve (TRUE/FALSE)
+#' @param grDev Logical parameter to decide wether to open a OS independent graphical window
 #' @keywords birth ogive
 #' @export
 #' @examples
 #' plotOgive()
-plotOgive <- function(dat=data, highlight.last=TRUE) {
+
+plotOgive <- function(dat=data, 
+                      highlight.last=TRUE,
+                      grDev = FALSE) {
   opal <- palette()
   palette(RColorBrewer::brewer.pal(8, 'Dark2'))
+  
+  if(grDev) graphDev(width = width,height = height)
   par(mar=c(5,6,4,2)+0.1)
   matplot(t(dat$Pmat), type='l', lty=1, col='grey',
           xlab='Age (years)',

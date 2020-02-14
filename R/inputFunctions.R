@@ -59,7 +59,8 @@ load.data <- function(population = "harpeast",Amax = 20,years_of_prediction = 15
   data$priors = as.matrix(priors)									#Priors for estimated parameters
   data$Npriors = length(priors$V1)									#Number of priors
   data$CQuota = catch_quota											#Catch level in future projections
-
+  data$fecundity = fecundity
+  
   if('Pper' %in% names(FecAndP)) {
     data$Pper = FecAndP$Pper
   }

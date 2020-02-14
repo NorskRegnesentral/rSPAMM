@@ -345,7 +345,7 @@ plotRes(res,data,projections = FALSE)
 
 The confidence intervals can be turned off by setting `conf.int = FALSE` and the horizontal lines for $N_{lim}$, $N_{50}$ and $N_{70}$ can be turned off by setting `plot.Nlims = FALSE`. For other options you can run `?plotRes`.
 
-If you want to visualize certain types of data you can plot the historical catch level used, the fecundity vector and the birth ogive curves for each time period. To plot the catch data run the `plot.catch()` function:
+If you want to visualize certain types of data you can plot the historical catch level used, the fecundity vector and the birth ogive curves for each time period. To plot the catch data run the `plotCatch()` function:
 ```{r eval = FALSE}
 plotCatch(catch = data$Cdata)
 ```
@@ -363,14 +363,17 @@ plotCatch(catch = data$Cdata,position = "stack")
 
 ***
 
-If you want to explore the birth ogive data used for various periods you can run the `plot.ogive()` function:
-```{r eval=FALSE}
+If you want to explore the birth ogive data used for various periods you can run the `plotOgive()` function:
+```{r}
 plotOgive(dat = data)
 ```
+
+***
+
 <!-- ![Birth ogive for different periods.](figures/birth_ogive.png){ width=98%} -->
 
-Since fecundity rates is not available for all years they are interpolated between missing years. You can plot the fecundity rates used in the modelling by running `plot.fecundity()`. Default it plots both the linear interpolated fecundity rates and the observed fecundity ratesfor a given population.
-```{r eval=FALSE}
+Since fecundity rates is not available for all years they are interpolated between missing years. You can plot the fecundity rates used in the modelling by running `plotFecundity()`. Default it plots both the linear interpolated fecundity rates and the observed fecundity ratesfor a given population.
+```{r}
 plotFecundity(dat = data)
 ```
 <!-- ![Fecundity rates used in the modelling.](figures/fecundity.png){ width=98%} -->

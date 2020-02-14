@@ -41,7 +41,7 @@ res <- model.results(data = data,optobject = optobj)
 partab <- par.table(results=res, dat=data) 
 
 #Plot the results (both the pup model fit and the N1+ population)
-plotRes(res,data)
+plotRes(res,data,grDev = TRUE)
 
 
 ##################
@@ -61,7 +61,7 @@ optEq = run.model(data = data, par = parameters)
 resEq = model.results(data = data,optobject = optEq)
 
 #Plot the estimated future trajectory using equilibrium catch level
-plotRes(resEq,data)
+plotRes(resEq,data,grDev = TRUE)
 
 #--------------------------
 
@@ -81,7 +81,7 @@ optN70 = run.model(data = data, par = parameters)
 resN70 = model.results(data = data,optobject = optN70)
 
 #Plot the estimated future trajectory using the N70 catch level
-plotRes(resN70,data)
+plotRes(resN70,data,grDev = TRUE)
 
 #--------------------------
 
@@ -99,4 +99,4 @@ optPBR = run.model(data = data, par = parameters)
 resPBR = model.results(data = data,optobject = optPBR)
 
 #Plot the estimated future trajectory using PBR catch level
-plotRes(resPBR,data)
+plotRes(resPBR,data,grDev = TRUE)
