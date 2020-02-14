@@ -239,13 +239,18 @@ plotRes <- function(results=res,
 #' @param position Position of bars: If Pup catch and 1+ catch next to each other use position = "dodge" (default). On top of each other use position = "stack"
 #' @param width Figure width
 #' @param height Figure height
+#' @param grDev Logical parameter to decide wether to open a OS independent graphical window
 #' @return plot Returns a plot of predicted population size for different population components
 #' @keywords population model
 #' @export
 #' @examples
 #' plotCatch(data$Cdata)
 
-plotCatch <- function(catch = cdata,width = 9,height = 7,position = "dodge")
+plotCatch <- function(catch = cdata,
+                      width = 9,
+                      height = 7,
+                      position = "dodge",
+                      grDev = FALSE)
 {
   library(ggplot2)
   
@@ -281,6 +286,7 @@ plotCatch <- function(catch = cdata,width = 9,height = 7,position = "dodge")
   
   
   #windows("",width = 15,height = 7)
+  if(grDev) graphDev(width = width,height = height)
   pl
   
 }
