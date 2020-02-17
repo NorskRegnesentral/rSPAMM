@@ -20,7 +20,13 @@ parameters = harpeast$parameters
 
 #Use this if analysing latest version of the
 #complete data set
-#Download full data
+#Download full data. Default the function will
+#ask to create a new folder. If you already have 
+#a folder you can add the option 
+#"chooseFolder = FALSE".
+#Note the Working Directory has to be set to the
+#root folder of the downloaded data, i.e., not 
+#the Data or the Scripts folder.
 downloadData()
 #Loading the data
 data <- load.data(population = "harpeast")

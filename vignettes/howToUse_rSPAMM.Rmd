@@ -68,6 +68,8 @@ downloadData(chooseFolder = FALSE)
 ```
 After downloading the data repository you will have a `Data` folder and a `Scripts` folder. The `Data` folder contains the various harp and hooded seal data and the `Scripts` folder contains useful examples on how to perform a complete assessment.
 
+When analyzing these data the `rSPAMM` package assumes that you are in the root folder of the downloaded data, i.e., not in the **Data** or the **Scripts** folder.
+
 
 
 ## Data files
@@ -489,7 +491,13 @@ parameters = harpeast$parameters
 
 #Use this if analysing latest version of the
 #complete data set
-#Download full data
+#Download full data. Default the function will
+#ask to create a new folder. If you already have 
+#a folder you can add the option 
+#"chooseFolder = FALSE".
+#Note the Working Directory has to be set to the
+#root folder of the downloaded data, i.e., not 
+#the Data or the Scripts folder.
 downloadData()
 #Loading the data
 data <- load.data(population = "harpeast")
@@ -521,8 +529,8 @@ plotRes(res,data,grDev = TRUE)
 #In this example we are assuming 15% pups 
 #and 85% 1+ animals in the catch
 EquilibriumCatch = find.eq.quota(data = data,
-                                  parameters = parameters, 
-                                  quota = c(0.15,0.85))
+                                 parameters =parameters,
+                                 quota = c(0.15,0.85))
 
 #Rerun the model using the estimated equilibrium catch level
 data$CQuota = EquilibriumCatch

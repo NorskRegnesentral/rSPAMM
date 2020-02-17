@@ -107,7 +107,7 @@ N70.helper.Nmax <- function(Tot,dataNmax,parametersNmax,quota)
 {
   #dataNmax <- load.data(population=population, catch_quota=Tot*quota)
   #parametersNmax <- load.initial.values(population)
-  dataN1$CQuota = Tot*quota
+  dataNmax$CQuota = Tot*quota
   #objNmax <- load.model.object(dataNmax, parametersNmax)
   objNmax = TMB::MakeADFun(data=dataNmax,parameters=parametersNmax,DLL="rSPAMM",silent = TRUE)
   
@@ -156,8 +156,8 @@ N70.helper.D <- function(Tot,dataD,parametersD,quota)
   repD <- TMB::sdreport(objD, getJointPrecision=TRUE)
   
   
-  DNmax <- repD$value[match('DNmax', names(repD$value))]
-  DNmaxSD <- repD$sd[match('DNmax', names(repD$value))]
+  DNmax = repD$value[match('DNmax', names(repD$value))]
+  DNmaxSD = repD$sd[match('DNmax', names(repD$value))]
   Dpred = DNmax-qnorm(1-0.1)*DNmaxSD
   
   if(Dpred>0) {

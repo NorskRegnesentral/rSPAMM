@@ -27,7 +27,7 @@ The most recent version of *rSPAMM* is hosted on a git repository at
 
 To install the R-package directly from the repository use the following command (note: the R-package devtools has to be installed first)
 ``` r
-devtools::install_github("https://github.com/NorskRegnesentral/rSPAMM.git")
+devtools::install_github("https://github.com/NorskRegnesentral/rSPAMM.git", build_vignettes = TRUE)
 ``` 
 
 In order to load the package type:
@@ -41,3 +41,10 @@ To load the vignette type:
 ```{r}
 vignette("howToUse_rSPAMM",package = "rSPAMM")
 ```
+
+The vignette will be opened in a system specified viewer. For a HTML version of the vignette (recommended) use
+
+```{r}
+browseVignettes()
+```
+and scroll down to the `rSPAMM` package.
