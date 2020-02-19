@@ -1,5 +1,6 @@
+library(rSPAMM)
 library(TMB)
-source("functions.R")
+#source("functions.R")
 
 # Lag funksjoner
 # * Les inn data OK
@@ -11,8 +12,13 @@ source("functions.R")
 # * Fortsett å lage flere funksjoner.
 
 #compile("harp_and_hoods.cpp")
-compile("harps_and_hoods_population_model.cpp","-O1 -g",DLLFLAGS="")
-dyn.load(dynlib("harps_and_hoods_population_model"))
+data("harpeastDemo")
+data = harpeast$data
+parameters = harpeast$parameters
+
+
+compile("harps_and_hoods_population_model2.cpp","-O1 -g",DLLFLAGS="")
+dyn.load(dynlib("harps_and_hoods_population_model2"))
 
 # Parameters -----------------
 # Specify which population
@@ -78,7 +84,7 @@ parameters$Mtilde= logit(Minit)
 parameters$M0tilde= logit(M0init)
 
 
-obj <- MakeADFun(data,parameters,DLL="harps_and_hoods_population_model")
+obj <- MakeADFun(data,parameters,DLL="harps_and_hoods_population_model2")
 #obj <- MakeADFun(data,parameters,random="u",DLL="hessm")
 
 obj$fn()
@@ -94,6 +100,10 @@ indN1 = which(rep.rnames=="N1");indN1 <- indN1[-1]
 indD1 = which(rep.rnames=="D1");
 indD1New = which(rep.rnames=="D1New");   #NEED TO BE FIXED
 indN0Current = which(rep.rnames=="N0CurrentYear");
+indNTot = which(rep.rnames=="NTot")
+indNTotmax = which(rep.rnames=="NTotmax")
+indDNmax = which(rep.rnames=="DNmax")
+indNTotCurrent = which(rep.rnames=="NTotCurrentYear")
 
 yrs = 1946:2032
 
@@ -108,6 +118,13 @@ N0Current = rep.matrix[indN0Current,1]
 D1.sd = rep.matrix[indD1,2]
 D1New.sd = rep.matrix[indD1New,2]
 N0Current.sd = rep.matrix[indN0Current,2]
+
+NTot = rep.matrix[indNTot,1]
+NTotmax = rep.matrix[indNTotmax,1]
+NTotcurrent = rep.matrix[indNTotCurrent,1]
+DNmax = rep.matrix[indDNmax,1]
+
+
 
 #allsd<-sqrt(diag(solve(rep$jointPrecision)))
 #plsd <- obj$env$parList(par=allsd)

@@ -218,21 +218,31 @@ Type objective_function<Type>::operator() ()
 
  }
  
+ // //array<Type> tmpNtot(Nc+Npred+2);
+ // vector<double> tmpNtot(Nc+Npred+2);
+ // 
+ // for(int i=0;i<Nc+Npred+2;i++)
+ // {
+ //   NTot(i) = (N0(i) + N1(i));
+ // }
+ // 
+ // for(int i =0; i<Nc+Npred+2; ++i){
+ //   tmpNTot(i) = ((double)CppAD::Integer(NTot(i)));
+ // }
+ // 
+ // NTotmax = Type(-999999);
+ // for(int i=0;i<Nc+1;i++)
+ // {
+ //   if(NTotmax < tmpNTot(i)){
+ //     NTotmax = tmpNTot(i);
+ //   }
+ // }
+ // 
  
- for(int i=0;i<Nc+Npred+2;i++)
- {
-   NTot(i) = (N0(i) + N1(i));
- }
+ NTotmax = max(NTot);
  
- NTotmax = Type(0.0);
- //Type maxind = 0;
- for(int i=0;i<Nc+1;i++)
- {
-   if(Type(NTot(i)) > NTotmax){
-     NTotmax = Type(NTot(i));
-     //maxind = i;
-   }
- }
+ //DNmax /= NTotmax;
+ 
  //NTotmax = NTot(CppAD::Integer(maxind));
  //DNmax /= NTot(CppAD::Integer(maxind));
  
