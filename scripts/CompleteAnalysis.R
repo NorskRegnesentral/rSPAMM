@@ -29,22 +29,22 @@ parameters = harpeast$parameters
 #the Data or the Scripts folder.
 downloadData()
 #Loading the data
-data <- load.data(population = "harpeast")
+data = load.data(population = "harpeast")
 #Loading the parameters
-parameters <- load.initial.values(population = "harpeast")
+parameters = load.initial.values(population = "harpeast")
 
 
 ##################
 # Model fitting
 ##################
 #Run the model
-optobj <- run.model(data = data, par = parameters)
+optobj = run.model(data = data, par = parameters)
 
 #Obtain the results
-res <- model.results(data = data,optobject = optobj)
+res = model.results(data = data,optobject = optobj)
 
 #Create a nice table with the results
-partab <- par.table(results=res, dat=data) 
+partab = par.table(results=res, dat=data) 
 
 #Plot the results (both the pup model fit and the N1+ population)
 plotRes(res,data,grDev = TRUE)

@@ -62,7 +62,7 @@ load.model.object <- function(dat = data,par = parameters,template='harps_and_ho
 #' @export
 #' @examples
 #' run.model()
-run.model <- function(data = data,par = parameters,print.to.screen = TRUE)
+run.model <- function(data = data,par = parameters,print2screen = TRUE)
 {
   
   #Load C part---------------------
@@ -81,7 +81,7 @@ run.model <- function(data = data,par = parameters,print.to.screen = TRUE)
   opt = nlminb(obj$par,obj$fn,obj$gr)
   
   #Print relevant output to screen
-  if(print.to.screen){
+  if(print2screen){
     cat('\n--------------------------------------------------\n')
     if(opt$convergence== 0){
     cat(paste('\n Optimization converged: ',opt$message,'\n'))

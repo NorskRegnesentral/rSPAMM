@@ -109,17 +109,23 @@ N70.helper.Nmax <- function(Tot,dataNmax,parametersNmax,quota)
   #parametersNmax <- load.initial.values(population)
   dataNmax$CQuota = Tot*quota
   #objNmax <- load.model.object(dataNmax, parametersNmax)
-  objNmax = TMB::MakeADFun(data=dataNmax,parameters=parametersNmax,DLL="rSPAMM",silent = TRUE)
+  #objNmax = TMB::MakeADFun(data=dataNmax,parameters=parametersNmax,DLL="rSPAMM",silent = TRUE)
   
   optNmax = nlminb(objNmax$par,objNmax$fn,objNmax$gr)
+  
+  optNmax = run.model(data = dataNmax, par = parametersNmax,print2screen = FALSE)
+  
   repNmax = TMB::sdreport(objNmax, getJointPrecision=TRUE)
-
+  resNmax = model.results(data = dataNmax,optobject = optNmax)
+  
+  N70 = 0.7*resNmax$NTotmax
   indNTot = which(names(repNmax$value)=="NTot")
   indNTot = indNTot[-1]
   indCur = diff(range(dataNmax$Cdata[,1]))+1
   NTot = repNmax$value[indNTot]
   NTotSD = repNmax$sd[indNTot]
   N70 = 0.7*max(NTot[c(1:indCur)])
+  
   
   Npred = NTot[indCur+15]-qnorm(1-0.1)*NTotSD[indCur+15]
   
@@ -154,10 +160,13 @@ N70.helper.D <- function(Tot,dataD,parametersD,quota)
   
   optD <- nlminb(objD$par,objD$fn,objD$gr)
   repD <- TMB::sdreport(objD, getJointPrecision=TRUE)
+  resD = model.results(data = data,optobject = optD)
   
   
-  DNmax = repD$value[match('DNmax', names(repD$value))]
-  DNmaxSD = repD$sd[match('DNmax', names(repD$value))]
+  #DNmax = repD$value[match('DNmax', names(repD$value))]
+  DNmax = resD$DNmax
+  #DNmaxSD = repD$sd[match('DNmax', names(repD$value))]
+  DNmaxSD = resD$DNmax.sd
   Dpred = DNmax-qnorm(1-0.1)*DNmaxSD
   
   if(Dpred>0) {
@@ -181,7 +190,7 @@ N70.helper.D <- function(Tot,dataD,parametersD,quota)
 #' @keywords population model
 #' @export
 
-find.N70.quota <- function(MIN=5000,
+find.N70.quota <- function(MIN=100,
                            MAX=50000,
                            quota=c(0,1),
                            data = data,
@@ -207,10 +216,11 @@ find.N70.quota <- function(MIN=5000,
   if(isAbove){
     quota = quota/sum(quota)
     if (method == "Dbased"){
-      tmp = optimize(N70.helper.D,lower=MIN,upper=MAX,dataD = data,parametersD = parameters,quota=quota,tol=50)
-    }
+      tmp = optimize(N70.helper.D,lower=MIN,upper=MAX,dataD = data,parametersD = parameters,quota=quota,tol=5)
+    
+      }
     if (method == "Nbased") {
-      tmp = optimize(N70.helper.Nmax,lower=MIN,upper=MAX,dataNmax=data,parametersNmax=parameters,quota=quota,tol=50)
+      tmp = optimize(N70.helper.Nmax,lower=MIN,upper=MAX,dataNmax=data,parametersNmax=parameters,quota=quota,tol=5)
     }
     #cat("N70 quota for",population,"(pups,adults,total):",round(tmp$minimum*quota),sum(round(tmp$minimum*quota)),"\n")
     cat("-----------------------------------------------------\n\n")
