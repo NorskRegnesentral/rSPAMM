@@ -221,10 +221,10 @@ Type objective_function<Type>::operator() ()
  // //array<Type> tmpNtot(Nc+Npred+2);
  // vector<double> tmpNtot(Nc+Npred+2);
  // 
- // for(int i=0;i<Nc+Npred+2;i++)
- // {
- //   NTot(i) = (N0(i) + N1(i));
- // }
+ for(int i=0;i<Nc+Npred+2;i++)
+ {
+    NTot(i) = (N0(i) + N1(i));
+}
  // 
  // for(int i =0; i<Nc+Npred+2; ++i){
  //   tmpNTot(i) = ((double)CppAD::Integer(NTot(i)));
