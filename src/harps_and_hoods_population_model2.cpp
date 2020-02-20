@@ -241,7 +241,7 @@ Type objective_function<Type>::operator() ()
  
  NTotmax = max(NTot);
  
- //DNmax /= NTotmax;
+ DNmax = NTotpred/NTotmax;
  
  //NTotmax = NTot(CppAD::Integer(maxind));
  //DNmax /= NTot(CppAD::Integer(maxind));
