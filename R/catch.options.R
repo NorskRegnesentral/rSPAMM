@@ -99,11 +99,12 @@ find.eq.quota <- function(MIN=1000,
 #' @param Tot Total annual catch for population projections 
 #' @param population Choose which population to run the model on (harpwest,harpeast,hooded).
 #' @param quota Proportional catch of 0 and 1+ animals
+#' @param predYears Define how many years the reduction will be carried out on. Default (10)
 #' @return minN70 Minimum found for difference between N70 and the projected total population size
 #' @keywords population model
 #' @export
 
-N70.helper.Nmax <- function(Tot,dataNmax,parametersNmax,quota)
+N70.helper.Nmax <- function(Tot,dataNmax,parametersNmax,quota,predYears)
 {
 
   dataNmax$CQuota = Tot*quota
@@ -119,7 +120,7 @@ N70.helper.Nmax <- function(Tot,dataNmax,parametersNmax,quota)
   N70 = 0.7*max(NTot[c(1:indCur)])
   
   #Lower limit of 80 percent confidence interval
-  Npred = NTot[indCur+10]-qnorm(1-0.1)*NTotSD[indCur+10]
+  Npred = NTot[indCur+predYears]-qnorm(1-0.1)*NTotSD[indCur+predYears]
   
   #if(Npred>0) {
   return(abs(N70-Npred))
@@ -136,15 +137,17 @@ N70.helper.Nmax <- function(Tot,dataNmax,parametersNmax,quota)
 #' @param dataD The data to be analyzed
 #' @param parametersD Parameters used for the model
 #' @param quota Proportional catch of 0 and 1+ animals
+#' @param predYears Define how many years the reduction will be carried out on. Default (10)
 #' @return minD07 Minimum found for difference between the depletion coefficient D and 0.7
 #' @keywords population model
 #' @export
 
-N70.helper.D <- function(Tot,dataD,parametersD,quota)
+N70.helper.D <- function(Tot,dataD,parametersD,quota,predYears)
 {
   # Function called from find.N70 that should be used!
   #dataD <- load.data(population=population, catch_quota=Tot*quota)
   #parametersD <- load.initial.values(population)
+  dataD$Npred = predYears
   dataD$CQuota = Tot*quota
   
   #objD <- load.model.object(dataD, parametersD)
@@ -174,6 +177,7 @@ N70.helper.D <- function(Tot,dataD,parametersD,quota)
 #' @param quota Proportional catch of 0 and 1+ animals
 #' @param data The data to be analyzed
 #' @param parameters Parameters used for the model
+#' @param predYears Define how many years the reduction will be carried out on. Default (10)
 #' @param method Set whether D-based (depletion coefficient D) or N-based (total population size) criterion should be used for optimisation (Dbased,Nbased)
 #' @return q70 Optimum quota for achieving projected size of 70% of maximum population size
 #' @keywords population model
@@ -184,6 +188,7 @@ find.N70.quota <- function(MIN=100,
                            quota=c(0,1),
                            data = data,
                            parameters = parameters,
+                           predYears = 10,
                            method = "Nbased")
 {
   #Check if current population is below N70
@@ -199,7 +204,7 @@ find.N70.quota <- function(MIN=100,
   NTotSD = repTest$sd[indNTot]
   NTotCur = NTot[indCur]
   N70 = 0.7*max(NTot[c(1:indCur)])
-  Npred = NTot[indCur+10]-qnorm(1-0.1)*NTotSD[indCur+10]
+  Npred = NTot[indCur+predYears]-qnorm(1-0.1)*NTotSD[indCur+predYears]
   
   if(Npred>N70) isAbove = TRUE else isAbove = FALSE
   
@@ -208,10 +213,10 @@ find.N70.quota <- function(MIN=100,
   if(isAbove){
     quota = quota/sum(quota)
     if (method == "Dbased"){
-      tmp = optimize(N70.helper.D,lower=MIN,upper=MAX,dataD = data,parametersD = parameters,quota=quota,tol=.005)
+      tmp = optimize(N70.helper.D,lower=MIN,upper=MAX,dataD = data,parametersD = parameters,quota=quota,predYears = predYears,tol=5)
       }
     if (method == "Nbased") {
-      tmp = optimize(N70.helper.Nmax,lower=MIN,upper=MAX,dataNmax=data,parametersNmax=parameters,quota=quota,tol=5)
+      tmp = optimize(N70.helper.Nmax,lower=MIN,upper=MAX,dataNmax=data,parametersNmax=parameters,quota=quota,predYears = predYears,tol=5)
     }
     #cat("N70 quota for",population,"(pups,adults,total):",round(tmp$minimum*quota),sum(round(tmp$minimum*quota)),"\n")
     cat("-----------------------------------------------------\n\n")
@@ -225,7 +230,7 @@ find.N70.quota <- function(MIN=100,
     cat("\n ---------------------------------------\n\n")
     cat(" Current population size is already within\n")
     cat(" the 80 percent confidence interval of\n")
-    cat(" the 10 year prediction.\n")
+    cat(" the ",predYears," year prediction.\n")
     cat(" Hence, no catch level will be estimated.\n")
     cat("\n ---------------------------------------\n\n")
     return(NA)
