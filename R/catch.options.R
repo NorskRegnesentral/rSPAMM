@@ -105,20 +105,12 @@ find.eq.quota <- function(MIN=1000,
 
 N70.helper.Nmax <- function(Tot,dataNmax,parametersNmax,quota)
 {
-  #dataNmax <- load.data(population=population, catch_quota=Tot*quota)
-  #parametersNmax <- load.initial.values(population)
+
   dataNmax$CQuota = Tot*quota
-  #objNmax <- load.model.object(dataNmax, parametersNmax)
-  #objNmax = TMB::MakeADFun(data=dataNmax,parameters=parametersNmax,DLL="rSPAMM",silent = TRUE)
-  
+  objNmax = TMB::MakeADFun(data=dataNmax,parameters=parametersNmax,DLL="rSPAMM",silent = TRUE)
   optNmax = nlminb(objNmax$par,objNmax$fn,objNmax$gr)
-  
-  optNmax = run.model(data = dataNmax, par = parametersNmax,print2screen = FALSE)
-  
   repNmax = TMB::sdreport(objNmax, getJointPrecision=TRUE)
-  resNmax = model.results(data = dataNmax,optobject = optNmax)
-  
-  N70 = 0.7*resNmax$NTotmax
+
   indNTot = which(names(repNmax$value)=="NTot")
   indNTot = indNTot[-1]
   indCur = diff(range(dataNmax$Cdata[,1]))+1
@@ -126,14 +118,14 @@ N70.helper.Nmax <- function(Tot,dataNmax,parametersNmax,quota)
   NTotSD = repNmax$sd[indNTot]
   N70 = 0.7*max(NTot[c(1:indCur)])
   
+  #Lower limit of 80 percent confidence interval
+  Npred = NTot[indCur+10]-qnorm(1-0.1)*NTotSD[indCur+10]
   
-  Npred = NTot[indCur+15]-qnorm(1-0.1)*NTotSD[indCur+15]
-  
-  if(Npred>0) {
-    return(abs(N70-Npred))
-  } else {
-    99999
-  }  
+  #if(Npred>0) {
+  return(abs(N70-Npred))
+  #} else {
+  #  99999
+  #}  
 }
 
 
@@ -160,26 +152,23 @@ N70.helper.D <- function(Tot,dataD,parametersD,quota)
   
   optD <- nlminb(objD$par,objD$fn,objD$gr)
   repD <- TMB::sdreport(objD, getJointPrecision=TRUE)
-  resD = model.results(data = data,optobject = optD)
-  
-  
-  #DNmax = repD$value[match('DNmax', names(repD$value))]
-  DNmax = resD$DNmax
-  #DNmaxSD = repD$sd[match('DNmax', names(repD$value))]
-  DNmaxSD = resD$DNmax.sd
+
+  DNmax = repD$value[match('DNmax', names(repD$value))]
+  DNmaxSD = repD$sd[match('DNmax', names(repD$value))]
+
   Dpred = DNmax-qnorm(1-0.1)*DNmaxSD
   
-  if(Dpred>0) {
-    return(abs(0.7-Dpred))
-  } else {
-    99999
-  }  
+  #if(Dpred>0) {
+  return(abs(0.7-Dpred))
+  #} else {
+  #  99999
+  #}  
 }
 
 
 #' Main function for finding N70 quota
 #'
-#' Finding D-based or N-based N70 quota
+#' Finding the catch level that brings the population down to N70 with probability 0.8 in a 10 year period
 #' @param MIN Minimum extent of search window for total catch 
 #' @param MAX Maximum extent of search window for total catch 
 #' @param quota Proportional catch of 0 and 1+ animals
@@ -209,15 +198,16 @@ find.N70.quota <- function(MIN=100,
   NTot = repTest$value[indNTot]
   NTotCur = NTot[indCur]
   N70 = 0.7*max(NTot[c(1:indCur)])
-  if(NTotCur>N70) isAbove = TRUE else isAbove = FALSE
+  Npred = NTot[indCur+10]-qnorm(1-0.1)*NTotSD[indCur+10]
+  
+  if(Npred>N70) isAbove = TRUE else isAbove = FALSE
   
   
   # Function to find 70% quota
   if(isAbove){
     quota = quota/sum(quota)
     if (method == "Dbased"){
-      tmp = optimize(N70.helper.D,lower=MIN,upper=MAX,dataD = data,parametersD = parameters,quota=quota,tol=5)
-    
+      tmp = optimize(N70.helper.D,lower=MIN,upper=MAX,dataD = data,parametersD = parameters,quota=quota,tol=.005)
       }
     if (method == "Nbased") {
       tmp = optimize(N70.helper.Nmax,lower=MIN,upper=MAX,dataNmax=data,parametersNmax=parameters,quota=quota,tol=5)
@@ -232,8 +222,10 @@ find.N70.quota <- function(MIN=100,
     tmp$minimum*quota
   } else{
     cat("\n ---------------------------------------\n\n")
-    cat(" Current population size is below N70.\n")
-    cat(" No catch level will be estimated.\n")
+    cat(" Current population size is already within\n")
+    cat(" the 80 percent confidence interval of\n")
+    cat(" the 10 year prediction.\n")
+    cat(" Hence, no catch level will be estimated.\n")
     cat("\n ---------------------------------------\n\n")
     return(NA)
   }

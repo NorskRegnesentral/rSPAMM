@@ -413,7 +413,7 @@ plotRes(resEq,data)
 ***
 
 ## $N_{70}$ catch level
-To find the the catch level that would reduce the population to 70% with probability 0.8 over a 15-year period you run the function `find.N70.quota()`:
+To find the the catch level that would reduce the population to 70% of the historical maximum observed (modelled) with probability 0.8 over a 10-year period you run the function `find.N70.quota()`:
 ```{r}
 catchN70 = find.N70.quota(data = data,
                           parameters = parameters, 
