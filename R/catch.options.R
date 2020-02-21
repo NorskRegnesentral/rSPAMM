@@ -196,6 +196,7 @@ find.N70.quota <- function(MIN=100,
   indNTot = indNTot[-1]
   indCur = diff(range(data$Cdata[,1]))+1
   NTot = repTest$value[indNTot]
+  NTotSD = repTest$sd[indNTot]
   NTotCur = NTot[indCur]
   N70 = 0.7*max(NTot[c(1:indCur)])
   Npred = NTot[indCur+10]-qnorm(1-0.1)*NTotSD[indCur+10]
