@@ -66,7 +66,7 @@ When you run this function you can run it as it is and you will be asked to spec
 ```{r eval=FALSE}
 downloadData(chooseFolder = FALSE)
 ```
-After downloading the data repository you will have a `Data` folder and a `Scripts` folder. The `Data` folder contains the various harp and hooded seal data and the `Scripts` folder contains useful examples on how to perform a complete assessment.
+After downloading the data repository you will have a **Data** folder and a **Scripts** folder. The **Data** folder contains the various harp and hooded seal data and the **Scripts** folder contains useful examples on how to perform a complete assessment.
 
 When analyzing these data the `rSPAMM` package assumes that you are in the root folder of the downloaded data, i.e., not in the **Data** or the **Scripts** folder.
 
