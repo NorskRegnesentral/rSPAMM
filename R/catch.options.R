@@ -177,7 +177,7 @@ N70.helper.D <- function(Tot,dataD,parametersD,quota,predYears)
 #' @param quota Proportional catch of 0 and 1+ animals
 #' @param data The data to be analyzed
 #' @param parameters Parameters used for the model
-#' @param predYears Define how many years the reduction will be carried out on. Default (10)
+#' @param predYears Define how many years the reduction will be carried out on. Default (15)
 #' @param method Set whether D-based (depletion coefficient D) or N-based (total population size) criterion should be used for optimisation (Dbased,Nbased)
 #' @return q70 Optimum quota for achieving projected size of 70% of maximum population size
 #' @keywords population model
@@ -188,7 +188,7 @@ find.N70.quota <- function(MIN=100,
                            quota=c(0,1),
                            data = data,
                            parameters = parameters,
-                           predYears = 10,
+                           predYears = 15,
                            method = "Nbased")
 {
   #Check if current population is below N70

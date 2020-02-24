@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 library(rSPAMM)
 ```
 # Overview
-The purpose of this vignette is to show how to use the `rSPAMM` package for assessment of various harp and hooded seal populations. It will guide you through the model fitting, obtaining estimated quantities, finding and exploring, various catch options, how to structure the data set, and how to visualize the modelled population dynamics. We also present the model used.
+The purpose of this vignette is to show how to use the `rSPAMM` package for assessment of various harp and hooded seal populations. It will guide you through the model fitting, obtaining estimated quantities, finding and exploring, various catch options, how to structure the data set, and how to visualize the modelled population dynamics. In the appendix we provide a script for a complete analysis of the demo data, and we present the population dynamics model used.
 
 
 
@@ -267,23 +267,23 @@ M0est.sd                Standard deviation of the estimated pup mortality
 
 D1                      Estimated depletion coefficient
 
-D1Nmax                   Estimated of depletion coefficient using Nmax and Npred
+DNmax                   Estimated of depletion coefficient using Nmax and Npred
 
 N0Current               Estimated pup abundance for the current year
 
 N1Current               Estimated 1+ abundance for the current year
 
-NtotCurrent             Estimated total abundance for the current year
+NTotCurrent             Estimated total abundance for the current year
 
 D1.sd                   Standard deviation of estimated D
 
-D1Nmax.sd                Standard deviation of estimated D using Nmax and Npred
+DNmax.sd                Standard deviation of estimated D using Nmax and Npred
 
 N0Current               Standard deviation of current pup abundance
 
 N1Current               Standard deviation of current 1+ abundanceI
 
-NtotCurrent             Standard deviation of current total abundance
+NTotCurrent             Standard deviation of current total abundance
 -------------------------------------------------
 
 The model results can be obtained by running:
@@ -413,7 +413,7 @@ plotRes(resEq,data)
 ***
 
 ## $N_{70}$ catch level
-To find the the catch level that would reduce the population to 70% of the historical maximum observed (modelled) with probability 0.8 over a 10-year period you run the function `find.N70.quota()`:
+To find the the catch level that would reduce the population to 70% of the historical maximum observed (modelled) with probability 0.8 over a 15-year period you run the function `find.N70.quota()`:
 ```{r}
 catchN70 = find.N70.quota(data = data,
                           parameters = parameters, 
@@ -421,11 +421,11 @@ catchN70 = find.N70.quota(data = data,
 ```
 
 For this population it turns out that the current population
-size is below $N{70}$. Because of this there is no point estimating the $N{70}$ catch level.
+size is below $N_{70}$. Because of this there is no point estimating the $N_{70}$ catch level.
 
 This example assume that zero pups are in the catch and that all catch are 1 year old animals or more. To change he proportion of pups and 1+ animals in the catch you use the `quota` variable, i.e., use `quota = c(0.15,0.85)` to find the $N{70}$ catch level assuming 15% pups and 85% 1+ animals in the catch:
 
-If the $N{70}$ population size was below the current population size you could re-run the model using the estimated $N{70}$ catch level 
+If the $N_{70}$ population size was below the current population size you could re-run the model using the estimated $N_{70}$ catch level 
 ```{r eval=FALSE}
 data$CQuota = catchN70
 optN70 = run.model(data = data, par = parameters)
