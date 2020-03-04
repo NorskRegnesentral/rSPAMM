@@ -4,14 +4,14 @@
 \alias{run.model}
 \title{Run the loaded population model for harp seals and hooded seals}
 \usage{
-run.model(data = data, par = parameters, print.to.screen = TRUE)
+run.model(data = data, par = parameters, print2screen = TRUE)
 }
 \arguments{
 \item{par}{The initial values of the parameters to be estimated.}
 
-\item{dat}{The data used for optimizing the model.}
-
 \item{print2screen}{Logical parameter to decide wether to output results to screen.}
+
+\item{dat}{The data used for optimizing the model.}
 }
 \value{
 Output from optimized model.

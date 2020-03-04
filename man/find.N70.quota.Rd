@@ -5,11 +5,12 @@
 \title{Main function for finding N70 quota}
 \usage{
 find.N70.quota(
-  MIN = 5000,
+  MIN = 100,
   MAX = 50000,
   quota = c(0, 1),
   data = data,
   parameters = parameters,
+  predYears = 15,
   method = "Nbased"
 )
 }
@@ -24,13 +25,15 @@ find.N70.quota(
 
 \item{parameters}{Parameters used for the model}
 
+\item{predYears}{Define how many years the reduction will be carried out on. Default (15)}
+
 \item{method}{Set whether D-based (depletion coefficient D) or N-based (total population size) criterion should be used for optimisation (Dbased,Nbased)}
 }
 \value{
 q70 Optimum quota for achieving projected size of 70% of maximum population size
 }
 \description{
-Finding D-based or N-based N70 quota
+Finding the catch level that brings the population down to N70 with probability 0.8 in a 10 year period
 }
 \keyword{model}
 \keyword{population}

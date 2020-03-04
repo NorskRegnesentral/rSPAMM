@@ -4,7 +4,7 @@
 \alias{N70.helper.D}
 \title{Internal helper function for finding N70 quota}
 \usage{
-N70.helper.D(Tot, dataD, parametersD, quota)
+N70.helper.D(Tot, dataD, parametersD, quota, predYears)
 }
 \arguments{
 \item{Tot}{Total annual catch for population projections}
@@ -14,6 +14,8 @@ N70.helper.D(Tot, dataD, parametersD, quota)
 \item{parametersD}{Parameters used for the model}
 
 \item{quota}{Proportional catch of 0 and 1+ animals}
+
+\item{predYears}{Define how many years the reduction will be carried out on. Default (10)}
 }
 \value{
 minD07 Minimum found for difference between the depletion coefficient D and 0.7

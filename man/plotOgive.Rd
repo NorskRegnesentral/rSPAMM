@@ -4,12 +4,14 @@
 \alias{plotOgive}
 \title{Plot birth ogive curves}
 \usage{
-plotOgive(dat = data, highlight.last = TRUE)
+plotOgive(dat = data, highlight.last = TRUE, grDev = FALSE)
 }
 \arguments{
 \item{dat}{input data for the model}
 
 \item{highlight.last}{Highlist last observed birth ogive curve (TRUE/FALSE)}
+
+\item{grDev}{Logical parameter to decide wether to open a OS independent graphical window}
 }
 \description{
 Plot the birth ogive curves for various time periods.

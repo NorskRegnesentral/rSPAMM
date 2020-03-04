@@ -4,12 +4,14 @@
 \alias{N70.helper.Nmax}
 \title{Internal helper function for finding N70 quota}
 \usage{
-N70.helper.Nmax(Tot, dataNmax, parametersNmax, quota)
+N70.helper.Nmax(Tot, dataNmax, parametersNmax, quota, predYears)
 }
 \arguments{
 \item{Tot}{Total annual catch for population projections}
 
 \item{quota}{Proportional catch of 0 and 1+ animals}
+
+\item{predYears}{Define how many years the reduction will be carried out on. Default (10)}
 
 \item{population}{Choose which population to run the model on (harpwest,harpeast,hooded).}
 }

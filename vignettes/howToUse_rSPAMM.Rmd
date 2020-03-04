@@ -365,6 +365,14 @@ plotCatch(catch = data$Cdata,position = "stack")
 
 ***
 
+You can plot the modelled population dynamics and the reported catch in the same figure using `plotResCatch()`
+
+```{r eval = FALSE}
+plotCatch(catch = data$Cdata,position = "stack")
+```
+
+***
+
 If you want to explore the birth ogive data used for various periods you can run the `plotOgive()` function:
 ```{r fig.height=4}
 plotOgive(dat = data)

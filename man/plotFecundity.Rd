@@ -4,12 +4,10 @@
 \alias{plotFecundity}
 \title{Plot fecundity data}
 \usage{
-plotFecundity(dat = data, include.observations = TRUE, population = "harpeast")
+plotFecundity(dat = data, include.observations = TRUE, grDev = FALSE)
 }
 \arguments{
 \item{include.observations}{Plot the observed fecundity rates with 95 percent confidence intervals (default = TRUE)}
-
-\item{population}{If include.observations is TRUE, define which population you want to use.}
 
 \item{data}{Data object used in model fit}
 }
