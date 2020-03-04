@@ -497,6 +497,7 @@ plotCatch <- function(catch = cdata,
                       grDev = FALSE)
 {
 
+  library(ggplot2)
   #theCols <- RColorBrewer::brewer.pal(3, 'Dark2')
   theCols <- RColorBrewer::brewer.pal(3, "Dark2")[c(2,1,3)]
   

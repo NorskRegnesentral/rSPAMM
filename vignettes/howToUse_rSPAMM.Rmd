@@ -351,7 +351,7 @@ If you want to visualize certain types of data you can plot the historical catch
 ```{r eval = FALSE}
 plotCatch(catch = data$Cdata)
 ```
-![Reported catch levels of pups and 1+ animals with bars next to each other.](figures/catch_data_dodge.png){ width=98%}
+![Reported catch levels of pups and 1+ animals with bars next to each other.](figures/catch_data_dodge_new.png){ width=98%}
 
 
 ***
@@ -361,15 +361,16 @@ Default the bars are next to each other, but the bars can be plotted on top of e
 plotCatch(catch = data$Cdata,position = "stack")
 ```
 
-![Reported catch levels of pups and 1+ animals with bars on top of each other.](figures/catch_data_stack.png){ width=98%}
+![Reported catch levels of pups and 1+ animals with bars on top of each other.](figures/catch_data_stack_new.png){ width=98%}
 
 ***
 
 You can plot the modelled population dynamics and the reported catch in the same figure using `plotResCatch()`
 
 ```{r eval = FALSE}
-plotCatch(catch = data$Cdata,position = "stack")
+plotResCatch(res,data)
 ```
+![Reported catch levels of pups and 1+ animals with bars next to each other.](figures/plotResCatch.png){ width=98%}
 
 ***
 
