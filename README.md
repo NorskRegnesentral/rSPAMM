@@ -1,4 +1,4 @@
-<img src="vignettes/figures/NR-logo_utvidet_r32g60b136_small.png" align="right" height="50px"/>
+<img src="vignettes/figures/Logos.png" align="right" height="50px"/>
 
 # The rSPAMM package
 
