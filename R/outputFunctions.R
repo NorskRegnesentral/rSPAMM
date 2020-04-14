@@ -243,6 +243,8 @@ plotRes <- function(results=res,
 #' @param height Height of the figure
 #' @param conf.int Logical parameter to decide wether to plot 95 percent confidence interval or not
 #' @param grDev Logical parameter to decide wether to open a OS independent graphical window
+#' @param long.labels Set TRUE for more detailed legend and FALSE for simple
+#' @param plotCatch Set TRUE to add catch, or FALSE to only show population trajectory.
 #' @return plot Returns a plot of predicted population size for different population components
 #' @keywords population model
 #' @export
@@ -251,7 +253,7 @@ plotRes <- function(results=res,
 
 plotResCatch <- function (results = res, 
                           data = data, 
-                          component = c("N0","N1"), 
+                          component = c("N0","N1", "Tot"), 
                           xLim = NA, 
                           yLim = NA, 
                           plot.legend = TRUE, 
@@ -262,8 +264,11 @@ plotResCatch <- function (results = res,
                           height = 13, 
                           conf.int = TRUE, 
                           grDev = FALSE, 
-                          labels='English') 
+                          labels='English', 
+                          long.labels=TRUE, 
+                          plotCatch=TRUE) 
 {
+  def.par <- par(no.readonly = TRUE) # save default, for resetting...
   if (projections) {
     span <- c(1:length(results$indN0))
   } else {
@@ -282,13 +287,22 @@ plotResCatch <- function (results = res,
                                       "Dark2")
   if (length(xLim) == 1) 
     xLim <- range(results$years)
-  if ("N1" %in% component) {
+  if ("N1" %in% component | "Tot" %in% component) {
     indN1back <- results$indN1[c(1:match(max(data$pupProductionData[, 
                                                                     1]), results$years))]
     lCI <- results$rep.matrix[results$indN1, 1] - (1.96 * 
                                                      results$rep.matrix[results$indN1, 2])
     uCI <- results$rep.matrix[results$indN1, 1] + (1.96 * 
                                                      results$rep.matrix[results$indN1, 2])
+    
+    if('Tot' %in% component) {
+      indN1back <- results$indNTot[c(1:match(max(data$pupProductionData[,1]), 
+                                             results$years))]
+      lCI <- results$rep.matrix[results$indNTot, 1] - (1.96 * 
+                                                         results$rep.matrix[results$indNTot, 2])
+      uCI <- results$rep.matrix[results$indNTot, 1] + (1.96 * 
+                                                         results$rep.matrix[results$indNTot, 2])
+    }
     if (length(yLim) == 1) 
       yLim <- c(0, max(uCI))
     if (!projections) {
@@ -305,20 +319,36 @@ plotResCatch <- function (results = res,
         yLim[2] <- max(uCI[span])
       }
     }
-    layout(matrix(c(1,2), ncol=1), heights=c(0.7, 0.3))
-    par(mar = c(1, 8, 1, 2) + 0.1, las=1)
-    plot(results$years, results$rep.matrix[results$indN1, 
-                                           1], type = "l", xlab = "Year", ylab = "", 
-         col = theCols[1], lwd = 2, lty = 2, xlim = xLim, 
-         ylim = yLim, axes = FALSE, cex.lab = 1.5)
+    if(plotCatch) {
+      layout(matrix(c(1,2), ncol=1), heights=c(0.7, 0.3))
+      par(mar = c(1, 8, 1, 2) + 0.1, las=1)
+    } else {
+      par(mar = c(3, 8, 1, 2) + 0.1, las=1)
+    }  
+    
+    if('Tot' %in% component) {
+      plot(results$years, results$rep.matrix[results$indNTot,1], type = "l", xlab = "", ylab = "", 
+           col = theCols[1], lwd = 2, lty = 2, xlim = xLim, 
+           ylim = yLim, axes = FALSE, cex.lab = 1.5)
+    } else {
+      plot(results$years, results$rep.matrix[results$indN1,1], type = "l", xlab = "", ylab = "", 
+           col = theCols[1], lwd = 2, lty = 2, xlim = xLim, 
+           ylim = yLim, axes = FALSE, cex.lab = 1.5)
+    }
     if(labels=='Norwegian') {
-      mtext(side=2, line=6, 'Bestandsst?rrelse', las=0, cex=1.5)
+      mtext(side=2, line=6, 'Bestandsstørrelse', las=0, cex=1.5)
     } else {
       mtext(side=2, line=6, 'Abundance', las=0, cex=1.5)
     }
-    if (!projections | !mean.proj) 
-      lines(results$years, results$rep.matrix[results$indN1, 
-                                              1], lwd = 2, lty = 2, col = "white")
+    if (!projections | !mean.proj) {
+      if('Tot' %in% component) {
+        lines(results$years, results$rep.matrix[results$indNTot, 
+                                                1], lwd = 2, lty = 2, col = "white")
+      } else {
+        lines(results$years, results$rep.matrix[results$indN1, 
+                                                1], lwd = 2, lty = 2, col = "white")
+      }  
+    }  
     axis(1, labels=F)
     axis(2, at = pretty(par("usr")[c(3, 4)]), 
          labels = format(pretty(par("usr")[c(3, 4)]), scientific = F, big.mark=' '))
@@ -340,8 +370,13 @@ plotResCatch <- function (results = res,
         lines(results$years, lCI, col = theCols[1], lty = 2)
         lines(results$years, uCI, col = theCols[1], lty = 2)
       }
-      lines(results$years, results$rep.matrix[results$indN1, 
-                                              1], col = theCols[1], lwd = 2, lty = 2)
+      if('Tot' %in% component) {
+        lines(results$years, results$rep.matrix[results$indNTot, 
+                                                1], col = theCols[1], lwd = 2, lty = 2)
+      } else {
+        lines(results$years, results$rep.matrix[results$indN1, 
+                                                1], col = theCols[1], lwd = 2, lty = 2)
+      }
     }
     if (conf.int) {
       polygon(c(c(results$years[1]:(max(data$Cdata[, 1]) + 
@@ -351,9 +386,15 @@ plotResCatch <- function (results = res,
                                                                                                                                                                         1]) + 1) - results$years[1] + 1))])), col = add.alpha(theCols[1], 
                                                                                                                                                                                                                               0.5), border = NA)
     }
-    lines((data$Cdata[1, 1]:(max(data$Cdata[, 1]) + 1)), 
-          results$rep.matrix[results$indN1[1:(length(data$Cdata[, 
-                                                                1]) + 1)]], col = theCols[1], lwd = 2)
+    if('Tot' %in% component) {
+      lines((data$Cdata[1, 1]:(max(data$Cdata[, 1]) + 1)), 
+            results$rep.matrix[results$indNTot[1:(length(data$Cdata[, 
+                                                                    1]) + 1)]], col = theCols[1], lwd = 2)
+    } else {
+      lines((data$Cdata[1, 1]:(max(data$Cdata[, 1]) + 1)), 
+            results$rep.matrix[results$indN1[1:(length(data$Cdata[, 
+                                                                  1]) + 1)]], col = theCols[1], lwd = 2)
+    }
   }
   if ("N0" %in% component) {
     indN0back <- results$indN0[c(1:match(max(data$pupProductionData[, 
@@ -384,12 +425,11 @@ plotResCatch <- function (results = res,
                                                                                        data$pupProductionData[, 2])))))
         }
       }
-      plot(results$years, results$rep.matrix[results$indN0, 
-                                             1], type = "l", xlab = "", ylab = "", 
+      plot(results$years, results$rep.matrix[results$indN0,1], type = "l", xlab = "", ylab = "", 
            col = theCols[2], lwd = 2, lty = 2, xlim = xLim, 
            ylim = yLim, axes = FALSE, cex.lab = 1.5)
       if(labels=='Norwegian') {
-        mtext(side=2, line=6, 'Bestandsst?rrelse', las=0, cex=1.5)
+        mtext(side=2, line=6, 'Bestandsstørrelse', las=0, cex=1.5)
       } else {
         mtext(side=2, line=6, 'Abundance', las=0, cex=1.5)
       }
@@ -447,32 +487,316 @@ plotResCatch <- function (results = res,
                                                                2], pch = 21, bg = theCols[2], cex = 1.5)
   }
   
-  par(mar = c(3, 8, 1, 2) + 0.1, las=1)
-  plot(par('usr')[c(1,2)], c(0, max(data$Cdata[,-1])), 
-       type='n', axes=F, xlab='', ylab='', xlim=xLim, 
-       cex.lab = 1.5)
-  axis(1)
-  axis(2, at=pretty(c(0, max(data$Cdata[,-1]))), 
-       labels=format(pretty(c(0, max(data$Cdata[,-1]))), big.mark = ' '))
-  abline(h=par('usr')[3])
-  abline(v=par('usr')[1])
-  
-  points(data$Cdata[,1]-0.2, data$Cdata[,2], 
-         type='h', col=theCols[2], lwd=3,
-         lend=2)
-  points(data$Cdata[,1]+0.2, data$Cdata[,3], 
-         type='h', col=theCols[1], lwd=3,
-         lend=2)
-  if(labels=='Norwegian') {
-    mtext(side=2, line=6, 'Fangst', las=0, cex=1.5)
-    legend('topright', pch=15, col=theCols[c(2,1)], c('Unger (0 gruppe)', 'Voksne (1+ gruppe)'), bty='n')
+  if(plotCatch) {
+    par(mar = c(3, 8, 1, 2) + 0.1, las=1)
+    plot(par('usr')[c(1,2)], c(0, max(data$Cdata[,-1])), 
+         type='n', axes=F, xlab='', ylab='', xlim=xLim, 
+         cex.lab = 1.5)
+    axis(1)
+    axis(2, at=pretty(c(0, max(data$Cdata[,-1]))), 
+         labels=format(pretty(c(0, max(data$Cdata[,-1]))), big.mark = ' '))
+    abline(h=par('usr')[3])
+    abline(v=par('usr')[1])
+    
+    points(data$Cdata[,1]-0.2, data$Cdata[,2], 
+           type='h', col=theCols[2], lwd=3,
+           lend=2)
+    points(data$Cdata[,1]+0.2, data$Cdata[,3], 
+           type='h', col=theCols[1], lwd=3,
+           lend=2)
+    if(labels=='Norwegian') {
+      mtext(side=2, line=6, 'Fangst', las=0, cex=1.5)
+      if("Tot" %in% component) {
+        if(long.labels) {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Unger (0 gruppe)', 'Total (0 & 1+ gruppe)'), bty='n')
+        } else {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Unger', 'Total'), bty='n')
+        }  
+      } else {
+        if(long.labels) {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Unger (0 gruppe)', 'Voksne (1+ gruppe)'), bty='n')
+        } else {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Unger', 'Voksne'), bty='n')
+        }
+      }  
+    } else {
+      mtext(side=2, line=6, 'Catch size', las=0, cex=1.5)
+      if("Tot" %in% component) {
+        if(long.labels) {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Pups (0 group)', 'Total (0 & 1+ group)'), bty='n')
+        } else {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Pups', 'Total'), bty='n')
+        }
+      } else {
+        if(long.labels) {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Pups (0 group)', 'Adults (1+ group)'), bty='n')
+        } else {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Pups', 'Adults'), bty='n')
+        }
+      }  
+    }
   } else {
-    mtext(side=2, line=6, 'Catch size', las=0, cex=1.5)
-    legend('topright', pch=15, col=theCols[c(2,1)], c('Pups (0 group)', 'Adults (1+ group)'), bty='n')
-  }
-  
+    axis(1)
+    if(labels=='Norwegian') {
+      mtext(side=2, line=6, 'Fangst', las=0, cex=1.5)
+      if("Tot" %in% component) {
+        if(long.labels) {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Unger (0 gruppe)', 'Total (0 & 1+ gruppe)'), bty='n')
+        } else {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Unger', 'Total'), bty='n')
+        }  
+      } else {
+        if(long.labels) {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Unger (0 gruppe)', 'Voksne (1+ gruppe)'), bty='n')
+        } else {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Unger', 'Voksne'), bty='n')
+        }
+      }  
+    } else {
+      mtext(side=2, line=6, 'Catch size', las=0, cex=1.5)
+      if("Tot" %in% component) {
+        if(long.labels) {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Pups (0 group)', 'Total (0 & 1+ group)'), bty='n')
+        } else {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Pups', 'Total'), bty='n')
+        }
+      } else {
+        if(long.labels) {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Pups (0 group)', 'Adults (1+ group)'), bty='n')
+        } else {
+          legend('topright', pch=15, col=theCols[c(2,1)], c('Pups', 'Adults'), bty='n')
+        }
+      }  
+    }
+  }  
   options(scipen = 0)
+  par(def.par)
 }
+
+# plotResCatch <- function (results = res, 
+#                           data = data, 
+#                           component = c("N0","N1"), 
+#                           xLim = NA, 
+#                           yLim = NA, 
+#                           plot.legend = TRUE, 
+#                           plot.Nlims = TRUE, 
+#                           projections = TRUE, 
+#                           mean.proj = FALSE, 
+#                           width = 13, 
+#                           height = 13, 
+#                           conf.int = TRUE, 
+#                           grDev = FALSE, 
+#                           labels='English') 
+# {
+#   if (projections) {
+#     span <- c(1:length(results$indN0))
+#   } else {
+#     span <- c(1:nrow(data$Cdata))
+#   }
+#   
+#   options(scipen = 999)
+#   add.alpha <- function(col, alpha = 1) {
+#     if (missing(col)) 
+#       stop("Please provide a vector of colours.")
+#     apply(sapply(col, col2rgb)/255, 2, function(x) rgb(x[1], 
+#                                                        x[2], x[3], alpha = alpha))
+#   }
+#   if (grDev) graphDev(width = width, height = height)
+#   theCols <- RColorBrewer::brewer.pal(max(c(3, length(component))), 
+#                                       "Dark2")
+#   if (length(xLim) == 1) 
+#     xLim <- range(results$years)
+#   if ("N1" %in% component) {
+#     indN1back <- results$indN1[c(1:match(max(data$pupProductionData[, 
+#                                                                     1]), results$years))]
+#     lCI <- results$rep.matrix[results$indN1, 1] - (1.96 * 
+#                                                      results$rep.matrix[results$indN1, 2])
+#     uCI <- results$rep.matrix[results$indN1, 1] + (1.96 * 
+#                                                      results$rep.matrix[results$indN1, 2])
+#     if (length(yLim) == 1) 
+#       yLim <- c(0, max(uCI))
+#     if (!projections) {
+#       if (length(xLim) == 1) {
+#         xLim <- range(results$years[span])
+#       }
+#       else {
+#         xLim[2] <- min(c(xLim[2], max(data$Cdata[, 1])))
+#       }
+#       if (length(yLim) == 1) {
+#         yLim <- c(0, max(uCI[span]))
+#       }
+#       else {
+#         yLim[2] <- max(uCI[span])
+#       }
+#     }
+#     layout(matrix(c(1,2), ncol=1), heights=c(0.7, 0.3))
+#     par(mar = c(1, 8, 1, 2) + 0.1, las=1)
+#     plot(results$years, results$rep.matrix[results$indN1, 
+#                                            1], type = "l", xlab = "Year", ylab = "", 
+#          col = theCols[1], lwd = 2, lty = 2, xlim = xLim, 
+#          ylim = yLim, axes = FALSE, cex.lab = 1.5)
+#     if(labels=='Norwegian') {
+#       mtext(side=2, line=6, 'Bestandsst?rrelse', las=0, cex=1.5)
+#     } else {
+#       mtext(side=2, line=6, 'Abundance', las=0, cex=1.5)
+#     }
+#     if (!projections | !mean.proj) 
+#       lines(results$years, results$rep.matrix[results$indN1, 
+#                                               1], lwd = 2, lty = 2, col = "white")
+#     axis(1, labels=F)
+#     axis(2, at = pretty(par("usr")[c(3, 4)]), 
+#          labels = format(pretty(par("usr")[c(3, 4)]), scientific = F, big.mark=' '))
+#     abline(h = par("usr")[3])
+#     abline(v = par("usr")[1])
+#     if (plot.Nlims) {
+#       Nlims <- c(0.3, 0.5, 0.7) * max(results$rep.matrix[results$indNTot, 
+#                                                          1])
+#       abline(h = Nlims, col = "lightgrey")
+#       text(par("usr")[2], Nlims[1], expression(N[lim]), 
+#            xpd = NA, adj = 0, cex = 0.9)
+#       text(par("usr")[2], Nlims[2], expression(N[50]), 
+#            xpd = NA, adj = 0, cex = 0.9)
+#       text(par("usr")[2], Nlims[3], expression(N[70]), 
+#            xpd = NA, adj = 0, cex = 0.9)
+#     }
+#     if (projections) {
+#       if (conf.int) {
+#         lines(results$years, lCI, col = theCols[1], lty = 2)
+#         lines(results$years, uCI, col = theCols[1], lty = 2)
+#       }
+#       lines(results$years, results$rep.matrix[results$indN1, 
+#                                               1], col = theCols[1], lwd = 2, lty = 2)
+#     }
+#     if (conf.int) {
+#       polygon(c(c(results$years[1]:(max(data$Cdata[, 1]) + 
+#                                       1)), rev(c(results$years[1]:(max(data$Cdata[, 
+#                                                                                   1]) + 1)))), c(lCI[c(1:((max(data$Cdata[, 1]) + 
+#                                                                                                              1) - results$years[1] + 1))], rev(uCI[c(1:((max(data$Cdata[, 
+#                                                                                                                                                                         1]) + 1) - results$years[1] + 1))])), col = add.alpha(theCols[1], 
+#                                                                                                                                                                                                                               0.5), border = NA)
+#     }
+#     lines((data$Cdata[1, 1]:(max(data$Cdata[, 1]) + 1)), 
+#           results$rep.matrix[results$indN1[1:(length(data$Cdata[, 
+#                                                                 1]) + 1)]], col = theCols[1], lwd = 2)
+#   }
+#   if ("N0" %in% component) {
+#     indN0back <- results$indN0[c(1:match(max(data$pupProductionData[, 
+#                                                                     1]), results$years))]
+#     plCI <- results$rep.matrix[results$indN0, 1] - (1.96 * 
+#                                                       results$rep.matrix[results$indN0, 2])
+#     puCI <- results$rep.matrix[results$indN0, 1] + (1.96 * 
+#                                                       results$rep.matrix[results$indN0, 2])
+#     if (!"N1" %in% component) {
+#       if (length(yLim) == 1) 
+#         yLim <- c(0, max(puCI))
+#       if (!projections) {
+#         if (length(xLim) == 1) {
+#           xLim <- range(results$years[span])
+#         }
+#         else {
+#           xLim[2] <- min(c(xLim[2], max(data$Cdata[, 
+#                                                    1])))
+#         }
+#         if (length(yLim) == 1) {
+#           yLim <- c(0, max(c(max(puCI[span]), max(data$pupProductionData[, 
+#                                                                          2] + (1.96 * (data$pupProductionData[, 3] * 
+#                                                                                          data$pupProductionData[, 2]))))))
+#         }
+#         else {
+#           yLim[2] <- max(c(max(puCI[span]), max(data$pupProductionData[, 
+#                                                                        2] + (1.96 * (data$pupProductionData[, 3] * 
+#                                                                                        data$pupProductionData[, 2])))))
+#         }
+#       }
+#       plot(results$years, results$rep.matrix[results$indN0, 
+#                                              1], type = "l", xlab = "", ylab = "", 
+#            col = theCols[2], lwd = 2, lty = 2, xlim = xLim, 
+#            ylim = yLim, axes = FALSE, cex.lab = 1.5)
+#       if(labels=='Norwegian') {
+#         mtext(side=2, line=6, 'Bestandsst?rrelse', las=0, cex=1.5)
+#       } else {
+#         mtext(side=2, line=6, 'Abundance', las=0, cex=1.5)
+#       }
+#       
+#       if (!projections | !mean.proj) 
+#         lines(results$years, results$rep.matrix[results$indN0, 
+#                                                 1], lwd = 2, lty = 2, col = theCols[2])
+#       axis(1)
+#       axis(2, at = pretty(par("usr")[c(3, 4)]), 
+#            labels = format(pretty(par("usr")[c(3, 4)]), scientific = FALSE, big.mark=' '))
+#       abline(h = par("usr")[3])
+#       abline(v = par("usr")[1])
+#     } else {
+#       if (projections) 
+#         lines(results$years, results$rep.matrix[results$indN0, 
+#                                                 1], col = theCols[2], lwd = 2, lty = 2)
+#     }
+#     if (projections) {
+#       if (conf.int) {
+#         lines(results$years, plCI, col = theCols[2], 
+#               lty = 2)
+#         lines(results$years, puCI, col = theCols[2], 
+#               lty = 2)
+#       }
+#     }
+#     if (conf.int) {
+#       polygon(c(c(results$years[1]:(max(data$Cdata[, 1]) + 
+#                                       0)), rev(c(results$years[1]:(max(data$Cdata[, 
+#                                                                                   1]) + 0)))), c(plCI[c(1:((max(data$Cdata[, 1]) + 
+#                                                                                                               0) - results$years[1] + 1))], rev(puCI[c(1:((max(data$Cdata[, 
+#                                                                                                                                                                           1]) + 0) - results$years[1] + 1))])), col = add.alpha(theCols[2], 
+#                                                                                                                                                                                                                                 0.5), border = NA)
+#     }
+#     lines((data$Cdata[1, 1]:(max(data$Cdata[, 1]) + 0)), 
+#           results$rep.matrix[results$indN0[1:(length(data$Cdata[, 
+#                                                                 1]) + 0)]], col = theCols[2], lwd = 2)
+#   }
+#   if (length(data) > 1 & "N0" %in% component) {
+#     segments(data$pupProductionData[, 1], data$pupProductionData[, 
+#                                                                  2] - (1.96 * (data$pupProductionData[, 3] * data$pupProductionData[, 
+#                                                                                                                                     2])), data$pupProductionData[, 1], data$pupProductionData[, 
+#                                                                                                                                                                                               2] + (1.96 * (data$pupProductionData[, 3] * data$pupProductionData[, 
+#                                                                                                                                                                                                                                                                  2])), col = 1)
+#     segments(data$pupProductionData[, 1] - 0.5, data$pupProductionData[, 
+#                                                                        2] - (1.96 * (data$pupProductionData[, 3] * data$pupProductionData[, 
+#                                                                                                                                           2])), data$pupProductionData[, 1] + 0.5, data$pupProductionData[, 
+#                                                                                                                                                                                                           2] - (1.96 * (data$pupProductionData[, 3] * data$pupProductionData[, 
+#                                                                                                                                                                                                                                                                              2])), col = 1)
+#     segments(data$pupProductionData[, 1] - 0.5, data$pupProductionData[, 
+#                                                                        2] + (1.96 * (data$pupProductionData[, 3] * data$pupProductionData[, 
+#                                                                                                                                           2])), data$pupProductionData[, 1] + 0.5, data$pupProductionData[, 
+#                                                                                                                                                                                                           2] + (1.96 * (data$pupProductionData[, 3] * data$pupProductionData[, 
+#                                                                                                                                                                                                                                                                              2])), col = 1)
+#     points(data$pupProductionData[, 1], data$pupProductionData[, 
+#                                                                2], pch = 21, bg = theCols[2], cex = 1.5)
+#   }
+#   
+#   par(mar = c(3, 8, 1, 2) + 0.1, las=1)
+#   plot(par('usr')[c(1,2)], c(0, max(data$Cdata[,-1])), 
+#        type='n', axes=F, xlab='', ylab='', xlim=xLim, 
+#        cex.lab = 1.5)
+#   axis(1)
+#   axis(2, at=pretty(c(0, max(data$Cdata[,-1]))), 
+#        labels=format(pretty(c(0, max(data$Cdata[,-1]))), big.mark = ' '))
+#   abline(h=par('usr')[3])
+#   abline(v=par('usr')[1])
+#   
+#   points(data$Cdata[,1]-0.2, data$Cdata[,2], 
+#          type='h', col=theCols[2], lwd=3,
+#          lend=2)
+#   points(data$Cdata[,1]+0.2, data$Cdata[,3], 
+#          type='h', col=theCols[1], lwd=3,
+#          lend=2)
+#   if(labels=='Norwegian') {
+#     mtext(side=2, line=6, 'Fangst', las=0, cex=1.5)
+#     legend('topright', pch=15, col=theCols[c(2,1)], c('Unger (0 gruppe)', 'Voksne (1+ gruppe)'), bty='n')
+#   } else {
+#     mtext(side=2, line=6, 'Catch size', las=0, cex=1.5)
+#     legend('topright', pch=15, col=theCols[c(2,1)], c('Pups (0 group)', 'Adults (1+ group)'), bty='n')
+#   }
+#   
+#   options(scipen = 0)
+# }
 
 
 
