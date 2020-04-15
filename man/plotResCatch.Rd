@@ -7,7 +7,7 @@
 plotResCatch(
   results = res,
   data = data,
-  component = c("N0", "N1"),
+  component = c("N0", "N1", "Tot"),
   xLim = NA,
   yLim = NA,
   plot.legend = TRUE,
@@ -18,7 +18,9 @@ plotResCatch(
   height = 13,
   conf.int = TRUE,
   grDev = FALSE,
-  labels = "English"
+  labels = "English",
+  long.labels = TRUE,
+  plotCatch = TRUE
 )
 }
 \arguments{
@@ -47,6 +49,10 @@ plotResCatch(
 \item{conf.int}{Logical parameter to decide wether to plot 95 percent confidence interval or not}
 
 \item{grDev}{Logical parameter to decide wether to open a OS independent graphical window}
+
+\item{long.labels}{Set TRUE for more detailed legend and FALSE for simple}
+
+\item{plotCatch}{Set TRUE to add catch, or FALSE to only show population trajectory.}
 }
 \value{
 plot Returns a plot of predicted population size for different population components

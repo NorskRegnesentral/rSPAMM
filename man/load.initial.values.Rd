@@ -7,7 +7,7 @@
 load.initial.values(
   population = "harpeast",
   fromFile = TRUE,
-  Kinit = 2000000,
+  Kinit = 2e+06,
   Minit = 0.09,
   M0init = 0.27
 )

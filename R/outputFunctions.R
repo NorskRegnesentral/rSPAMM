@@ -244,7 +244,6 @@ plotRes <- function(results=res,
 #' @param conf.int Logical parameter to decide wether to plot 95 percent confidence interval or not
 #' @param grDev Logical parameter to decide wether to open a OS independent graphical window
 #' @param long.labels Set TRUE for more detailed legend and FALSE for simple
-#' @param plotCatch Set TRUE to add catch, or FALSE to only show population trajectory.
 #' @return plot Returns a plot of predicted population size for different population components
 #' @keywords population model
 #' @export
@@ -265,8 +264,7 @@ plotResCatch <- function (results = res,
                           conf.int = TRUE, 
                           grDev = FALSE, 
                           labels='English', 
-                          long.labels=TRUE, 
-                          plotCatch=TRUE) 
+                          long.labels=TRUE) 
 {
   def.par <- par(no.readonly = TRUE) # save default, for resetting...
   if (projections) {
@@ -274,6 +272,8 @@ plotResCatch <- function (results = res,
   } else {
     span <- c(1:nrow(data$Cdata))
   }
+  
+  plotCatch=TRUE
   
   options(scipen = 999)
   add.alpha <- function(col, alpha = 1) {
@@ -328,11 +328,11 @@ plotResCatch <- function (results = res,
     
     if('Tot' %in% component) {
       plot(results$years, results$rep.matrix[results$indNTot,1], type = "l", xlab = "", ylab = "", 
-           col = theCols[1], lwd = 2, lty = 2, xlim = xLim, 
+           col = theCols[3], lwd = 2, lty = 2, xlim = xLim, 
            ylim = yLim, axes = FALSE, cex.lab = 1.5)
     } else {
       plot(results$years, results$rep.matrix[results$indN1,1], type = "l", xlab = "", ylab = "", 
-           col = theCols[1], lwd = 2, lty = 2, xlim = xLim, 
+           col = theCols[3], lwd = 2, lty = 2, xlim = xLim, 
            ylim = yLim, axes = FALSE, cex.lab = 1.5)
     }
     if(labels=='Norwegian') {
@@ -367,15 +367,15 @@ plotResCatch <- function (results = res,
     }
     if (projections) {
       if (conf.int) {
-        lines(results$years, lCI, col = theCols[1], lty = 2)
-        lines(results$years, uCI, col = theCols[1], lty = 2)
+        lines(results$years, lCI, col = theCols[3], lty = 2)
+        lines(results$years, uCI, col = theCols[3], lty = 2)
       }
       if('Tot' %in% component) {
         lines(results$years, results$rep.matrix[results$indNTot, 
-                                                1], col = theCols[1], lwd = 2, lty = 2)
+                                                1], col = theCols[3], lwd = 2, lty = 2)
       } else {
         lines(results$years, results$rep.matrix[results$indN1, 
-                                                1], col = theCols[1], lwd = 2, lty = 2)
+                                                1], col = theCols[3], lwd = 2, lty = 2)
       }
     }
     if (conf.int) {
@@ -383,17 +383,17 @@ plotResCatch <- function (results = res,
                                       1)), rev(c(results$years[1]:(max(data$Cdata[, 
                                                                                   1]) + 1)))), c(lCI[c(1:((max(data$Cdata[, 1]) + 
                                                                                                              1) - results$years[1] + 1))], rev(uCI[c(1:((max(data$Cdata[, 
-                                                                                                                                                                        1]) + 1) - results$years[1] + 1))])), col = add.alpha(theCols[1], 
+                                                                                                                                                                        1]) + 1) - results$years[1] + 1))])), col = add.alpha(theCols[3], 
                                                                                                                                                                                                                               0.5), border = NA)
     }
     if('Tot' %in% component) {
       lines((data$Cdata[1, 1]:(max(data$Cdata[, 1]) + 1)), 
             results$rep.matrix[results$indNTot[1:(length(data$Cdata[, 
-                                                                    1]) + 1)]], col = theCols[1], lwd = 2)
+                                                                    1]) + 1)]], col = theCols[3], lwd = 2)
     } else {
       lines((data$Cdata[1, 1]:(max(data$Cdata[, 1]) + 1)), 
             results$rep.matrix[results$indN1[1:(length(data$Cdata[, 
-                                                                  1]) + 1)]], col = theCols[1], lwd = 2)
+                                                                  1]) + 1)]], col = theCols[3], lwd = 2)
     }
   }
   if ("N0" %in% component) {
@@ -485,6 +485,13 @@ plotResCatch <- function (results = res,
                                                                                                                                                                                                                                                                              2])), col = 1)
     points(data$pupProductionData[, 1], data$pupProductionData[, 
                                                                2], pch = 21, bg = theCols[2], cex = 1.5)
+  
+    if(labels=='Norwegian') {
+      legend("topright",legend = c("Unge bestand (0 gruppe)","Total bestand (0 & 1+ gruppe)"),col = theCols[c(2,3)],lty = c(1,1),lwd = 2,bty = "n")
+    } else {
+      legend("topright",legend = c("Pup abundance (0 group)","Total abundance (0 & 1+ group)"),col = theCols[c(2,3)],lty = c(1,1),lwd = 2,bty = "n")
+      
+    }
   }
   
   if(plotCatch) {
@@ -570,7 +577,7 @@ plotResCatch <- function (results = res,
     }
   }  
   options(scipen = 0)
-  par(def.par)
+  #par(def.par)
 }
 
 # plotResCatch <- function (results = res, 
