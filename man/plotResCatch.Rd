@@ -19,8 +19,7 @@ plotResCatch(
   conf.int = TRUE,
   grDev = FALSE,
   labels = "English",
-  long.labels = TRUE,
-  plotCatch = TRUE
+  long.labels = TRUE
 )
 }
 \arguments{
@@ -51,8 +50,6 @@ plotResCatch(
 \item{grDev}{Logical parameter to decide wether to open a OS independent graphical window}
 
 \item{long.labels}{Set TRUE for more detailed legend and FALSE for simple}
-
-\item{plotCatch}{Set TRUE to add catch, or FALSE to only show population trajectory.}
 }
 \value{
 plot Returns a plot of predicted population size for different population components

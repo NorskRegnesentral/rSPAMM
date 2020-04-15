@@ -55,6 +55,13 @@ names(harpeast$data)
 names(harpeast$parameters)
 ```
 
+To use the demo data set in the following examples it would be easiest to split the list in two separate lists `data` and `parameters`, i.e.,
+
+```{r}
+data = harpeast$data
+parameters = harpeast$parameters
+```
+
 # Full data set
 The latest version of the most recent data on the harps and hooded seal population in the West Ice and the harp seal population in the east ice has a separate GitHub repository called [HarpAndHoodedSealData](https://www.github.com/NorskRegnesentral/HarpAndHoodedSealData).
 
@@ -365,12 +372,12 @@ plotCatch(catch = data$Cdata,position = "stack")
 
 ***
 
-You can plot the modelled population dynamics and the reported catch in the same figure using `plotResCatch()`
+You can plot the modelled population dynamics (pup abundance and total abundance, not the 1+ population) and the reported catch in the same figure using `plotResCatch()`
 
 ```{r eval = FALSE}
 plotResCatch(res,data)
 ```
-![Reported catch levels of pups and 1+ animals with bars next to each other.](figures/plotResCatch.png){ width=98%}
+![Reported catch levels of pups and 1+ animals with bars next to each other.](figures/plotResCatch2.png){ width=98%}
 
 ***
 
