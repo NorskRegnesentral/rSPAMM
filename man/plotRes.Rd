@@ -7,17 +7,13 @@
 plotRes(
   results = res,
   data = data,
-  component = c("N0", "N1"),
-  xLim = NA,
-  yLim = NA,
-  plot.legend = TRUE,
-  plot.Nlims = TRUE,
-  projections = TRUE,
-  mean.proj = FALSE,
-  width = 13,
-  height = 7,
-  conf.int = TRUE,
-  grDev = FALSE
+  component = c("N0", "Ntot"),
+  plotNlims = TRUE,
+  plotProjections = TRUE,
+  plotProjMean = TRUE,
+  width = 15,
+  height = 10,
+  grDev = TRUE
 )
 }
 \arguments{
@@ -25,27 +21,19 @@ plotRes(
 
 \item{data}{Original data on estimated pup production (set to NA if these are not to be included).}
 
-\item{component}{Which population component to plot. Can be either 'N0' for pups, 'N1' for adults, or a vector with both.}
+\item{component}{Which population component to plot. Can be either 'N0' for pups, 'N1' for adults, 'Ntot' for total abundance or a vector with both. Default showing pups and total abundance.}
 
-\item{xLim}{Manually set the x axis extent, overrides the default which is the extent of the plotted data.}
+\item{plotNlims}{Logical parameter to turn on and off Nlim, N50, and N70 lines, default True}
 
-\item{yLim}{Manually set the y axis extent, overrides the default which is the extent of the plotted data.}
-
-\item{plot.legend}{Add legend to plot (TRUE/FALSE)}
-
-\item{plot.Nlims}{True/False}
-
-\item{projections}{Plot projections (TRUE/FALSE)}
-
-\item{mean.proj}{True/False}
+\item{plotProjections}{Logical parameter to turn on and off plotting of projections, default True}
 
 \item{width}{Width of the figure}
 
 \item{height}{Height of the figure}
 
-\item{conf.int}{Logical parameter to decide wether to plot 95 percent confidence interval or not}
-
 \item{grDev}{Logical parameter to decide wether to open a OS independent graphical window}
+
+\item{plotMeanProj}{Logical parameter to turn on and off plotting of the mean projections, default TRUE}
 }
 \value{
 plot Returns a plot of predicted population size for different population components
@@ -56,5 +44,7 @@ Plot population trajectories.
 \examples{
 plotRes(res, data)
 }
-\keyword{model}
+\keyword{model,}
+\keyword{plot}
 \keyword{population}
+\keyword{results}
