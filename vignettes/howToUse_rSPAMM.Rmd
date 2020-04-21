@@ -312,7 +312,7 @@ partab
 
 # Visualize the modelled population dynamics
 In this section we will show how to create graphics to present the various output of the modelling results. To display the modelled pup abundance and the 1+ abundance you run the following function:
-```{r}
+```{r eval = FALSE}
 plotRes(res,data)
 ```
 
