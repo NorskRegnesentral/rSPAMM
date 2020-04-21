@@ -160,14 +160,14 @@ plotRes <- function(results=res,
   
   p1 <- ggplot2::ggplot() + 
     ggplot2::geom_line(data = df,
-                       aes(x=Year,
+                       ggplot2::aes(x=Year,
                            y=Abundance/scalef,
                            group = group,
                            color = group),
                        size = 1.3,
                        linetype = 1) +
     ggplot2::geom_ribbon(data=df,
-                         aes(x = Year, ymin=LL/scalef,ymax=UL/scalef, 
+                         ggplot2::aes(x = Year, ymin=LL/scalef,ymax=UL/scalef, 
                              group = group,
                              color = NULL,
                              fill = group),
@@ -176,7 +176,7 @@ plotRes <- function(results=res,
   if(plotProjections){
     if(plotProjMean){
       p1 <- p1 + ggplot2::geom_line(data = dfProj,
-                                    aes(x=Year,
+                                    ggplot2::aes(x=Year,
                                         y=Abundance/scalef,
                                         group = group,
                                         color = group),
@@ -185,14 +185,14 @@ plotRes <- function(results=res,
     }
     
     p1 <- p1 + ggplot2::geom_line(data = dfProj,
-                                  aes(x=Year,
+                                  ggplot2::aes(x=Year,
                                       y=LL/scalef,
                                       group = group,
                                       color = group),
                                   size = 0.8,
                                   linetype = 2) +
       ggplot2::geom_line(data = dfProj,
-                         aes(x=Year,
+                         ggplot2::aes(x=Year,
                              y=UL/scalef,
                              group = group,
                              color = group),
@@ -213,17 +213,17 @@ plotRes <- function(results=res,
   
   if(plotNlims){
     p1 <- p1 + ggplot2::geom_line(data=dfNlims,
-                                  aes(x=Year,y=N30/scalef),
+                                  ggplot2::aes(x=Year,y=N30/scalef),
                                   color="lightgrey",
                                   size = 1.2,
                                   alpha = 0.5) +
       ggplot2::geom_line(data=dfNlims,
-                         aes(x=Year,y=N50/scalef),
+                         ggplot2::aes(x=Year,y=N50/scalef),
                          color="lightgrey",
                          size = 1.2,
                          alpha = 0.5) + 
       ggplot2::geom_line(data=dfNlims,
-                         aes(x=Year,y=N70/scalef),
+                         ggplot2::aes(x=Year,y=N70/scalef),
                          color="lightgrey",
                          size = 1.2,
                          alpha = 0.5) +
@@ -234,11 +234,11 @@ plotRes <- function(results=res,
   
   if("N0" %in% component){
     p1 <- p1 + ggplot2::geom_point(data = dfPups,
-                                   aes(x=Year,y = pupEst/scalef),
+                                   ggplot2::aes(x=Year,y = pupEst/scalef),
                                    size = 2,
                                    color = colPupest) + 
       ggplot2::geom_errorbar(data = dfPups,
-                             aes(x = Year,ymin = LL/scalef,ymax = UL/scalef), 
+                             ggplot2::aes(x = Year,ymin = LL/scalef,ymax = UL/scalef), 
                              width=1.0,
                              size = 0.5,
                              color = colPupest)
