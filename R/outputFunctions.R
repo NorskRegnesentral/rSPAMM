@@ -245,7 +245,7 @@ plotRes <- function(results=res,
   }
   
   p1 <- p1 + ggplot2::theme_classic() +
-    ggplot2::theme(text = ggplot2::element_text(size=20), plot.margin = unit(c(1,2,1,1), "cm"), axis.text.y = ggplot2::element_text(angle = 90,margin = margin(t = 0, r = 20, b = 0, l = 30),vjust = 0.5),axis.text.x = ggplot2::element_text(margin = margin(t = 10, r = 0, b = 0, l = 0),vjust = 1),
+    ggplot2::theme(text = ggplot2::element_text(size=20), plot.margin = unit(c(1,2,1,1), "cm"), axis.text.y = ggplot2::element_text(angle = 90,margin = ggplot2::margin(t = 0, r = 20, b = 0, l = 30),vjust = 0.5),axis.text.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0),vjust = 1),
                    legend.title = ggplot2::element_blank(),
                    legend.position = "top") +
     ggplot2::ylab("Abundance (in 10K)") + 
@@ -877,8 +877,8 @@ plotCatch <- function(catch = cdata,
   pl <- pl + ggplot2::theme_classic() 
   pl <- pl + ggplot2::theme(text = element_text(size=20),
                    plot.margin = unit(c(1,2,1,1), "cm"),
-                   axis.text.y = element_text(angle = 90,margin = margin(t = 0, r = 20, b = 0, l = 30),vjust = 0.5),
-                   axis.text.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0),vjust = 1),
+                   axis.text.y = element_text(angle = 90,margin = ggplot2::margin(t = 0, r = 20, b = 0, l = 30),vjust = 0.5),
+                   axis.text.x = element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0),vjust = 1),
                    #legend.title = element_text(size = 20),
                    legend.title = element_blank(),
                    #legend.position = "bottom",
