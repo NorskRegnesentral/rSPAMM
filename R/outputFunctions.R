@@ -158,47 +158,47 @@ plotRes <- function(results=res,
     if(length(component) == 3) colPupest = theCols[2]
   }
   
-  p1 <- ggplot() + 
-    geom_line(data = df,
-              aes(x=Year,
-                  y=Abundance/scalef,
-                  group = group,
-                  color = group),
-              size = 1.3,
-              linetype = 1) +
-    geom_ribbon(data=df,
-                aes(x = Year, ymin=LL/scalef,ymax=UL/scalef, 
-                    group = group,
-                    color = NULL,
-                    fill = group),
-                alpha=0.3)
+  p1 <- ggplot2::ggplot() + 
+    ggplot2::geom_line(data = df,
+                       aes(x=Year,
+                           y=Abundance/scalef,
+                           group = group,
+                           color = group),
+                       size = 1.3,
+                       linetype = 1) +
+    ggplot2::geom_ribbon(data=df,
+                         aes(x = Year, ymin=LL/scalef,ymax=UL/scalef, 
+                             group = group,
+                             color = NULL,
+                             fill = group),
+                         alpha=0.3)
   
   if(plotProjections){
     if(plotProjMean){
-      p1 <- p1 + geom_line(data = dfProj,
-                           aes(x=Year,
-                               y=Abundance/scalef,
-                               group = group,
-                               color = group),
-                           size = 0.8,
-                           linetype = 2)
+      p1 <- p1 + ggplot2::geom_line(data = dfProj,
+                                    aes(x=Year,
+                                        y=Abundance/scalef,
+                                        group = group,
+                                        color = group),
+                                    size = 0.8,
+                                    linetype = 2)
     }
     
-    p1 <- p1 + geom_line(data = dfProj,
+    p1 <- p1 + ggplot2::geom_line(data = dfProj,
+                                  aes(x=Year,
+                                      y=LL/scalef,
+                                      group = group,
+                                      color = group),
+                                  size = 0.8,
+                                  linetype = 2) +
+      ggplot2::geom_line(data = dfProj,
                          aes(x=Year,
-                             y=LL/scalef,
+                             y=UL/scalef,
                              group = group,
                              color = group),
                          size = 0.8,
                          linetype = 2) +
-      geom_line(data = dfProj,
-                aes(x=Year,
-                    y=UL/scalef,
-                    group = group,
-                    color = group),
-                size = 0.8,
-                linetype = 2) +
-      xlim(NA,results$years[c(length(results$indN0))])
+      ggplot2::xlim(NA,results$years[c(length(results$indN0))])
     # + geom_vline(xintercept = tail(data$Cdata[,1],n=1), 
     #              linetype="dotted", 
     #              color = "grey", 
@@ -212,49 +212,49 @@ plotRes <- function(results=res,
   }
   
   if(plotNlims){
-    p1 <- p1 + geom_line(data=dfNlims,
-                         aes(x=Year,y=N30/scalef),
+    p1 <- p1 + ggplot2::geom_line(data=dfNlims,
+                                  aes(x=Year,y=N30/scalef),
+                                  color="lightgrey",
+                                  size = 1.2,
+                                  alpha = 0.5) +
+      ggplot2::geom_line(data=dfNlims,
+                         aes(x=Year,y=N50/scalef),
+                         color="lightgrey",
+                         size = 1.2,
+                         alpha = 0.5) + 
+      ggplot2::geom_line(data=dfNlims,
+                         aes(x=Year,y=N70/scalef),
                          color="lightgrey",
                          size = 1.2,
                          alpha = 0.5) +
-      geom_line(data=dfNlims,
-                aes(x=Year,y=N50/scalef),
-                color="lightgrey",
-                size = 1.2,
-                alpha = 0.5) + 
-      geom_line(data=dfNlims,
-                aes(x=Year,y=N70/scalef),
-                color="lightgrey",
-                size = 1.2,
-                alpha = 0.5) +
-      annotate("text", x = (max(df$Year)+4), y = Nlims[3]/scalef, label = "N[70]",parse = TRUE,size = 5) +
-      annotate("text", x = (max(df$Year)+4), y = Nlims[2]/scalef, label = "N[50]",parse = TRUE,size = 5) +
-      annotate("text", x = (max(df$Year)+4), y = Nlims[1]/scalef, label = "N[lim]",parse = TRUE,size = 5)
+      ggplot2::annotate("text", x = (max(df$Year)+4), y = Nlims[3]/scalef, label = "N[70]",parse = TRUE,size = 5) +
+      ggplot2::annotate("text", x = (max(df$Year)+4), y = Nlims[2]/scalef, label = "N[50]",parse = TRUE,size = 5) +
+      ggplot2::annotate("text", x = (max(df$Year)+4), y = Nlims[1]/scalef, label = "N[lim]",parse = TRUE,size = 5)
   }
   
   if("N0" %in% component){
-    p1 <- p1 + geom_point(data = dfPups,
-                          aes(x=Year,y = pupEst/scalef),
-                          size = 2,
-                          color = colPupest) + 
-      geom_errorbar(data = dfPups,
-                    aes(x = Year,ymin = LL/scalef,ymax = UL/scalef), 
-                    width=1.0,
-                    size = 0.5,
-                    color = colPupest)
+    p1 <- p1 + ggplot2::geom_point(data = dfPups,
+                                   aes(x=Year,y = pupEst/scalef),
+                                   size = 2,
+                                   color = colPupest) + 
+      ggplot2::geom_errorbar(data = dfPups,
+                             aes(x = Year,ymin = LL/scalef,ymax = UL/scalef), 
+                             width=1.0,
+                             size = 0.5,
+                             color = colPupest)
   }
   
-  p1 <- p1 + theme_classic() +
-    theme(text = element_text(size=20),
-          plot.margin = unit(c(1,2,1,1), "cm"),
-          axis.text.y = element_text(angle = 90,margin = margin(t = 0, r = 20, b = 0, l = 30),vjust = 0.5),
-          axis.text.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0),vjust = 1),
-          #legend.title = element_text(size = 20),
-          legend.title = element_blank(),
-          legend.position = "top") +
-    ylab("Abundance (in 10K)") + 
-    scale_fill_manual(values = c(theCols[3], theCols[2], theCols[1])) +
-    scale_colour_manual(values = c(theCols[3], theCols[2], theCols[1])) 
+  p1 <- p1 + ggplot2::theme_classic() +
+    ggplot2::theme(text = element_text(size=20),
+                   plot.margin = unit(c(1,2,1,1), "cm"),
+                   axis.text.y = element_text(angle = 90,margin = margin(t = 0, r = 20, b = 0, l = 30),vjust = 0.5),
+                   axis.text.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0),vjust = 1),
+                   #legend.title = element_text(size = 20),
+                   legend.title = element_blank(),
+                   legend.position = "top") +
+    ggplot2::ylab("Abundance (in 10K)") + 
+    ggplot2::scale_fill_manual(values = c(theCols[3], theCols[2], theCols[1])) +
+    ggplot2::scale_colour_manual(values = c(theCols[3], theCols[2], theCols[1])) 
   
   
   p1
