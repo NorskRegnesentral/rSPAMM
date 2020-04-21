@@ -27,7 +27,7 @@ plotRes <- function(results=res,
                      grDev = TRUE)
 {
   
-  
+  library(ggplot2)
   
   # if(plotProjections) {
   #   span <- c(1:length(results$indN0))
