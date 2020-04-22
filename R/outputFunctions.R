@@ -103,10 +103,10 @@ plotRes <- function(results=res,
     dfIndex = (tail(dfIndex,n=1)+1):((tail(dfIndex,n=1)+length(span)))
     
     if(plotProjections){
-      dfProj$Abundance[dfIndex] = results$rep.matrix[results$indN1[indProj],1]
-      dfProj$group[dfIndex] = "1+ group"
-      dfProj$LL[dfIndex] = results$rep.matrix[results$indN1[indProj],1] - (1.96*results$rep.matrix[results$indN1[indProj],2]) 
-      dfProj$UL[dfIndex] = results$rep.matrix[results$indN1[indProj],1] + (1.96*results$rep.matrix[results$indN1[indProj],2]) 
+      dfProj$Abundance[dfProjIndex] = results$rep.matrix[results$indN1[indProj],1]
+      dfProj$group[dfProjIndex] = "1+ group"
+      dfProj$LL[dfProjIndex] = results$rep.matrix[results$indN1[indProj],1] - (1.96*results$rep.matrix[results$indN1[indProj],2]) 
+      dfProj$UL[dfProjIndex] = results$rep.matrix[results$indN1[indProj],1] + (1.96*results$rep.matrix[results$indN1[indProj],2]) 
       dfProjIndex = (tail(dfProjIndex,n=1)+1):(tail(dfProjIndex,n=1)+length(indProj))
     }
   }
