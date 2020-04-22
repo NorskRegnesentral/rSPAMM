@@ -24,7 +24,7 @@ plotRes <- function(results=res,
                      plotProjMean = TRUE,
                      width = 15, 
                      height = 10,
-                     grDev = TRUE)
+                     grDev = FALSE)
 {
   
   library(ggplot2)
@@ -141,7 +141,13 @@ plotRes <- function(results=res,
   
   if(plotNlims){
     Nlims <- c(0.3, 0.5, 0.7)*max(results$rep.matrix[results$indNTot,1]) 
-    dfNlims = data.frame(Year = results$years[span],N30 = Nlims[1],N50 = Nlims[2], N70 = Nlims[3])
+    
+    if(plotProjections){
+      dfNlims = data.frame(Year = results$years[spanProj],N30 = Nlims[1],N50 = Nlims[2], N70 = Nlims[3])
+    } else
+    {
+      dfNlims = data.frame(Year = results$years[span],N30 = Nlims[1],N50 = Nlims[2], N70 = Nlims[3])
+    }
   }
   
   
@@ -197,8 +203,14 @@ plotRes <- function(results=res,
                              group = group,
                              color = group),
                          size = 0.8,
-                         linetype = 2) +
-      ggplot2::xlim(NA,results$years[c(length(results$indN0))])
+                         linetype = 2) 
+    if(plotProjections){
+      p1 <- p1 + ggplot2::xlim(NA,(results$years[c(length(results$indN0))]+6))
+
+    } else {
+      p1 <- p1 + ggplot2::xlim(NA,results$years[c(length(results$indN0))])
+
+    }
     # + geom_vline(xintercept = tail(data$Cdata[,1],n=1), 
     #              linetype="dotted", 
     #              color = "grey", 
@@ -226,10 +238,16 @@ plotRes <- function(results=res,
                          ggplot2::aes(x=Year,y=N70/scalef),
                          color="lightgrey",
                          size = 1.2,
-                         alpha = 0.5) +
-      ggplot2::annotate("text", x = (max(df$Year)+4), y = Nlims[3]/scalef, label = "N[70]",parse = TRUE,size = 5) +
-      ggplot2::annotate("text", x = (max(df$Year)+4), y = Nlims[2]/scalef, label = "N[50]",parse = TRUE,size = 5) +
-      ggplot2::annotate("text", x = (max(df$Year)+4), y = Nlims[1]/scalef, label = "N[lim]",parse = TRUE,size = 5)
+                         alpha = 0.5) 
+    if(plotProjections){
+      p1 <- p1 + ggplot2::annotate("text", x = (max(df$Year)+4+18), y = Nlims[3]/scalef, label = "N[70]",parse = TRUE,size = 5) +
+        ggplot2::annotate("text", x = (max(df$Year)+4+18), y = Nlims[2]/scalef, label = "N[50]",parse = TRUE,size = 5) +
+        ggplot2::annotate("text", x = (max(df$Year)+4+18), y = Nlims[1]/scalef, label = "N[lim]",parse = TRUE,size = 5)
+    } else {
+      p1 <- p1 + ggplot2::annotate("text", x = (max(df$Year)+4), y = Nlims[3]/scalef, label = "N[70]",parse = TRUE,size = 5) +
+        ggplot2::annotate("text", x = (max(df$Year)+4), y = Nlims[2]/scalef, label = "N[50]",parse = TRUE,size = 5) +
+        ggplot2::annotate("text", x = (max(df$Year)+4), y = Nlims[1]/scalef, label = "N[lim]",parse = TRUE,size = 5)
+      }
   }
   
   if("N0" %in% component){
@@ -252,6 +270,9 @@ plotRes <- function(results=res,
     ggplot2::scale_fill_manual(values = c(theCols[3], theCols[2], theCols[1])) +
     ggplot2::scale_colour_manual(values = c(theCols[3], theCols[2], theCols[1])) 
   
+  # if(plotProjections){
+  #   p1 <- p1 + scale_x_discrete(limits = c((min(df$Year)),(max(df$Year)+4+19)))
+  # }
   
   p1
 }

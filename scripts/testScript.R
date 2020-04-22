@@ -1,3 +1,5 @@
+devtools::install_github("https://github.com/NorskRegnesentral/rSPAMM.git", build_vignettes = FALSE)
+
 library(rSPAMM)
 
 data("harpeastDemo")

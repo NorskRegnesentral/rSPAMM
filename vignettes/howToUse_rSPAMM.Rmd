@@ -311,8 +311,8 @@ partab
 ```
 
 # Visualize the modelled population dynamics
-In this section we will show how to create graphics to present the various output of the modelling results. To display the modelled pup abundance and the 1+ abundance you run the following function:
-```{r eval = FALSE}
+In this section we will show how to create graphics to present the various output of the modelling results. To display the modelled pup abundance and the total abundance you run the following function:
+```{r}
 plotRes(res,data)
 ```
 
@@ -326,10 +326,19 @@ plotRes(res,data,grDev = TRUE)
 ***
 
 
-<!-- ![Modelled pup abundance and 1+ abundance.](figures/fitted_N0_N1_with_projections.png){ width=98%} -->
+<!-- ![Modelled pup abundance and 1+ abundance.](figures/plotResN0NtotProjMean.png){ width=98%} -->
 
+If you want to turn off the mean trajectory for the predictions and only plot the 95 percent konfidence intervals for the projections you add the option `plotProjMean = FALSE`, i.e.,
+```{r}
+plotRes(res,data,plotProjMean = FALSE)
+```
 
-You can also plot the fit to the pup abundance and the 1+ abundance separately by specifying that in the `component` option:
+If you want to show the pup trajectory and the 1+ group you change the `compnent` option, i.e.,
+```{r}
+plotRes(res,data,component = c("N0","N1"))
+```
+
+You can also plot the fit to the pup abundance, the 1+ group or the total abundance separately by specifying that in the `component` option:
 ```{r}
 plotRes(res,data,component = c("N0"))
 ```
@@ -344,15 +353,15 @@ plotRes(res,data,component = c("N1"))
 ***
 <!-- ![Modelled abundance.](figures/fitted_adult_abun.png){ width=98%} -->
 
-You can also choose to not plot the future projections by setting `projections = FALSE` . 
+You can also choose to not plot the future projections by setting `plotProjections = FALSE` . 
 ```{r}
-plotRes(res,data,projections = FALSE)
+plotRes(res,data,plotProjections = FALSE)
 ```
 
 ***
 <!-- ![Modelled pup and 1+ abundance  withouth projections.](figures/fitted_abun_no_proj.png){ width=98%} -->
 
-The confidence intervals can be turned off by setting `conf.int = FALSE` and the horizontal lines for $N_{lim}$, $N_{50}$ and $N_{70}$ can be turned off by setting `plot.Nlims = FALSE`. For other options you can run `?plotRes`.
+The horizontal lines for $N_{lim}$, $N_{50}$ and $N_{70}$ can be turned off by setting `plotNlims = FALSE`. For other options you can run `?plotRes`.
 
 If you want to visualize certain types of data you can plot the historical catch level used, the fecundity vector and the birth ogive curves for each time period. To plot the catch data run the `plotCatch()` function:
 ```{r eval = FALSE}
