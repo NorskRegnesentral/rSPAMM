@@ -338,7 +338,7 @@ If you want to show the pup trajectory and the 1+ group you change the `compnent
 plotRes(res,data,component = c("N0","N1"))
 ```
 
-You can also plot the fit to the pup abundance, the 1+ group or the total abundance separately by specifying that in the `component` option:
+You can also plot the fit to the pup abundance, the 1+ group, or the total abundance separately by specifying that in the `component` option:
 ```{r}
 plotRes(res,data,component = c("N0"))
 ```

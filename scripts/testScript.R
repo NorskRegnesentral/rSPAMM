@@ -1,4 +1,4 @@
-devtools::install_github("https://github.com/NorskRegnesentral/rSPAMM.git", build_vignettes = FALSE)
+devtools::install_github("https://github.com/NorskRegnesentral/rSPAMM.git", build_vignettes = TRUE)
 
 library(rSPAMM)
 
