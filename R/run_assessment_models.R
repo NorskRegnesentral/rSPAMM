@@ -68,7 +68,7 @@ run.model <- function(data = data,par = parameters,print2screen = TRUE)
   #Load C part---------------------
   tmbDir <- system.file("libs", package = "rSPAMM")
   if(Sys.info()["sysname"] =="Windows")dyn.load(paste(tmbDir,"/x64/rSPAMM",sep = ""))
-  if(Sys.info()["sysname"] =="Linux")dyn.load(paste(tmbDir,"/.so",sep = ""))
+  if(Sys.info()["sysname"] =="Linux")dyn.load(paste(tmbDir,"/rSPAMM.so",sep = ""))
   #-----------------------------------
   
   if('Pper' %in% names(data)) {
